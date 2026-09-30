@@ -32,11 +32,14 @@ export type Cronograma = {
 };
 
 export function montarCronograma(festa: Festa, ano: number): Cronograma {
-  const consagracao = dataDaFesta(festa, ano);
-  return cronogramaPara(festa, consagracao);
+  return cronogramaPara(festa, dataDaFesta(festa, ano));
 }
 
-function cronogramaPara(festa: Festa, consagracao: DataSimples): Cronograma {
+/** O mesmo cronograma, a partir de uma data já gravada. */
+export function cronogramaPara(
+  festa: Festa,
+  consagracao: DataSimples,
+): Cronograma {
   const inicio = somarDias(consagracao, -TOTAL_DIAS);
 
   return {

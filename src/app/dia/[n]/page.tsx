@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { CondutorDoDia } from "@/components/jornada/CondutorDoDia";
 import { diaPorNumero } from "@/content/jornada";
 import { TOTAL_DIAS, etapaDoDia } from "@/lib/jornada/etapas";
+import { jornadaAtual } from "@/lib/jornada/repositorio";
+import { clienteServidor } from "@/lib/supabase/servidor";
 
 type Props = { params: Promise<{ n: string }> };
 
@@ -22,6 +24,11 @@ export default async function DiaDaJornada({ params }: Props) {
 
   const etapa = etapaDoDia(numero);
   const dia = diaPorNumero(numero);
+  const jornada = await jornadaAtual();
+
+  if (!jornada) redirect("/calendario");
+
+  const textos = await textosDoDia(jornada.id, numero);
 
   return (
     <main
@@ -56,13 +63,35 @@ export default async function DiaDaJornada({ params }: Props) {
 
       <div className="mt-14">
         {dia ? (
-          <CondutorDoDia dia={dia} etapa={etapa} />
+          <CondutorDoDia
+            dia={dia}
+            etapa={etapa}
+            jornadaId={jornada.id}
+            passosFeitos={jornada.progresso.get(numero) ?? []}
+            textos={textos}
+          />
         ) : (
           <EmPreparacao numero={numero} />
         )}
       </div>
     </main>
   );
+}
+
+/** O que a pessoa já escreveu neste dia, para reabrir onde parou. */
+async function textosDoDia(jornadaId: string, dia: number) {
+  const supabase = await clienteServidor();
+  const { data } = await supabase
+    .from("diario")
+    .select("tipo, texto")
+    .eq("jornada_id", jornadaId)
+    .eq("dia", dia)
+    .returns<{ tipo: string; texto: string }[]>();
+
+  return {
+    reflexao: data?.find((d) => d.tipo === "reflexao")?.texto ?? "",
+    registro: data?.find((d) => d.tipo === "livre")?.texto ?? "",
+  };
 }
 
 /**

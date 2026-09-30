@@ -1,45 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import type { Dia } from "@/content/jornada";
-import { PASSOS, TOTAL_PASSOS } from "@/lib/jornada/passos";
+import { PASSOS, TOTAL_PASSOS, type PassoId } from "@/lib/jornada/passos";
 import type { Etapa } from "@/lib/jornada/etapas";
+import { marcarPasso, salvarTexto } from "@/lib/jornada/acoes";
+
+type Props = {
+  dia: Dia;
+  etapa: Etapa;
+  jornadaId: string;
+  passosFeitos: PassoId[];
+  textos: { reflexao: string; registro: string };
+};
 
 /**
  * Conduz a pessoa pelos sete passos do dia, um de cada vez.
  *
- * O que ela escreve fica, por enquanto, apenas neste navegador. A migração
- * para a conta acontece quando o Supabase entrar; até lá, a tela diz isso
- * com todas as letras em vez de deixar a pessoa supor que está salvo.
+ * Cada passo é marcado ao ser deixado para trás, e o que se escreve é
+ * guardado sozinho pouco depois de a digitação parar — não há botão de
+ * salvar a esquecer no meio de uma oração.
  */
-export function CondutorDoDia({ dia, etapa }: { dia: Dia; etapa: Etapa }) {
+export function CondutorDoDia({
+  dia,
+  etapa,
+  jornadaId,
+  passosFeitos,
+  textos,
+}: Props) {
   const [indice, setIndice] = useState(0);
+  const [feitos, setFeitos] = useState<Set<PassoId>>(new Set(passosFeitos));
   const passo = PASSOS[indice];
   const semMovimento = useReducedMotion();
 
-  const [reflexao, setReflexao] = useState("");
-  const [registro, setRegistro] = useState("");
+  const [reflexao, setReflexao] = useState(textos.reflexao);
+  const [registro, setRegistro] = useState(textos.registro);
 
-  const chaveReflexao = `rascunho:reflexao:dia-${dia.numero}`;
-  const chaveRegistro = `rascunho:registro:dia-${dia.numero}`;
-
-  useEffect(() => {
-    try {
-      setReflexao(localStorage.getItem(chaveReflexao) ?? "");
-      setRegistro(localStorage.getItem(chaveRegistro) ?? "");
-    } catch {
-      // Navegação privativa ou armazenamento bloqueado: segue sem rascunho.
+  function irPara(novo: number) {
+    const deixado = PASSOS[indice].id;
+    if (!feitos.has(deixado)) {
+      setFeitos(new Set(feitos).add(deixado));
+      void marcarPasso(jornadaId, dia.numero, deixado);
     }
-  }, [chaveReflexao, chaveRegistro]);
-
-  function guardar(chave: string, valor: string) {
-    try {
-      localStorage.setItem(chave, valor);
-    } catch {
-      // Sem armazenamento, o texto vive só enquanto a tela estiver aberta.
-    }
+    setIndice(novo);
   }
 
   const transicao = semMovimento
@@ -48,24 +53,24 @@ export function CondutorDoDia({ dia, etapa }: { dia: Dia; etapa: Etapa }) {
 
   return (
     <div className="mx-auto w-full max-w-[64ch]">
-      {/* Os sete passos, em uma linha fina de marcas. */}
       <ol className="flex items-center gap-2" aria-label="Passos de hoje">
         {PASSOS.map((p, i) => (
           <li key={p.id} className="flex-1">
             <button
               type="button"
-              onClick={() => setIndice(i)}
+              onClick={() => irPara(i)}
               aria-current={i === indice ? "step" : undefined}
               className="group block w-full py-3"
             >
               <span className="sr-only">
                 {p.nome}
                 {i === indice ? " (passo atual)" : ""}
+                {feitos.has(p.id) ? " — cumprido" : ""}
               </span>
               <span
                 aria-hidden
                 data-estado={
-                  i === indice ? "atual" : i < indice ? "feito" : "adiante"
+                  i === indice ? "atual" : feitos.has(p.id) ? "feito" : "adiante"
                 }
                 className="block h-px w-full transition-all duration-500 ease-[var(--ease-santuario)]
                   group-hover:h-[2px]
@@ -167,10 +172,10 @@ export function CondutorDoDia({ dia, etapa }: { dia: Dia; etapa: Etapa }) {
                 rotulo="O que ficou da leitura de hoje?"
                 ajuda="Escreva livremente. Não precisa ter forma, nem conclusão."
                 valor={reflexao}
-                aoMudar={(v) => {
-                  setReflexao(v);
-                  guardar(chaveReflexao, v);
-                }}
+                aoMudar={setReflexao}
+                gravar={(v) =>
+                  salvarTexto(jornadaId, dia.numero, "reflexao", v)
+                }
               />
             )}
 
@@ -206,10 +211,10 @@ export function CondutorDoDia({ dia, etapa }: { dia: Dia; etapa: Etapa }) {
                 rotulo="O que você quer guardar deste dia?"
                 ajuda="Uma frase basta. Este texto vai para o seu diário."
                 valor={registro}
-                aoMudar={(v) => {
-                  setRegistro(v);
-                  guardar(chaveRegistro, v);
-                }}
+                aoMudar={setRegistro}
+                gravar={(v) =>
+                  salvarTexto(jornadaId, dia.numero, "registro", v)
+                }
               />
             )}
           </div>
@@ -220,7 +225,7 @@ export function CondutorDoDia({ dia, etapa }: { dia: Dia; etapa: Etapa }) {
         {indice > 0 ? (
           <button
             type="button"
-            onClick={() => setIndice(indice - 1)}
+            onClick={() => irPara(indice - 1)}
             className="text-sm text-[var(--texto-suave)] underline
               decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
               transition-colors hover:text-[var(--color-pergaminho)]"
@@ -232,50 +237,73 @@ export function CondutorDoDia({ dia, etapa }: { dia: Dia; etapa: Etapa }) {
         )}
 
         {indice < TOTAL_PASSOS - 1 ? (
-          <button
-            type="button"
-            onClick={() => setIndice(indice + 1)}
-            className="brilho-borda superficie-vidro inline-flex items-center px-10 py-3.5
-              font-[family-name:var(--font-livro)] text-base tracking-[0.26em] indent-[0.26em] uppercase
-              text-[var(--color-marfim)] transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]
-              hover:text-[var(--color-ouro-luz)]
-              hover:shadow-[inset_0_0_0_1px_var(--color-ouro),0_0_28px_-10px_color-mix(in_oklab,var(--color-ouro)_70%,transparent)]"
-          >
+          <button type="button" onClick={() => irPara(indice + 1)} className={ESTILO_BOTAO}>
             Continuar
           </button>
         ) : (
           <Link
             href="/caminho"
-            className="brilho-borda superficie-vidro inline-flex items-center px-10 py-3.5
-              font-[family-name:var(--font-livro)] text-base tracking-[0.26em] indent-[0.26em] uppercase
-              text-[var(--color-marfim)] transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]
-              hover:text-[var(--color-ouro-luz)]
-              hover:shadow-[inset_0_0_0_1px_var(--color-ouro),0_0_28px_-10px_color-mix(in_oklab,var(--color-ouro)_70%,transparent)]"
+            onClick={() => {
+              if (!feitos.has("registre")) {
+                void marcarPasso(jornadaId, dia.numero, "registre");
+              }
+            }}
+            className={ESTILO_BOTAO}
           >
             Concluir o dia {dia.numero}
           </Link>
         )}
       </nav>
 
-      <p className="mt-10 text-center text-xs leading-relaxed text-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]">
-        Ainda não há contas neste aplicativo. O que você escreve fica somente
-        neste navegador, e não é enviado a lugar nenhum. Etapa: {etapa.nome}.
+      <p className="mt-10 text-center text-xs text-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]">
+        {etapa.nome} · dia {dia.numero}
       </p>
     </div>
   );
 }
 
+const ESTILO_BOTAO = `brilho-borda superficie-vidro inline-flex items-center px-10 py-3.5
+  font-[family-name:var(--font-livro)] text-base tracking-[0.26em] indent-[0.26em] uppercase
+  text-[var(--color-marfim)] transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]
+  hover:text-[var(--color-ouro-luz)]
+  hover:shadow-[inset_0_0_0_1px_var(--color-ouro),0_0_28px_-10px_color-mix(in_oklab,var(--color-ouro)_70%,transparent)]`;
+
+/** Campo de escrita que se guarda sozinho quando a digitação para. */
 function Escrita({
   rotulo,
   ajuda,
   valor,
   aoMudar,
+  gravar,
 }: {
   rotulo: string;
   ajuda: string;
   valor: string;
   aoMudar: (v: string) => void;
+  gravar: (v: string) => Promise<void>;
 }) {
+  const [estado, setEstado] = useState<"parado" | "gravando" | "guardado">(
+    "parado",
+  );
+  const tempo = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const gravarRef = useRef(gravar);
+  gravarRef.current = gravar;
+
+  const agendar = useCallback((texto: string) => {
+    if (tempo.current) clearTimeout(tempo.current);
+    setEstado("gravando");
+    tempo.current = setTimeout(async () => {
+      try {
+        await gravarRef.current(texto);
+        setEstado("guardado");
+      } catch {
+        setEstado("parado");
+      }
+    }, 900);
+  }, []);
+
+  useEffect(() => () => void (tempo.current && clearTimeout(tempo.current)), []);
+
   return (
     <label className="block">
       <span className="font-[family-name:var(--font-livro)] text-xl text-[var(--color-marfim)]">
@@ -286,13 +314,23 @@ function Escrita({
       </span>
       <textarea
         value={valor}
-        onChange={(e) => aoMudar(e.target.value)}
+        onChange={(e) => {
+          aoMudar(e.target.value);
+          agendar(e.target.value);
+        }}
         rows={9}
         className="superficie-pergaminho mt-5 block w-full resize-y px-6 py-5
           font-[family-name:var(--font-livro)] text-lg leading-[1.75] text-[#2a1d12]
           placeholder:text-[#8a6f52] focus:outline-none"
         placeholder="…"
       />
+      <span
+        aria-live="polite"
+        className="mt-2 block h-5 text-sm text-[var(--texto-suave)]"
+      >
+        {estado === "gravando" && "Guardando…"}
+        {estado === "guardado" && "Guardado"}
+      </span>
     </label>
   );
 }

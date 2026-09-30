@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FESTAS, festaPorId, type FestaId } from "@/lib/agenda/festas";
 import { montarCronograma, situacao } from "@/lib/agenda/cronograma";
+import { escolherData } from "@/lib/jornada/acoes";
 import {
   diaEMes,
   diferencaEmDias,
@@ -144,16 +145,20 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
             mesma no ano que vem.
           </p>
         ) : (
-          <button
-            type="button"
-            className="brilho-borda superficie-vidro inline-flex items-center px-12 py-4
+          <form action={escolherData}>
+            <input type="hidden" name="festa" value={festa.id} />
+            <input type="hidden" name="ano" value={anoEscolhido} />
+            <button
+              type="submit"
+              className="brilho-borda superficie-vidro inline-flex items-center px-12 py-4
               font-[family-name:var(--font-livro)] text-lg tracking-[0.3em] indent-[0.3em] uppercase
               text-[var(--color-marfim)] transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]
               hover:text-[var(--color-ouro-luz)]
               hover:shadow-[inset_0_0_0_1px_var(--color-ouro),0_0_32px_-10px_color-mix(in_oklab,var(--color-ouro)_70%,transparent)]"
-          >
-            Escolher esta data
-          </button>
+            >
+              Escolher esta data
+            </button>
+          </form>
         )}
 
         <Link
