@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
 import { Rodape } from "@/components/vitrine/Rodape";
+import { Passagem } from "@/components/atmosphere/Passagem";
 
 export const metadata: Metadata = {
   title: "Política de privacidade",
@@ -73,46 +74,48 @@ const SECOES = [
 
 export default function Privacidade() {
   return (
-    <div className="min-h-dvh">
-      <PorticoPublico />
+    <Passagem>
+      <div className="min-h-dvh">
+        <PorticoPublico />
 
-      <main data-sala="pedra" className="bg-[var(--fundo)]">
-        <article className="mx-auto max-w-[66ch] px-6 py-20 sm:px-10 lg:py-28">
-          <p className="font-[family-name:var(--font-livro)] text-[var(--realce)] italic">
-            O que guardamos e por quê
-          </p>
+        <main data-sala="pedra" className="bg-[var(--fundo)]">
+          <article className="mx-auto max-w-[66ch] px-6 py-20 sm:px-10 lg:py-28">
+            <p className="font-[family-name:var(--font-livro)] text-[var(--realce)] italic">
+              O que guardamos e por quê
+            </p>
 
-          <h1 className="mt-3 font-[family-name:var(--font-livro)] text-[clamp(2rem,1.5rem+2vw,3rem)] leading-[1.06] text-[var(--texto)] uppercase">
-            Política de privacidade
-          </h1>
+            <h1 className="mt-3 font-[family-name:var(--font-livro)] text-[clamp(2rem,1.5rem+2vw,3rem)] leading-[1.06] text-[var(--texto)] uppercase">
+              Política de privacidade
+            </h1>
 
-          <div
-            aria-hidden
-            className="mt-8 h-px w-24 bg-[linear-gradient(to_right,var(--realce),transparent)]"
-          />
+            <div
+              aria-hidden
+              className="mt-8 h-px w-24 bg-[linear-gradient(to_right,var(--realce),transparent)]"
+            />
 
-          {SECOES.map((secao) => (
-            <section key={secao.titulo} className="assenta mt-14">
-              <h2 className="font-[family-name:var(--font-livro)] text-[1.6rem] leading-snug text-[var(--texto)]">
-                {secao.titulo}
-              </h2>
-              <div className="voz-livro mt-4 text-[var(--texto-suave)]">
-                {secao.paragrafos.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </section>
-          ))}
+            {SECOES.map((secao) => (
+              <section key={secao.titulo} className="assenta mt-14">
+                <h2 className="font-[family-name:var(--font-livro)] text-[1.6rem] leading-snug text-[var(--texto)]">
+                  {secao.titulo}
+                </h2>
+                <div className="voz-livro mt-4 text-[var(--texto-suave)]">
+                  {secao.paragrafos.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+              </section>
+            ))}
 
-          <p className="mt-20 border-t border-[color-mix(in_oklab,var(--realce)_30%,transparent)] pt-8 text-sm leading-relaxed text-[color-mix(in_oklab,var(--texto)_55%,transparent)]">
-            Este texto ainda não passou por revisão jurídica. Antes de o
-            aplicativo abrir ao público, ele deve ser revisto por um advogado e
-            ganhar a identificação do responsável pelo tratamento dos dados.
-          </p>
-        </article>
-      </main>
+            <p className="mt-20 border-t border-[color-mix(in_oklab,var(--realce)_30%,transparent)] pt-8 text-sm leading-relaxed text-[color-mix(in_oklab,var(--texto)_55%,transparent)]">
+              Este texto ainda não passou por revisão jurídica. Antes de o
+              aplicativo abrir ao público, ele deve ser revisto por um advogado
+              e ganhar a identificação do responsável pelo tratamento dos dados.
+            </p>
+          </article>
+        </main>
 
-      <Rodape />
-    </div>
+        <Rodape />
+      </div>
+    </Passagem>
   );
 }

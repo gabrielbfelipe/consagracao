@@ -51,7 +51,13 @@ function Moldura({
   );
 }
 
-function Botao({ href, children }: { href: string; children: React.ReactNode }) {
+function Botao({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
   return (
     <Link
       href={href}

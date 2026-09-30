@@ -5,7 +5,8 @@ import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { LIMITE, SOCORROS, type Socorro } from "@/content/socorro";
 
-type Etapa = "escolher" | "acolhida" | "palavra" | "oracao" | "silencio" | "fim";
+type Etapa =
+  "escolher" | "acolhida" | "palavra" | "oracao" | "silencio" | "fim";
 
 /**
  * Conduz um momento breve de oração: acolher, ouvir uma palavra, rezar,
@@ -78,7 +79,10 @@ export function MomentoDeOracao() {
           )}
 
           {socorro && etapa === "oracao" && (
-            <Passo aoContinuar={() => setEtapa("silencio")} rotulo="Ficar em silêncio">
+            <Passo
+              aoContinuar={() => setEtapa("silencio")}
+              rotulo="Ficar em silêncio"
+            >
               <p className="voz-livro text-[var(--color-marfim)]">
                 {socorro.oracao}
               </p>

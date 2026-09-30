@@ -33,7 +33,10 @@ export function MeuMotivo({
     [jornadaId],
   );
 
-  useEffect(() => () => void (tempo.current && clearTimeout(tempo.current)), []);
+  useEffect(
+    () => () => void (tempo.current && clearTimeout(tempo.current)),
+    [],
+  );
 
   return (
     <div className="mt-7">

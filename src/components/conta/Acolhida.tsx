@@ -77,16 +77,16 @@ export function Acolhida({ emailDaConta }: { emailDaConta: string }) {
         <div className="mt-4 font-[family-name:var(--font-livro)] text-[1.05rem] leading-[1.75] text-[#3d2c1c]">
           <p>
             Para acompanhar sua preparação, precisamos guardar a data que você
-            escolher, os dias que você concluir e o que você escrever no
-            diário. Isso revela sua convicção religiosa, que a Lei Geral de
-            Proteção de Dados trata como dado sensível.
+            escolher, os dias que você concluir e o que você escrever no diário.
+            Isso revela sua convicção religiosa, que a Lei Geral de Proteção de
+            Dados trata como dado sensível.
           </p>
           <p className="mt-4">
             O que você escreve é seu e de mais ninguém. Não vendemos, não
-            compartilhamos e não usamos para treinar nenhum modelo. Nenhum
-            texto seu vai para a inteligência artificial sem que você clique
-            para isso. Você pode apagar tudo a qualquer momento, e apagar
-            significa apagar.
+            compartilhamos e não usamos para treinar nenhum modelo. Nenhum texto
+            seu vai para a inteligência artificial sem que você clique para
+            isso. Você pode apagar tudo a qualquer momento, e apagar significa
+            apagar.
           </p>
         </div>
 

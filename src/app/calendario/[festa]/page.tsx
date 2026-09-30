@@ -35,7 +35,10 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
   const diasAteConsagracao = diferencaEmDias(hoje, c.consagracao);
 
   return (
-    <main data-sala="manuscrito" className="luz-alta min-h-dvh px-6 py-16 sm:px-10">
+    <main
+      data-sala="manuscrito"
+      className="luz-alta min-h-dvh px-6 py-16 sm:px-10"
+    >
       <Link
         href="/calendario"
         className="mx-auto block max-w-3xl text-sm text-[var(--texto-suave)] underline
@@ -78,7 +81,9 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
 
         <dl className="mt-10 grid gap-8 sm:grid-cols-3 sm:text-center">
           <div>
-            <dt className="text-sm text-[var(--texto-suave)]">Você começa em</dt>
+            <dt className="text-sm text-[var(--texto-suave)]">
+              Você começa em
+            </dt>
             <dd className="mt-2 font-[family-name:var(--font-livro)] text-2xl text-[var(--color-marfim)]">
               {porExtenso(c.inicio)}
             </dd>
@@ -133,8 +138,9 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
         </ol>
 
         <p className="mt-10 text-center text-sm leading-relaxed text-[var(--texto-suave)]">
-          No dia {diaEMes(c.ultimoDia)} você conclui o trigésimo terceiro dia. Na
-          manhã seguinte, {porExtenso(c.consagracao)}, você faz sua consagração.
+          No dia {diaEMes(c.ultimoDia)} você conclui o trigésimo terceiro dia.
+          Na manhã seguinte, {porExtenso(c.consagracao)}, você faz sua
+          consagração.
         </p>
       </section>
 

@@ -19,7 +19,10 @@ const SALAS = [
 export function Portico({ autenticado }: { autenticado: boolean }) {
   return (
     <header className="relative z-20 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 px-6 py-5 sm:px-10">
-      <nav aria-label="Salas" className="flex flex-wrap items-center gap-x-7 gap-y-2">
+      <nav
+        aria-label="Salas"
+        className="flex flex-wrap items-center gap-x-7 gap-y-2"
+      >
         {SALAS.map((sala) => (
           <Link
             key={sala.href}

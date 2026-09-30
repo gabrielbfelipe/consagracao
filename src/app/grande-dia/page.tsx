@@ -22,7 +22,10 @@ export default async function GrandeDia() {
       data-sala="altar"
       className="luz-alta relative min-h-dvh overflow-hidden px-6 pb-28 sm:px-10"
     >
-      <Poeira densidade={0.00006} className="absolute inset-0 -z-10 h-full w-full" />
+      <Poeira
+        densidade={0.00006}
+        className="absolute inset-0 -z-10 h-full w-full"
+      />
 
       <header className="mx-auto max-w-[62ch] pt-24 text-center">
         {chegou ? (

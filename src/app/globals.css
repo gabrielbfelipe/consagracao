@@ -116,6 +116,21 @@ html {
   color-scheme: dark;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+    /* Quem chega por um link com âncora não deve parar com o título
+       colado no alto da tela. */
+    scroll-padding-top: 7rem;
+  }
+}
+
+:root {
+  /* Sem isto, uma altura que termina em "auto" não é interpolável e o
+     conteúdo que se abre salta em vez de crescer. */
+  interpolate-size: allow-keywords;
+}
+
 body {
   background-color: var(--fundo);
   color: var(--texto);
@@ -134,6 +149,17 @@ body {
 
 .voz-livro p + p {
   margin-top: 1.2em;
+}
+
+/* O toque responde na hora.
+   A passagem entre salas leva mais de um segundo, e sem um sinal imediato
+   a pessoa acha que o clique não pegou e clica de novo. Isto acontece em
+   milissegundos, antes de qualquer animação começar. */
+@media (prefers-reduced-motion: no-preference) {
+  :where(a, button):active {
+    scale: 0.988;
+    transition: scale 90ms ease-out;
+  }
 }
 
 /* Foco visível, no vocabulário da casa. */
@@ -327,9 +353,49 @@ body {
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .assenta {
-      animation: surgir 1ms linear both;
+      animation: assentar 1ms linear both;
       animation-timeline: view();
-      animation-range: entry 8% cover 26%;
+      /* Faixa larga: o elemento leva quase um terço da tela para assentar,
+         em vez de saltar à vista de uma vez. */
+      animation-range: entry 2% cover 34%;
+    }
+  }
+}
+
+@keyframes assentar {
+  from {
+    opacity: 0;
+    translate: 0 26px;
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+
+/* ==========================================================================
+   Abrir e fechar conteúdo — o clique que revela também tem duração.
+   Onde o navegador não sabe animar ::details-content, o conteúdo
+   simplesmente aparece, como sempre apareceu.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports selector(::details-content) {
+    details::details-content {
+      overflow: clip;
+      block-size: 0;
+      opacity: 0;
+      transition:
+        block-size 620ms var(--ease-santuario),
+        content-visibility 620ms var(--ease-santuario) allow-discrete,
+        opacity 480ms var(--ease-santuario) 120ms;
+    }
+
+    details[open]::details-content {
+      block-size: auto;
+      opacity: 1;
     }
   }
 }
@@ -367,32 +433,59 @@ body {
 }
 
 /* ==========================================================================
-   Transições entre páginas — passa-se de uma sala a outra, não se troca
-   de aba. A dissolução é lenta o bastante para ser sentida e curta o
-   bastante para não atrasar ninguém.
+   A passagem entre salas.
+
+   Trocar de página deve parecer atravessar um arco, não trocar de aba. A
+   sala que se deixa recua e desfoca; a que se entra chega de leve e
+   assenta. As durações são assimétricas de propósito: o que sai vai
+   depressa, para não disputar atenção, e o que chega vem devagar, para
+   dar tempo de olhar.
    ========================================================================== */
 
 @media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root) {
-    animation: dissolver-saida 420ms var(--ease-santuario) both;
+  ::view-transition-old(.sala) {
+    animation: sala-sai 400ms cubic-bezier(0.4, 0, 0.9, 0.45) both;
   }
 
+  ::view-transition-new(.sala) {
+    animation: sala-entra 820ms var(--ease-santuario) 220ms both;
+  }
+
+  /* O fundo não participa: se ele também animasse, a página inteira
+     piscaria por baixo do conteúdo. */
+  ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation: dissolver-entrada 620ms var(--ease-santuario) both;
+    animation: none;
+    mix-blend-mode: normal;
   }
 }
 
-@keyframes dissolver-saida {
+@keyframes sala-sai {
+  from {
+    opacity: 1;
+    scale: 1;
+    filter: blur(0);
+  }
   to {
     opacity: 0;
-    scale: 0.994;
+    scale: 0.985;
+    filter: blur(5px);
   }
 }
 
-@keyframes dissolver-entrada {
+@keyframes sala-entra {
   from {
     opacity: 0;
-    scale: 1.008;
+    scale: 1.022;
+    filter: blur(9px);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    filter: blur(0);
   }
 }
 

@@ -68,8 +68,14 @@ export function Nave({ className = "" }: { className?: string }) {
 
       {/* Feixes vindos das janelas altas, fora de quadro. */}
       <g opacity="0.75">
-        <path d="M 250 0 L 360 0 L 250 640 L 120 640 Z" fill="url(#nave-feixe)" />
-        <path d="M 700 0 L 790 0 L 900 640 L 760 640 Z" fill="url(#nave-feixe)" />
+        <path
+          d="M 250 0 L 360 0 L 250 640 L 120 640 Z"
+          fill="url(#nave-feixe)"
+        />
+        <path
+          d="M 700 0 L 790 0 L 900 640 L 760 640 Z"
+          fill="url(#nave-feixe)"
+        />
       </g>
 
       {arcos.map((a, i) => (

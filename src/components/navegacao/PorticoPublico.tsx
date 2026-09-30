@@ -110,7 +110,9 @@ export function PorticoPublico({
               rounded-full shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ouro)_55%,transparent)]
               transition-colors duration-500 hover:shadow-[inset_0_0_0_1px_var(--color-ouro-luz)] xl:hidden"
           >
-            <span className="sr-only">{aberto ? "Fechar menu" : "Abrir menu"}</span>
+            <span className="sr-only">
+              {aberto ? "Fechar menu" : "Abrir menu"}
+            </span>
             {[0, 1, 2].map((i) => (
               <span
                 key={i}

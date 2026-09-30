@@ -37,7 +37,9 @@ export function TelaDeSilencio() {
 
     adiar();
     const eventos = ["pointermove", "keydown", "touchstart", "scroll"] as const;
-    eventos.forEach((e) => window.addEventListener(e, adiar, { passive: true }));
+    eventos.forEach((e) =>
+      window.addEventListener(e, adiar, { passive: true }),
+    );
 
     return () => {
       clearTimeout(temporizador);
@@ -59,9 +61,11 @@ export function TelaDeSilencio() {
           bg-[radial-gradient(ellipse_52%_44%_at_50%_16%,rgba(255,240,205,0.13),transparent_72%)]"
       />
 
-      <p className="relative max-w-[22ch] text-center font-[family-name:var(--font-livro)]
+      <p
+        className="relative max-w-[22ch] text-center font-[family-name:var(--font-livro)]
         text-[clamp(1.75rem,1.2rem+2.6vw,3rem)] leading-[1.4] text-balance
-        text-[color-mix(in_oklab,var(--color-marfim)_88%,transparent)]">
+        text-[color-mix(in_oklab,var(--color-marfim)_88%,transparent)]"
+      >
         {oracao}
       </p>
 

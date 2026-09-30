@@ -37,8 +37,8 @@ export function EscritaDaCarta({ jornadaId }: { jornadaId: string }) {
       <p className="voz-livro text-[var(--texto-suave)]">
         Escreva por que você decidiu se consagrar. Não precisa ser bonito nem
         organizado — precisa ser verdadeiro. Esta carta será guardada e só se
-        abrirá no dia da sua consagração, quando você já não for bem o mesmo
-        que a escreveu.
+        abrirá no dia da sua consagração, quando você já não for bem o mesmo que
+        a escreveu.
       </p>
 
       <label className="mt-9 block">

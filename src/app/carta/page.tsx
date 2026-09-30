@@ -63,7 +63,12 @@ export default async function Carta() {
 
         {aberta && <Aberta texto={carta!.texto} seladaEm={carta!.selada_em} />}
 
-        {selada && <Selada faltam={faltam} consagracao={porExtenso(jornada.consagracao)} />}
+        {selada && (
+          <Selada
+            faltam={faltam}
+            consagracao={porExtenso(jornada.consagracao)}
+          />
+        )}
 
         {!aberta && !selada && <EscritaDaCarta jornadaId={jornada.id} />}
 

@@ -62,8 +62,8 @@ export default async function Diario() {
             className="mx-auto mt-8 h-px w-24 bg-[linear-gradient(to_right,transparent,var(--color-ouro),transparent)]"
           />
           <p className="voz-livro mx-auto mt-8 text-[var(--texto-suave)]">
-            Tudo o que você escreveu ao longo da preparação, na ordem em que
-            foi vivido. Ninguém além de você lê estas páginas.
+            Tudo o que você escreveu ao longo da preparação, na ordem em que foi
+            vivido. Ninguém além de você lê estas páginas.
           </p>
         </header>
 
@@ -118,8 +118,8 @@ function Vazio() {
     <div className="mx-auto mt-24 max-w-[52ch] text-center">
       <p className="voz-livro mx-auto text-[var(--texto-suave)]">
         Seu diário ainda está em branco. Ele se enche sozinho conforme você
-        percorre os dias — o que você escrever nos passos “Reflita” e
-        “Registre” vem parar aqui.
+        percorre os dias — o que você escrever nos passos “Reflita” e “Registre”
+        vem parar aqui.
       </p>
       <Link
         href="/caminho"

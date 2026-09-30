@@ -67,7 +67,11 @@ export function CondutorDoDia({
               <span
                 aria-hidden
                 data-estado={
-                  i === indice ? "atual" : feitos.has(p.id) ? "feito" : "adiante"
+                  i === indice
+                    ? "atual"
+                    : feitos.has(p.id)
+                      ? "feito"
+                      : "adiante"
                 }
                 className="block h-px w-full transition-all duration-500 ease-[var(--ease-santuario)]
                   group-hover:h-[2px]
@@ -234,7 +238,11 @@ export function CondutorDoDia({
         )}
 
         {indice < TOTAL_PASSOS - 1 ? (
-          <button type="button" onClick={() => irPara(indice + 1)} className={ESTILO_BOTAO}>
+          <button
+            type="button"
+            onClick={() => irPara(indice + 1)}
+            className={ESTILO_BOTAO}
+          >
             Continuar
           </button>
         ) : (
@@ -299,7 +307,10 @@ function Escrita({
     }, 900);
   }, []);
 
-  useEffect(() => () => void (tempo.current && clearTimeout(tempo.current)), []);
+  useEffect(
+    () => () => void (tempo.current && clearTimeout(tempo.current)),
+    [],
+  );
 
   return (
     <label className="block">

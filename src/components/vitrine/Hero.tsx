@@ -218,7 +218,12 @@ export function Hero() {
             className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full
               shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ouro)_55%,transparent)] sm:flex"
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden>
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              aria-hidden
+            >
               <path
                 d="M12 3v18M7 8.5h10"
                 stroke="var(--color-ouro)"
