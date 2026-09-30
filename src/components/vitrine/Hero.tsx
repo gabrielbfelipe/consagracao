@@ -60,38 +60,75 @@ const QUADROS: readonly Quadro[] = [
   },
 ] as const;
 
-const INTERVALO = 9000;
+/**
+ * Quanto tempo cada quadro fica no ar.
+ *
+ * Um número fixo trata textos de tamanhos diferentes como se fossem iguais.
+ * Aqui o tempo sai do próprio conteúdo, somando três parcelas:
+ *
+ *   ENTRADA   o quadro leva 1,05s para assentar antes de estar legível;
+ *   LEITURA   palavras ÷ 4,2 por segundo. São ~252 por minuto, a média
+ *             medida para leitura silenciosa de texto não literário
+ *             (Brysbaert, 2019). Conta-se tudo o que aparece: a linha em
+ *             itálico, o título e o parágrafo;
+ *   DECISÃO   1,8s depois de ler, para reparar no botão e decidir. Sem
+ *             esta parcela o quadro sai no instante em que se terminou de
+ *             ler, e ninguém chega a agir.
+ *
+ * Os limites existem para que um texto muito curto não pisque e um muito
+ * longo não prenda quem já leu.
+ */
+const ENTRADA_MS = 1050;
+const PALAVRAS_POR_SEGUNDO = 4.2;
+const DECISAO_MS = 1800;
+const MINIMO_MS = 7000;
+const MAXIMO_MS = 13000;
+
+function duracaoDoQuadro(q: Quadro): number {
+  const palavras = `${q.sobrenome} ${q.titulo} ${q.texto}`
+    .trim()
+    .split(/\s+/).length;
+
+  const leitura = (palavras / PALAVRAS_POR_SEGUNDO) * 1000;
+  const total = ENTRADA_MS + leitura + DECISAO_MS;
+
+  return Math.round(Math.min(Math.max(total, MINIMO_MS), MAXIMO_MS));
+}
 
 export function Hero() {
   const [atual, setAtual] = useState(0);
-  const [pausado, setPausado] = useState(false);
+  /** Pausa deliberada: quem clicou em pausar assim fica até mandar seguir. */
+  const [parado, setParado] = useState(false);
+  /** Pausa de cortesia: enquanto o ponteiro ou o foco estão aqui. */
+  const [visitado, setVisitado] = useState(false);
   const semMovimento = useReducedMotion();
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const quadro = QUADROS[atual];
+  const duracao = duracaoDoQuadro(quadro);
+  const pausado = parado || visitado;
+
   const avancar = useCallback(
-    (passo = 1) =>
-      setAtual((i) => (i + passo + QUADROS.length) % QUADROS.length),
+    () => setAtual((i) => (i + 1) % QUADROS.length),
     [],
   );
 
   useEffect(() => {
     if (semMovimento || pausado) return;
-    temporizador.current = setTimeout(() => avancar(), INTERVALO);
+    temporizador.current = setTimeout(avancar, duracao);
     return () => {
       if (temporizador.current) clearTimeout(temporizador.current);
     };
-  }, [atual, pausado, semMovimento, avancar]);
-
-  const quadro = QUADROS[atual];
+  }, [atual, pausado, semMovimento, avancar, duracao]);
 
   return (
     <section
       aria-roledescription="apresentação"
       aria-label="Apresentação do santuário"
-      onMouseEnter={() => setPausado(true)}
-      onMouseLeave={() => setPausado(false)}
-      onFocusCapture={() => setPausado(true)}
-      onBlurCapture={() => setPausado(false)}
+      onMouseEnter={() => setVisitado(true)}
+      onMouseLeave={() => setVisitado(false)}
+      onFocusCapture={() => setVisitado(true)}
+      onBlurCapture={() => setVisitado(false)}
       className="relative flex min-h-[92svh] flex-col justify-center overflow-hidden"
     >
       {/* As fotografias, uma de cada vez, com aproximação quase imperceptível. */}
@@ -111,7 +148,7 @@ export function Hero() {
             className="absolute inset-0"
             initial={{ scale: 1 }}
             animate={{ scale: 1.07 }}
-            transition={{ duration: INTERVALO / 1000 + 2, ease: "linear" }}
+            transition={{ duration: duracao / 1000 + 2, ease: "linear" }}
           >
             <Image
               src={urlDaImagem(quadro.imagem, { largura: 2000, qualidade: 78 })}
@@ -142,6 +179,13 @@ export function Hero() {
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-40 bg-[linear-gradient(to_bottom,rgba(8,5,3,0.82),transparent)]"
+      />
+      {/* Uma faixa estreita à direita, onde vive o índice. Sombra projetada
+          não vence uma coluna em plena luz; esta faixa vence, e é discreta
+          o bastante para a arquitetura continuar visível através dela. */}
+      <div
+        aria-hidden
+        className="absolute inset-y-0 right-0 hidden w-72 bg-[linear-gradient(to_left,rgba(8,5,3,0.62),transparent)] sm:block"
       />
 
       {/* O texto */}
@@ -201,63 +245,101 @@ export function Hero() {
       {/* A sombra projetada mantém o índice legível mesmo quando a
           fotografia clareia atrás dele. */}
       <div className="absolute bottom-36 left-6 z-10 [filter:drop-shadow(0_0_3px_rgba(8,5,3,1))_drop-shadow(0_2px_12px_rgba(8,5,3,0.9))] sm:top-1/2 sm:right-9 sm:bottom-auto sm:left-auto sm:-translate-y-1/2">
-        <ul className="flex flex-row gap-6 sm:flex-col sm:items-end sm:gap-6">
-          {QUADROS.map((q, i) => {
-            const ativo = i === atual;
-            return (
-              <li key={q.titulo}>
-                <button
-                  type="button"
-                  onClick={() => setAtual(i)}
-                  aria-label={`Quadro ${i + 1} de ${QUADROS.length}: ${q.titulo}`}
-                  aria-current={ativo ? "true" : undefined}
-                  className="group flex items-center gap-3"
-                >
-                  <span
-                    className={`font-[family-name:var(--font-livro)] text-sm tabular-nums transition-colors duration-500 ${
-                      ativo
-                        ? "text-[var(--color-ouro-luz)]"
-                        : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
-                    }`}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
+        <div className="flex flex-row items-center gap-6 sm:flex-col sm:items-end">
+          {/* Primeiro elemento focalizável do conjunto, como a norma pede:
+              quem chega pelo teclado encontra a pausa antes de tudo.
+              Pausar ao passar o ponteiro não basta — não existe ponteiro em
+              tela sensível ao toque, e é a falha mais comum em auditorias. */}
+          <button
+            type="button"
+            onClick={() => setParado(!parado)}
+            aria-pressed={parado}
+            className="group flex h-8 w-8 shrink-0 items-center justify-center rounded-full
+              shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-pergaminho)_70%,transparent)]
+              transition-[box-shadow] duration-500 ease-[var(--ease-santuario)]
+              hover:shadow-[inset_0_0_0_1px_var(--color-ouro-luz)]"
+          >
+            <span className="sr-only">
+              {parado
+                ? "Retomar a troca automática dos quadros"
+                : "Pausar a troca automática dos quadros"}
+            </span>
 
-                  {/* A linha corre enquanto o quadro está no ar. */}
-                  <span
-                    aria-hidden
-                    className={`relative h-px overflow-hidden transition-all duration-700 ease-[var(--ease-santuario)] ${
-                      ativo
-                        ? "w-10 bg-[color-mix(in_oklab,var(--color-pergaminho)_28%,transparent)]"
-                        : "w-4 bg-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]"
-                    }`}
+            <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden>
+              {parado ? (
+                <path
+                  d="M3 2 L10 6 L3 10 Z"
+                  fill="var(--color-ouro-luz)"
+                  className="transition-colors"
+                />
+              ) : (
+                <g fill="var(--color-ouro-luz)">
+                  <rect x="3" y="2" width="2" height="8" rx="0.4" />
+                  <rect x="7" y="2" width="2" height="8" rx="0.4" />
+                </g>
+              )}
+            </svg>
+          </button>
+
+          <ul className="flex flex-row gap-6 sm:flex-col sm:items-end sm:gap-6">
+            {QUADROS.map((q, i) => {
+              const ativo = i === atual;
+              return (
+                <li key={q.titulo}>
+                  <button
+                    type="button"
+                    onClick={() => setAtual(i)}
+                    aria-label={`Quadro ${i + 1} de ${QUADROS.length}: ${q.titulo}`}
+                    aria-current={ativo ? "true" : undefined}
+                    className="group flex items-center gap-3"
                   >
-                    {ativo && (
-                      <span
-                        key={atual}
-                        data-pausado={pausado || undefined}
-                        className="absolute inset-0 origin-left bg-[var(--color-ouro-luz)]
-                          motion-safe:animate-[percorrer_9s_linear_forwards]
+                    <span
+                      className={`font-[family-name:var(--font-livro)] text-sm tabular-nums transition-colors duration-500 ${
+                        ativo
+                          ? "text-[var(--color-ouro-luz)]"
+                          : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
+                      }`}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+
+                    {/* A linha corre enquanto o quadro está no ar. */}
+                    <span
+                      aria-hidden
+                      className={`relative h-px overflow-hidden transition-all duration-700 ease-[var(--ease-santuario)] ${
+                        ativo
+                          ? "w-10 bg-[color-mix(in_oklab,var(--color-pergaminho)_28%,transparent)]"
+                          : "w-4 bg-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]"
+                      }`}
+                    >
+                      {ativo && (
+                        <span
+                          key={atual}
+                          data-pausado={pausado || undefined}
+                          style={{ animationDuration: `${duracao}ms` }}
+                          className="absolute inset-0 origin-left bg-[var(--color-ouro-luz)]
+                          motion-safe:animate-[percorrer_linear_forwards]
                           motion-reduce:scale-x-100
                           data-[pausado]:[animation-play-state:paused]"
-                      />
-                    )}
-                  </span>
+                        />
+                      )}
+                    </span>
 
-                  <span
-                    className={`hidden font-[family-name:var(--font-livro)] text-sm tracking-[0.12em] uppercase transition-colors duration-500 xl:inline ${
-                      ativo
-                        ? "text-[var(--color-marfim)]"
-                        : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
-                    }`}
-                  >
-                    {q.rotulo}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                    <span
+                      className={`hidden font-[family-name:var(--font-livro)] text-sm tracking-[0.12em] uppercase transition-colors duration-500 xl:inline ${
+                        ativo
+                          ? "text-[var(--color-marfim)]"
+                          : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
+                      }`}
+                    >
+                      {q.rotulo}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
 
       {/* A inscrição no rodapé da nave. */}
