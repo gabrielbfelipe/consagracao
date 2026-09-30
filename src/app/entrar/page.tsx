@@ -7,15 +7,15 @@ import { usuarioAtual } from "@/lib/supabase/servidor";
 export const metadata: Metadata = {
   title: "Iniciar preparação",
   description:
-    "Crie sua conta com um link enviado por e-mail e escolha a data da sua consagração.",
+    "Crie sua conta e escolha a data da sua consagração.",
 };
 
 export default async function Entrar({
   searchParams,
 }: {
-  searchParams: Promise<{ destino?: string; expirado?: string }>;
+  searchParams: Promise<{ destino?: string }>;
 }) {
-  const { destino, expirado } = await searchParams;
+  const { destino } = await searchParams;
 
   if (await usuarioAtual()) redirect("/caminho");
 
@@ -34,9 +34,9 @@ export default async function Entrar({
         />
 
         <p className="voz-livro mt-8 text-[var(--texto-suave)]">
-          {expirado
-            ? "Esse link já não vale — eles duram uma hora e servem uma vez só. Peça outro abaixo."
-            : "Informe seu e-mail e enviaremos um link de acesso. Se você ainda não tem conta, ela será criada ao clicar nele. Não há senha a criar nem a lembrar."}
+          Informe seu e-mail e escolha uma senha. Se ainda não tem conta, ela é
+          criada na hora e você entra direto — não há e-mail de confirmação a
+          esperar. Se já tem, é por aqui mesmo que se entra.
         </p>
 
         <FormularioEntrada destino={destino ?? "/caminho"} />
@@ -47,7 +47,7 @@ export default async function Entrar({
             {
               n: "Primeiro",
               t: "Sua conta",
-              d: "Um link no e-mail, e pronto.",
+              d: "E-mail e senha. Entra na hora.",
             },
             {
               n: "Depois",

@@ -35,8 +35,23 @@ Nada em `src/content/` deve ir a produção sem revisão pastoral.
 
 ## Tecnologia
 
-Next.js 16 (App Router) · TypeScript · Tailwind v4 · Supabase (Postgres com RLS,
-Auth por link de e-mail) · Motion · Vercel.
+Next.js 16 (App Router) · TypeScript · Tailwind v4 · Supabase (Postgres com RLS)
+· Motion · Vercel.
+
+### Entrada sem verificação de e-mail — provisório
+
+A conta é criada com e-mail e senha, e nasce com o endereço já dado por
+confirmado, para que ninguém espere mensagem nenhuma. **Isso é temporário.**
+
+Sem verificação, nada impede alguém de se cadastrar com um e-mail que não é
+seu; quem controla a conta é quem escolheu a senha. Antes de abrir ao público,
+volte a exigir confirmação — basta trocar `src/app/entrar/acoes.ts` pelo envio
+de link, que o resto do sistema não muda.
+
+A ordem das tentativas nessa ação é deliberada: cria-se primeiro e só então se
+entra. Se o e-mail já existe, a criação falha e a senha de quem já tinha conta
+permanece intacta. O inverso permitiria sobrescrever a senha alheia, e
+`npm run verificar:entrada` existe para provar que isso não acontece.
 
 ### Decisões que valem saber
 
@@ -73,6 +88,7 @@ npm run dev
 | `npm test` | Testes do motor de cronograma |
 | `npm run migrar` | Aplica as migrações em `supabase/migrations` |
 | `npm run verificar:rls` | Prova o isolamento entre contas contra o banco real |
+| `npm run verificar:entrada` | Prova que a criação de conta não toma conta alheia |
 | `npm run publicar` | Publica na Vercel |
 
 O `verificar:rls` cria duas contas de teste, confirma que nenhuma alcança os
@@ -81,12 +97,13 @@ remove tudo — e apaga as contas ao final, inclusive se falhar.
 
 ## Configuração externa
 
-No painel do Supabase, em **Authentication → URL Configuration**, as URLs de
-retorno precisam incluir o domínio de produção e `http://localhost:3000/**`,
-ou o link de entrada por e-mail não volta para a aplicação.
+Enquanto a entrada for por senha, nada precisa ser configurado no painel do
+Supabase — a conta é criada pelo servidor com a chave secreta.
 
-O remetente padrão do Supabase tem limite baixo e cai em spam; para uso real,
-configure um SMTP próprio.
+Quando a confirmação de e-mail voltar, serão necessários dois ajustes: as URLs
+de retorno em **Authentication → URL Configuration**, incluindo o domínio de
+produção e `http://localhost:3000/**`; e um SMTP próprio, porque o remetente
+padrão do Supabase tem limite baixo e cai em spam.
 
 ## Créditos
 
