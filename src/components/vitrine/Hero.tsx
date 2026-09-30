@@ -20,30 +20,43 @@ type Quadro = {
   sobrenome: string;
   titulo: string;
   texto: string;
+  /** Uma palavra, para o índice lateral. Sem ela, os números não dizem nada. */
+  rotulo: string;
 };
 
+/**
+ * Três quadros, três verbos, um só destino.
+ *
+ * Comece, caminhe, entregue-se: a mesma coisa vista do começo, do meio e do
+ * fim. Cada um tem a sua fotografia — a nave que se percorre, aquela que
+ * conduz, e a luz a que se chega.
+ */
 const QUADROS: readonly Quadro[] = [
   {
     // A nave com profundidade: o olhar entra e é conduzido ao fundo.
     imagem: "naveGotica",
-    sobrenome: "Comece sua preparação",
-    titulo: "Trinta e três dias",
+    rotulo: "Comece",
+    sobrenome: "Trinta e três dias de preparação",
+    titulo: "Comece o caminho",
     texto:
-      "Um caminho de leitura, oração e silêncio que conduz o coração a Cristo pelas mãos de Maria.",
+      "Um dia para cada ano que Cristo viveu na terra. Leitura, oração e silêncio, conduzidos um dia de cada vez.",
   },
   {
     imagem: "nossaSenhora",
+    rotulo: "Caminhe",
     sobrenome: "Pelas mãos de Maria",
-    titulo: "Até Cristo",
+    titulo: "Caminhe acompanhado",
     texto:
-      "A consagração não termina em Nossa Senhora. É ela quem conduz, e Ele é o destino de todo o caminho.",
+      "A consagração não termina em Nossa Senhora. É ela quem conduz, e Cristo é o destino de todo o caminho.",
   },
   {
     imagem: "vitralGrande",
-    sobrenome: "Escolha o seu dia",
-    titulo: "Uma data sua",
+    rotulo: "Entregue-se",
+    sobrenome: "No dia que você escolher",
+    // Hífen inquebrável: sem ele o título parte em "ENTREGUE-" / "SE INTEIRO".
+    titulo: "Entregue‑se inteiro",
     texto:
-      "Vinte e quatro festas marianas. Você escolhe uma, e o caminho até ela é calculado para você.",
+      "Vinte e quatro festas marianas. Escolha uma, e o caminho até ela será preparado para você.",
   },
 ] as const;
 
@@ -123,6 +136,13 @@ export function Hero() {
         aria-hidden
         className="absolute inset-0 bg-[linear-gradient(to_top,rgba(8,5,3,0.88),transparent_36%)]"
       />
+      {/* Um leito escuro no alto: o pórtico é transparente sobre a foto, e
+          sem isto ele desaparece quando o quadro é claro — como acontece
+          com o do vitral. */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-40 bg-[linear-gradient(to_bottom,rgba(8,5,3,0.82),transparent)]"
+      />
 
       {/* O texto */}
       <div className="relative z-10 w-full px-6 pt-28 pb-56 sm:px-12 sm:pb-40 lg:px-20">
@@ -173,40 +193,70 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Os quadros, numerados como numa página de manuscrito.
-          No celular não há margem lateral livre: eles descem para o pé,
-          em linha, para não atravessarem o texto. */}
-      <div className="absolute bottom-36 left-6 z-10 sm:top-1/2 sm:bottom-auto sm:left-auto sm:right-9 sm:-translate-y-1/2">
-        <ul className="flex flex-row gap-6 sm:flex-col sm:gap-5">
-          {QUADROS.map((q, i) => (
-            <li key={q.titulo}>
-              <button
-                type="button"
-                onClick={() => setAtual(i)}
-                aria-label={`Quadro ${i + 1}: ${q.titulo}`}
-                aria-current={i === atual ? "true" : undefined}
-                className="group flex items-center gap-3"
-              >
-                <span
-                  className={`font-[family-name:var(--font-livro)] text-sm tabular-nums transition-colors duration-500 ${
-                    i === atual
-                      ? "text-[var(--color-ouro-luz)]"
-                      : "text-[color-mix(in_oklab,var(--color-pergaminho)_45%,transparent)] group-hover:text-[var(--color-pergaminho)]"
-                  }`}
+      {/* O índice dos quadros.
+          Números soltos não dizem o que são — com o nome ao lado e o tempo
+          correndo na linha, lê-se na hora que é uma apresentação de três
+          partes, e não um menu de três destinos.
+          No celular não há margem lateral livre: desce para o pé, em linha. */}
+      {/* A sombra projetada mantém o índice legível mesmo quando a
+          fotografia clareia atrás dele. */}
+      <div className="absolute bottom-36 left-6 z-10 [filter:drop-shadow(0_0_3px_rgba(8,5,3,1))_drop-shadow(0_2px_12px_rgba(8,5,3,0.9))] sm:top-1/2 sm:right-9 sm:bottom-auto sm:left-auto sm:-translate-y-1/2">
+        <ul className="flex flex-row gap-6 sm:flex-col sm:items-end sm:gap-6">
+          {QUADROS.map((q, i) => {
+            const ativo = i === atual;
+            return (
+              <li key={q.titulo}>
+                <button
+                  type="button"
+                  onClick={() => setAtual(i)}
+                  aria-label={`Quadro ${i + 1} de ${QUADROS.length}: ${q.titulo}`}
+                  aria-current={ativo ? "true" : undefined}
+                  className="group flex items-center gap-3"
                 >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span
-                  aria-hidden
-                  className={`h-px transition-all duration-700 ease-[var(--ease-santuario)] ${
-                    i === atual
-                      ? "w-8 bg-[var(--color-ouro-luz)]"
-                      : "w-3 bg-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]"
-                  }`}
-                />
-              </button>
-            </li>
-          ))}
+                  <span
+                    className={`font-[family-name:var(--font-livro)] text-sm tabular-nums transition-colors duration-500 ${
+                      ativo
+                        ? "text-[var(--color-ouro-luz)]"
+                        : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
+                    }`}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* A linha corre enquanto o quadro está no ar. */}
+                  <span
+                    aria-hidden
+                    className={`relative h-px overflow-hidden transition-all duration-700 ease-[var(--ease-santuario)] ${
+                      ativo
+                        ? "w-10 bg-[color-mix(in_oklab,var(--color-pergaminho)_28%,transparent)]"
+                        : "w-4 bg-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]"
+                    }`}
+                  >
+                    {ativo && (
+                      <span
+                        key={atual}
+                        data-pausado={pausado || undefined}
+                        className="absolute inset-0 origin-left bg-[var(--color-ouro-luz)]
+                          motion-safe:animate-[percorrer_9s_linear_forwards]
+                          motion-reduce:scale-x-100
+                          data-[pausado]:[animation-play-state:paused]"
+                      />
+                    )}
+                  </span>
+
+                  <span
+                    className={`hidden font-[family-name:var(--font-livro)] text-sm tracking-[0.12em] uppercase transition-colors duration-500 xl:inline ${
+                      ativo
+                        ? "text-[var(--color-marfim)]"
+                        : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
+                    }`}
+                  >
+                    {q.rotulo}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
 

@@ -489,6 +489,16 @@ body {
   }
 }
 
+/* O tempo de um quadro do hero, correndo na linha do índice. */
+@keyframes percorrer {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 /* Respiração lenta, para dar ritmo ao silêncio sem dar instrução. */
 @keyframes respirar {
   0%,

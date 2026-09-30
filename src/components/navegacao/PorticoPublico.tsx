@@ -15,9 +15,16 @@ import { PAGINAS } from "@/content/sobre";
  * o resto da casa.
  */
 
+/**
+ * As duas salas que não são páginas de apresentação.
+ *
+ * `so2xl` marca as que só aparecem em telas largas: com sete rótulos em
+ * português, um monitor de 1280px empurrava o botão de ação para fora da
+ * tela. Quem não as vê aqui as encontra no rodapé e no menu recolhido.
+ */
 const EXTRAS = [
-  { href: "/calendario", rotulo: "Calendário" },
-  { href: "/biblioteca", rotulo: "Biblioteca" },
+  { href: "/calendario", rotulo: "Calendário", so2xl: false },
+  { href: "/biblioteca", rotulo: "Biblioteca", so2xl: true },
 ] as const;
 
 export function PorticoPublico({
@@ -31,7 +38,11 @@ export function PorticoPublico({
   const caminho = usePathname();
 
   const itens = [
-    ...PAGINAS.map((p) => ({ href: `/sobre/${p.slug}`, rotulo: p.menu })),
+    ...PAGINAS.map((p) => ({
+      href: `/sobre/${p.slug}`,
+      rotulo: p.menu,
+      so2xl: false,
+    })),
     ...EXTRAS,
   ];
 
@@ -75,6 +86,7 @@ export function PorticoPublico({
               href={item.href}
               rotulo={item.rotulo}
               ativo={caminho === item.href}
+              so2xl={item.so2xl}
             />
           ))}
         </nav>
@@ -224,10 +236,12 @@ function Elo({
   href,
   rotulo,
   ativo,
+  so2xl = false,
 }: {
   href: string;
   rotulo: string;
   ativo: boolean;
+  so2xl?: boolean;
 }) {
   return (
     <Link
@@ -235,6 +249,7 @@ function Elo({
       aria-current={ativo ? "page" : undefined}
       className={`relative font-[family-name:var(--font-livro)] text-[0.82rem] tracking-[0.06em] whitespace-nowrap
         uppercase transition-colors duration-500 ease-[var(--ease-santuario)] hover:text-[var(--color-ouro-luz)]
+        ${so2xl ? "hidden 2xl:inline" : ""}
         ${ativo ? "text-[var(--color-ouro)]" : "text-[color-mix(in_oklab,var(--color-pergaminho)_72%,transparent)]"}`}
     >
       {rotulo}
