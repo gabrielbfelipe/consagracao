@@ -8,11 +8,11 @@ import { IMAGENS, urlDaImagem, type NomeDaImagem } from "@/lib/imagens";
 
 /**
  * A entrada do santuário: fotografia de nave em tela cheia, com três
- * quadros que se sucedem devagar.
+ * quadros que se sucedem na ordem 1 → 2 → 3 → 1, sem parar.
  *
- * O ritmo é deliberadamente lento — nove segundos por quadro. Um carrossel
- * apressado pede atenção; este quer dar tempo de olhar. Para quem pediu
- * menos movimento, ele simplesmente não anda sozinho.
+ * O ritmo é calmo, mas não arrastado: cinco a seis segundos por quadro,
+ * tirados do próprio texto. Para quem pediu menos movimento, ele
+ * simplesmente não anda sozinho.
  */
 
 type Quadro = {
@@ -66,23 +66,25 @@ const QUADROS: readonly Quadro[] = [
  * Um número fixo trata textos de tamanhos diferentes como se fossem iguais.
  * Aqui o tempo sai do próprio conteúdo, somando três parcelas:
  *
- *   ENTRADA   o quadro leva 1,05s para assentar antes de estar legível;
- *   LEITURA   palavras ÷ 4,2 por segundo. São ~252 por minuto, a média
- *             medida para leitura silenciosa de texto não literário
- *             (Brysbaert, 2019). Conta-se tudo o que aparece: a linha em
- *             itálico, o título e o parágrafo;
- *   DECISÃO   1,8s depois de ler, para reparar no botão e decidir. Sem
- *             esta parcela o quadro sai no instante em que se terminou de
- *             ler, e ninguém chega a agir.
+ *   ENTRADA   0,7s para o quadro assentar e estar legível — o mesmo tempo
+ *             da transição do texto;
+ *   LEITURA   palavras ÷ 6,5 por segundo. Não é a taxa de leitura corrida
+ *             (~4,2/s, ou 252 por minuto); é a de varredura, que é como se
+ *             lê um título em caixa alta e duas linhas de apoio: aos
+ *             saltos, sem soletrar. Conta-se tudo o que aparece;
+ *   DECISÃO   0,9s depois de varrer, para reparar no botão.
  *
  * Os limites existem para que um texto muito curto não pisque e um muito
- * longo não prenda quem já leu.
+ * longo não prenda quem já leu. Dá 6,1s, 5,6s e 5,1s.
  */
-const ENTRADA_MS = 1050;
-const PALAVRAS_POR_SEGUNDO = 4.2;
-const DECISAO_MS = 1800;
-const MINIMO_MS = 7000;
-const MAXIMO_MS = 13000;
+const ENTRADA_MS = 700;
+const PALAVRAS_POR_SEGUNDO = 6.5;
+const DECISAO_MS = 900;
+const MINIMO_MS = 4500;
+const MAXIMO_MS = 8000;
+
+/** A troca de fotografia. Curta o bastante para não comer o quadro novo. */
+const CRUZAMENTO_S = 1;
 
 function duracaoDoQuadro(q: Quadro): number {
   const palavras = `${q.sobrenome} ${q.titulo} ${q.texto}`
@@ -97,29 +99,27 @@ function duracaoDoQuadro(q: Quadro): number {
 
 export function Hero() {
   const [atual, setAtual] = useState(0);
-  /** Pausa deliberada: quem clicou em pausar assim fica até mandar seguir. */
-  const [parado, setParado] = useState(false);
-  /** Pausa de cortesia: enquanto o ponteiro ou o foco estão aqui. */
+  /** Enquanto o ponteiro ou o foco estão aqui, o ciclo espera. */
   const [visitado, setVisitado] = useState(false);
   const semMovimento = useReducedMotion();
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const quadro = QUADROS[atual];
   const duracao = duracaoDoQuadro(quadro);
-  const pausado = parado || visitado;
 
+  /** Sempre para a frente, e do terceiro de volta ao primeiro. */
   const avancar = useCallback(
     () => setAtual((i) => (i + 1) % QUADROS.length),
     [],
   );
 
   useEffect(() => {
-    if (semMovimento || pausado) return;
+    if (semMovimento || visitado) return;
     temporizador.current = setTimeout(avancar, duracao);
     return () => {
       if (temporizador.current) clearTimeout(temporizador.current);
     };
-  }, [atual, pausado, semMovimento, avancar, duracao]);
+  }, [atual, visitado, semMovimento, avancar, duracao]);
 
   return (
     <section
@@ -138,17 +138,23 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.6, ease: "easeInOut" }}
+          transition={{ duration: CRUZAMENTO_S, ease: "easeInOut" }}
           className="absolute inset-0"
         >
-          {/* Aproximação lenta. O respeito por "menos movimento" vem do
-              MotionConfig no layout, e não de uma ramificação aqui — que
-              renderizaria estilos diferentes no servidor e no cliente. */}
+          {/* Aproximação lenta. Com o quadro mais curto, o percurso também
+              encurta — 1,045 em vez de 1,07 — para que a velocidade
+              aparente continue a mesma.
+              O respeito por "menos movimento" vem do MotionConfig no
+              layout, e não de uma ramificação aqui — que renderizaria
+              estilos diferentes no servidor e no cliente. */}
           <motion.div
             className="absolute inset-0"
             initial={{ scale: 1 }}
-            animate={{ scale: 1.07 }}
-            transition={{ duration: duracao / 1000 + 2, ease: "linear" }}
+            animate={{ scale: 1.045 }}
+            transition={{
+              duration: duracao / 1000 + CRUZAMENTO_S,
+              ease: "linear",
+            }}
           >
             <Image
               src={urlDaImagem(quadro.imagem, { largura: 2000, qualidade: 78 })}
@@ -193,10 +199,10 @@ export function Hero() {
         <AnimatePresence mode="wait">
           <motion.div
             key={atual}
-            initial={{ opacity: 0, y: 22 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
             className="max-w-4xl"
           >
             <p className="font-[family-name:var(--font-livro)] text-[clamp(1.25rem,1rem+1vw,1.9rem)] text-[var(--color-ouro)] italic">
@@ -241,105 +247,68 @@ export function Hero() {
           Números soltos não dizem o que são — com o nome ao lado e o tempo
           correndo na linha, lê-se na hora que é uma apresentação de três
           partes, e não um menu de três destinos.
-          No celular não há margem lateral livre: desce para o pé, em linha. */}
-      {/* A sombra projetada mantém o índice legível mesmo quando a
+          No celular não há margem lateral livre: desce para o pé, em linha.
+          A sombra projetada mantém o índice legível mesmo quando a
           fotografia clareia atrás dele. */}
       <div className="absolute bottom-36 left-6 z-10 [filter:drop-shadow(0_0_3px_rgba(8,5,3,1))_drop-shadow(0_2px_12px_rgba(8,5,3,0.9))] sm:top-1/2 sm:right-9 sm:bottom-auto sm:left-auto sm:-translate-y-1/2">
-        <div className="flex flex-row items-center gap-6 sm:flex-col sm:items-end">
-          {/* Primeiro elemento focalizável do conjunto, como a norma pede:
-              quem chega pelo teclado encontra a pausa antes de tudo.
-              Pausar ao passar o ponteiro não basta — não existe ponteiro em
-              tela sensível ao toque, e é a falha mais comum em auditorias. */}
-          <button
-            type="button"
-            onClick={() => setParado(!parado)}
-            aria-pressed={parado}
-            className="group flex h-8 w-8 shrink-0 items-center justify-center rounded-full
-              shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-pergaminho)_70%,transparent)]
-              transition-[box-shadow] duration-500 ease-[var(--ease-santuario)]
-              hover:shadow-[inset_0_0_0_1px_var(--color-ouro-luz)]"
-          >
-            <span className="sr-only">
-              {parado
-                ? "Retomar a troca automática dos quadros"
-                : "Pausar a troca automática dos quadros"}
-            </span>
-
-            <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden>
-              {parado ? (
-                <path
-                  d="M3 2 L10 6 L3 10 Z"
-                  fill="var(--color-ouro-luz)"
-                  className="transition-colors"
-                />
-              ) : (
-                <g fill="var(--color-ouro-luz)">
-                  <rect x="3" y="2" width="2" height="8" rx="0.4" />
-                  <rect x="7" y="2" width="2" height="8" rx="0.4" />
-                </g>
-              )}
-            </svg>
-          </button>
-
-          <ul className="flex flex-row gap-6 sm:flex-col sm:items-end sm:gap-6">
-            {QUADROS.map((q, i) => {
-              const ativo = i === atual;
-              return (
-                <li key={q.titulo}>
-                  <button
-                    type="button"
-                    onClick={() => setAtual(i)}
-                    aria-label={`Quadro ${i + 1} de ${QUADROS.length}: ${q.titulo}`}
-                    aria-current={ativo ? "true" : undefined}
-                    className="group flex items-center gap-3"
+        <ul className="flex flex-row gap-6 sm:flex-col sm:items-end sm:gap-6">
+          {QUADROS.map((q, i) => {
+            const ativo = i === atual;
+            return (
+              <li key={q.titulo}>
+                <button
+                  type="button"
+                  onClick={() => setAtual(i)}
+                  aria-label={`Quadro ${i + 1} de ${QUADROS.length}: ${q.titulo}`}
+                  aria-current={ativo ? "true" : undefined}
+                  className="group flex items-center gap-3"
+                >
+                  <span
+                    className={`font-[family-name:var(--font-livro)] text-sm tabular-nums transition-colors duration-500 ${
+                      ativo
+                        ? "text-[var(--color-ouro-luz)]"
+                        : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
+                    }`}
                   >
-                    <span
-                      className={`font-[family-name:var(--font-livro)] text-sm tabular-nums transition-colors duration-500 ${
-                        ativo
-                          ? "text-[var(--color-ouro-luz)]"
-                          : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
-                      }`}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
 
-                    {/* A linha corre enquanto o quadro está no ar. */}
-                    <span
-                      aria-hidden
-                      className={`relative h-px overflow-hidden transition-all duration-700 ease-[var(--ease-santuario)] ${
-                        ativo
-                          ? "w-10 bg-[color-mix(in_oklab,var(--color-pergaminho)_28%,transparent)]"
-                          : "w-4 bg-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]"
-                      }`}
-                    >
-                      {ativo && (
-                        <span
-                          key={atual}
-                          data-pausado={pausado || undefined}
-                          style={{ animationDuration: `${duracao}ms` }}
-                          className="absolute inset-0 origin-left bg-[var(--color-ouro-luz)]
+                  {/* A linha corre enquanto o quadro está no ar. */}
+                  <span
+                    aria-hidden
+                    className={`relative h-px overflow-hidden transition-all duration-700 ease-[var(--ease-santuario)] ${
+                      ativo
+                        ? "w-10 bg-[color-mix(in_oklab,var(--color-pergaminho)_28%,transparent)]"
+                        : "w-4 bg-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]"
+                    }`}
+                  >
+                    {ativo && (
+                      <span
+                        key={atual}
+                        data-pausado={visitado || undefined}
+                        style={{ animationDuration: `${duracao}ms` }}
+                        className="absolute inset-0 origin-left bg-[var(--color-ouro-luz)]
                           motion-safe:animate-[percorrer_linear_forwards]
                           motion-reduce:scale-x-100
                           data-[pausado]:[animation-play-state:paused]"
-                        />
-                      )}
-                    </span>
+                      />
+                    )}
+                  </span>
 
-                    <span
-                      className={`hidden font-[family-name:var(--font-livro)] text-sm tracking-[0.12em] uppercase transition-colors duration-500 xl:inline ${
-                        ativo
-                          ? "text-[var(--color-marfim)]"
-                          : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
-                      }`}
-                    >
-                      {q.rotulo}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                  <span
+                    className={`hidden font-[family-name:var(--font-livro)] text-sm tracking-[0.12em] uppercase transition-colors duration-500 xl:inline ${
+                      ativo
+                        ? "text-[var(--color-marfim)]"
+                        : "text-[color-mix(in_oklab,var(--color-pergaminho)_68%,transparent)] group-hover:text-[var(--color-pergaminho)]"
+                    }`}
+                  >
+                    {q.rotulo}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
       {/* A inscrição no rodapé da nave. */}

@@ -3,13 +3,19 @@
  *
  * Uso: node scripts/medir-quadros.mjs
  *
- * Observa o título mudando e cronometra quanto cada quadro ficou no ar,
- * confere que o terceiro volta ao primeiro, e testa se o botão de pausa
- * realmente detém o ciclo.
+ * Observa o título mudando, cronometra quanto cada quadro ficou no ar e
+ * confere que a ordem é sempre 1 → 2 → 3 → 1, ciclo após ciclo.
  */
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE ?? "http://localhost:3000";
+
+/** A ordem que o componente declara. Lida daqui, não adivinhada. */
+const QUADROS_ESPERADOS = [
+  "Comece o caminho",
+  "Caminhe acompanhado",
+  "Entregue‑se inteiro",
+];
 
 const navegador = await chromium.launch();
 const pagina = await navegador.newPage({
@@ -43,7 +49,7 @@ await pagina.evaluate(() => {
 await pagina.mouse.move(5, 850);
 
 console.log("Observando um ciclo inteiro…\n");
-await pagina.waitForTimeout(40000);
+await pagina.waitForTimeout(30000);
 
 const trocas = await pagina.evaluate(() => window.__trocas);
 
@@ -61,24 +67,26 @@ for (let i = 0; i < trocas.length - 1; i++) {
 console.log(`\nÚltimo em cena: “${trocas.at(-1).texto}”`);
 
 const sequencia = trocas.map((t) => t.texto);
-const voltou =
-  sequencia.length > 3 && sequencia[3] === sequencia[0];
-console.log(`Voltou ao primeiro depois do terceiro: ${voltou ? "sim" : "não"}`);
+const titulos = [...new Set(sequencia)];
 
-// --- O botão de pausa detém mesmo o ciclo? --------------------------------
+// A ordem tem de ser sempre a mesma: cada quadro seguido do próximo, e o
+// terceiro seguido do primeiro. Um salto ou um retrocesso aparece aqui.
+const ordem = QUADROS_ESPERADOS;
+const erros = [];
+for (let i = 0; i < sequencia.length - 1; i++) {
+  const de = ordem.indexOf(sequencia[i]);
+  const para = ordem.indexOf(sequencia[i + 1]);
+  if (de < 0 || para < 0) {
+    erros.push(`título desconhecido: “${sequencia[i + 1]}”`);
+  } else if (para !== (de + 1) % ordem.length) {
+    erros.push(`${de + 1} → ${para + 1} (esperado ${de + 1} → ${((de + 1) % ordem.length) + 1})`);
+  }
+}
 
-await pagina.click('button[aria-pressed]');
-const antes = await pagina.textContent("section h1");
-const pressionado = await pagina.getAttribute("button[aria-pressed]", "aria-pressed");
-await pagina.mouse.move(5, 850);
-await pagina.waitForTimeout(15000);
-const depois = await pagina.textContent("section h1");
-
-console.log(`\naria-pressed após clicar: ${pressionado}`);
-console.log(
-  `Com a pausa ligada, 15s depois: ${
-    antes.trim() === depois.trim() ? "não trocou (correto)" : "TROCOU — pausa não funciona"
-  }`,
-);
+console.log(`
+Sequência observada: ${sequencia.map((t) => ordem.indexOf(t) + 1).join(" → ")}`);
+console.log(`Ordem 1→2→3→1 em todas as trocas: ${erros.length === 0 ? "sim" : "NÃO — " + erros.join("; ")}`);
+console.log(`Ciclos inteiros observados: ${(sequencia.length / 3).toFixed(1)}`);
+console.log(`Títulos vistos: ${titulos.length} de 3`);
 
 await navegador.close();
