@@ -293,6 +293,22 @@ body {
 }
 
 /* ==========================================================================
+   Revelação pelo scroll — o texto assenta conforme se avança.
+   Só entra onde o navegador sabe animar por posição de rolagem; onde não
+   sabe, o conteúdo simplesmente já está lá, visível.
+   ========================================================================== */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .assenta {
+      animation: surgir 1ms linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 26%;
+    }
+  }
+}
+
+/* ==========================================================================
    Movimento — respeitado por quem pediu menos movimento.
    ========================================================================== */
 

@@ -42,7 +42,7 @@ export default function Entrada() {
         style={{ "--espera": "1700ms" } as React.CSSProperties}
       >
         <Link
-          href="/calendario"
+          href="/guia"
           className="brilho-borda superficie-vidro group inline-flex items-center px-12 py-4
             font-[family-name:var(--font-livro)] text-lg tracking-[0.3em] indent-[0.3em] text-[var(--color-marfim)]
             uppercase transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]

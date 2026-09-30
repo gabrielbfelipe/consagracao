@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Colunata } from "@/components/jornada/Colunata";
 import { TOTAL_DIAS, etapaDoDia } from "@/lib/jornada/etapas";
@@ -5,8 +6,9 @@ import { TOTAL_DIAS, etapaDoDia } from "@/lib/jornada/etapas";
 export const metadata: Metadata = { title: "Meu Caminho" };
 
 export default function Caminho() {
-  // Provisório: enquanto não há conta, a jornada é demonstrada no dia 17.
-  const diaAtual = 17;
+  // Provisório: enquanto não há conta, a jornada é demonstrada no dia 13,
+  // que abre a primeira semana e já tem conteúdo escrito.
+  const diaAtual = 13;
   const concluidos = Array.from({ length: diaAtual - 1 }, (_, i) => i + 1);
   const etapa = etapaDoDia(diaAtual);
 
@@ -33,9 +35,20 @@ export default function Caminho() {
         </div>
 
         <p className="mt-12 text-sm text-[var(--texto-suave)]">
-          Dezesseis dias acesos. Restam {TOTAL_DIAS - diaAtual} até a
+          {diaAtual - 1} dias acesos. Restam {TOTAL_DIAS - diaAtual + 1} até a
           consagração.
         </p>
+
+        <Link
+          href={`/dia/${diaAtual}`}
+          className="brilho-borda superficie-vidro mt-12 inline-flex items-center px-12 py-4
+            font-[family-name:var(--font-livro)] text-lg tracking-[0.3em] indent-[0.3em] uppercase
+            text-[var(--color-marfim)] transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]
+            hover:text-[var(--color-ouro-luz)]
+            hover:shadow-[inset_0_0_0_1px_var(--color-ouro),0_0_32px_-10px_color-mix(in_oklab,var(--color-ouro)_70%,transparent)]"
+        >
+          Entrar no dia {diaAtual}
+        </Link>
       </div>
     </main>
   );

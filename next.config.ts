@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
     // e encontra o package-lock.json da pasta do usuário.
     root: __dirname,
   },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
+  },
 };
 
 export default nextConfig;
