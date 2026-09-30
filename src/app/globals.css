@@ -1,26 +1,317 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   SANTUÁRIO — sistema de design
+   Três regras: a luz é o estado; o arco é a estrutura; o ornamento
+   só aparece no limiar. Nada aqui compete com o texto de oração.
+   ========================================================================== */
+
+@theme {
+  /* --- Madeira e sombra ------------------------------------------------- */
+  --color-sombra: #120c08;
+  --color-madeira: #1c130d;
+  --color-nogueira: #33231a;
+  --color-castanho: #4a3424;
+
+  /* --- Metal ------------------------------------------------------------ */
+  --color-bronze: #7a5a32;
+  --color-ouro-fundo: #8a6b2e;
+  --color-ouro: #c2a15c;
+  --color-ouro-luz: #f0dfa8;
+
+  /* --- Claros ----------------------------------------------------------- */
+  --color-marfim: #f2ead8;
+  --color-pergaminho: #e3d5b8;
+  --color-pergaminho-sombra: #c9b68f;
+
+  /* --- Azuis ------------------------------------------------------------ */
+  --color-azul-profundo: #0f1a3a;
+  --color-azul-mariano: #2e4b8f;
+  --color-azul-luz: #7b95d4;
+
+  /* --- Tipografia ------------------------------------------------------- */
+  --font-livro: var(--font-eb-garamond), "EB Garamond", Garamond, serif;
+  --font-interface: var(--font-archivo), system-ui, sans-serif;
+
+  /* --- Movimento -------------------------------------------------------- */
+  --ease-santuario: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ==========================================================================
+   Salas — cada módulo é um ambiente do mesmo edifício.
+   Aplicadas com data-sala no elemento de página.
+   ========================================================================== */
+
+:root,
+[data-sala="biblioteca"] {
+  --fundo: var(--color-madeira);
+  --fundo-longe: var(--color-sombra);
+  --texto: var(--color-pergaminho);
+  --texto-suave: color-mix(in oklab, var(--color-pergaminho) 62%, transparent);
+  --realce: var(--color-ouro);
+  --luz-cor: 255 236 190;
+  --luz-forca: 0.16;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-sala="estudo"] {
+  --fundo: var(--color-nogueira);
+  --fundo-longe: var(--color-madeira);
+  --texto: var(--color-marfim);
+  --texto-suave: color-mix(in oklab, var(--color-marfim) 62%, transparent);
+  --realce: var(--color-ouro);
+  --luz-cor: 255 232 180;
+  --luz-forca: 0.2;
+}
+
+[data-sala="capela"] {
+  --fundo: var(--color-azul-profundo);
+  --fundo-longe: #070c1d;
+  --texto: var(--color-pergaminho);
+  --texto-suave: color-mix(in oklab, var(--color-pergaminho) 58%, transparent);
+  --realce: var(--color-ouro);
+  --luz-cor: 200 216 255;
+  --luz-forca: 0.12;
+}
+
+[data-sala="manuscrito"] {
+  --fundo: #241812;
+  --fundo-longe: var(--color-sombra);
+  --texto: var(--color-pergaminho);
+  --texto-suave: color-mix(in oklab, var(--color-pergaminho) 62%, transparent);
+  --realce: var(--color-ouro);
+  --luz-cor: 255 238 200;
+  --luz-forca: 0.14;
+}
+
+/* O Grande Dia: a biblioteca amanhecendo. */
+[data-sala="altar"] {
+  --fundo: #101d45;
+  --fundo-longe: var(--color-azul-mariano);
+  --texto: var(--color-marfim);
+  --texto-suave: color-mix(in oklab, var(--color-marfim) 70%, transparent);
+  --realce: var(--color-ouro-luz);
+  --luz-cor: 255 246 214;
+  --luz-forca: 0.4;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--fundo);
+  color: var(--texto);
+  font-family: var(--font-interface);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Texto espiritual: EB Garamond, entrelinha generosa, medida curta. */
+.voz-livro {
+  font-family: var(--font-livro);
+  font-size: clamp(1.125rem, 0.95rem + 0.7vw, 1.375rem);
+  line-height: 1.75;
+  max-width: 62ch;
+}
+
+.voz-livro p + p {
+  margin-top: 1.2em;
+}
+
+/* Foco visível, no vocabulário da casa. */
+:where(a, button, [tabindex], input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-ouro);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-ouro) 35%, transparent);
+  color: var(--color-marfim);
+}
+
+/* ==========================================================================
+   Ouro — nunca chapado. Sempre um metal com altos e baixos.
+   ========================================================================== */
+
+.ouro {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-ouro-fundo) 0%,
+    var(--color-ouro) 28%,
+    var(--color-ouro-luz) 46%,
+    var(--color-ouro) 62%,
+    var(--color-ouro-fundo) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Reflexo que percorre a borda — só na interação, nunca sozinho. */
+.brilho-borda {
+  position: relative;
+  overflow: hidden;
+}
+
+.brilho-borda::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    color-mix(in oklab, var(--color-ouro-luz) 40%, transparent) 50%,
+    transparent 62%
+  );
+  translate: -130% 0;
+  pointer-events: none;
+}
+
+.brilho-borda:hover::after,
+.brilho-borda:focus-visible::after {
+  transition: translate 900ms var(--ease-santuario);
+  translate: 130% 0;
+}
+
+/* ==========================================================================
+   Superfícies — canto vivo. O arredondamento pertence só aos arcos.
+   ========================================================================== */
+
+.superficie-pergaminho {
+  background-color: var(--color-pergaminho);
+  background-image:
+    radial-gradient(
+      ellipse at 18% 0%,
+      rgba(255, 255, 255, 0.55),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 90% 100%,
+      rgba(140, 106, 58, 0.22),
+      transparent 60%
+    );
+  color: #2a1d12;
+  box-shadow:
+    inset 0 0 0 1px rgba(122, 90, 50, 0.25),
+    0 18px 40px -28px rgba(0, 0, 0, 0.9);
+}
+
+.superficie-madeira {
+  background-color: var(--color-nogueira);
+  background-image: linear-gradient(
+    177deg,
+    rgba(255, 220, 160, 0.06),
+    transparent 40%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(242, 234, 216, 0.07),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.45);
+}
+
+/* Vidro antigo: verniz sobre madeira, não vidro de aeroporto. */
+.superficie-vidro {
+  background-color: color-mix(in oklab, var(--fundo-longe) 62%, transparent);
+  backdrop-filter: blur(7px) saturate(1.15);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--color-bronze) 55%, transparent),
+    inset 0 1px 0 color-mix(in oklab, var(--color-ouro-luz) 18%, transparent);
+}
+
+/* ==========================================================================
+   Arco — a forma que carrega a metáfora.
+   ========================================================================== */
+
+.arco {
+  border-start-start-radius: 999px;
+  border-start-end-radius: 999px;
+}
+
+/* ==========================================================================
+   Luz — volumétrica, entrando de cima, como janela alta.
+   ========================================================================== */
+
+.luz-alta {
+  position: relative;
+  isolation: isolate;
+}
+
+.luz-alta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% -12%,
+    rgb(var(--luz-cor) / var(--luz-forca)),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   A chegada — o único momento coreografado da casa.
+   A interface não aparece: ela se revela, como quem entra e espera os
+   olhos se acostumarem à luz.
+   ========================================================================== */
+
+@keyframes surgir {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes aproximar {
+  from {
+    opacity: 0;
+    scale: 1.045;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.chega {
+  opacity: 0;
+  animation: surgir 1100ms var(--ease-santuario) forwards;
+  animation-delay: var(--espera, 0ms);
+}
+
+.chega-nave {
+  opacity: 0;
+  animation: aproximar 2400ms var(--ease-santuario) forwards;
+}
+
+/* ==========================================================================
+   Movimento — respeitado por quem pediu menos movimento.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .brilho-borda::after {
+    display: none;
+  }
+}
+
+/* Modo Retiro: o mesmo edifício, em passo mais lento. */
+[data-retiro="true"] {
+  --ease-santuario: cubic-bezier(0.33, 0.6, 0.3, 1);
 }
