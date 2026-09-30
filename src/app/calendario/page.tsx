@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { FESTAS } from "@/lib/agenda/festas";
 import { opcoesDeData } from "@/lib/agenda/cronograma";
 import { diaEMes, hojeEm, porExtenso } from "@/lib/agenda/dataSimples";
+import { Portico } from "@/components/navegacao/Portico";
+import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
+import { usuarioAtual } from "@/lib/supabase/servidor";
 
 export const metadata: Metadata = {
   title: "Calendário Mariano",
@@ -18,17 +21,19 @@ const GRAU: Record<string, string> = {
   devocao: "Celebração devocional",
 };
 
-export default function Calendario() {
+export default async function Calendario() {
+  const autenticado = Boolean(await usuarioAtual());
+
   // Enquanto não há perfil, o calendário fala a partir do Brasil.
   const hoje = hojeEm("America/Sao_Paulo");
   const opcoes = opcoesDeData(hoje, FESTAS, 24);
 
   return (
-    <main
-      data-sala="manuscrito"
-      className="luz-alta min-h-dvh px-6 py-20 sm:px-10 lg:px-16"
-    >
-      <header className="mx-auto max-w-[62ch] text-center">
+    <div data-sala="manuscrito" className="min-h-dvh">
+      {autenticado ? <Portico autenticado /> : <PorticoPublico />}
+
+      <main className="luz-alta px-6 pt-10 pb-24 sm:px-10 lg:px-16">
+        <header className="mx-auto max-w-[62ch] text-center">
         <h1 className="font-[family-name:var(--font-livro)] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] leading-tight text-[var(--color-marfim)]">
           Em que dia você deseja se consagrar?
         </h1>
@@ -48,9 +53,9 @@ export default function Calendario() {
           Mostrando as datas que ainda dá tempo de alcançar, a partir de{" "}
           {porExtenso(hoje)}.
         </p>
-      </header>
+        </header>
 
-      <ul className="mx-auto mt-20 grid max-w-6xl gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mx-auto mt-20 grid max-w-6xl gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {opcoes.map(({ festa, data, inicio, diasAteComecar }) => (
           <li key={`${festa.id}-${data}`}>
             <Link
@@ -99,7 +104,8 @@ export default function Calendario() {
             </Link>
           </li>
         ))}
-      </ul>
-    </main>
+        </ul>
+      </main>
+    </div>
   );
 }

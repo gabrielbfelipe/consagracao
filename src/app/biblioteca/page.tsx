@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { ORACOES } from "@/content/oracoes";
 import { IMAGENS, urlDaImagem } from "@/lib/imagens";
 import { Portico } from "@/components/navegacao/Portico";
+import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
 import { usuarioAtual } from "@/lib/supabase/servidor";
 
 export const metadata: Metadata = {
@@ -17,7 +18,9 @@ export default async function Biblioteca() {
 
   return (
     <div data-sala="estudo" className="min-h-dvh">
-      <Portico autenticado={autenticado} />
+      {/* Quem já tem jornada navega pelas salas; quem não tem, pelo menu
+          de apresentação, que é o que lhe serve. */}
+      {autenticado ? <Portico autenticado /> : <PorticoPublico />}
 
       <main className="luz-alta px-6 pb-28 sm:px-10">
         <header className="mx-auto max-w-[62ch] pt-16 text-center">
@@ -64,7 +67,7 @@ export default async function Biblioteca() {
                 indicamos quais parágrafos ler no seu exemplar.
               </p>
               <Link
-                href="/guia#o-livro"
+                href="/sobre/o-livro"
                 className="mt-7 inline-block font-[family-name:var(--font-livro)] text-base tracking-[0.14em] uppercase
                   text-[var(--color-ouro)] underline decoration-[color-mix(in_oklab,var(--color-ouro)_45%,transparent)]
                   underline-offset-[7px] transition-colors hover:text-[var(--color-ouro-luz)]"

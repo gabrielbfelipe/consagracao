@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
+  async redirects() {
+    return [
+      // O guia era uma página só, longa demais. Virou cinco salas com porta
+      // própria no menu; quem tiver o endereço antigo continua chegando.
+      { source: "/guia", destination: "/sobre/a-consagracao", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

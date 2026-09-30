@@ -97,7 +97,7 @@ function Aguardando({ jornada, faltam }: { jornada: Jornada; faltam: number }) {
         consagração será {porExtenso(jornada.consagracao)}. Enquanto isso, você
         pode ler o guia e providenciar seu exemplar do Tratado.
       </p>
-      <Botao href="/guia">Ler o guia</Botao>
+      <Botao href="/sobre/a-preparacao">Ler sobre a preparação</Botao>
     </Moldura>
   );
 }

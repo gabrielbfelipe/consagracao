@@ -118,12 +118,12 @@ export default function Privacidade() {
         </p>
 
         <Link
-          href="/guia"
+          href="/"
           className="mt-12 inline-block text-sm text-[var(--texto-suave)] underline
             decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
             transition-colors hover:text-[var(--color-pergaminho)]"
         >
-          Voltar ao guia
+          Voltar ao início
         </Link>
       </article>
     </main>
