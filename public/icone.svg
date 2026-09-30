@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Um arco com uma estrela">
+  <defs>
+    <linearGradient id="ouro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0dfa8"/>
+      <stop offset="55%" stop-color="#c2a15c"/>
+      <stop offset="100%" stop-color="#8a6b2e"/>
+    </linearGradient>
+    <radialGradient id="luz" cx="50%" cy="34%" r="46%">
+      <stop offset="0%" stop-color="#f0dfa8" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#f0dfa8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="#1c130d"/>
+  <rect width="512" height="512" rx="96" fill="url(#luz)"/>
+
+  <!-- O arco: a forma que carrega toda a identidade. -->
+  <path d="M 158 404 L 158 268 A 98 98 0 0 1 354 268 L 354 404"
+        fill="none" stroke="url(#ouro)" stroke-width="17" stroke-linecap="round"/>
+
+  <!-- Estrela do mar, dentro do vão. -->
+  <path d="M 256 232 Q 263 290 306 300 Q 263 310 256 368 Q 249 310 206 300 Q 249 290 256 232 Z"
+        fill="url(#ouro)"/>
+</svg>

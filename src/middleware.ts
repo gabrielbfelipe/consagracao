@@ -9,7 +9,14 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 
 /** Áreas que exigem estar autenticado. */
-const RESERVADAS = ["/caminho", "/dia", "/diario", "/conta", "/carta"];
+const RESERVADAS = [
+  "/caminho",
+  "/dia",
+  "/diario",
+  "/conta",
+  "/carta",
+  "/grande-dia",
+];
 
 export async function middleware(requisicao: NextRequest) {
   let resposta = NextResponse.next({ request: requisicao });

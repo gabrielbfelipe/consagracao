@@ -24,6 +24,15 @@ export const metadata: Metadata = {
   description:
     "Um caminho de preparação, oração e conhecimento que conduz o coração a Cristo pelas mãos de Maria.",
   applicationName: "Consagração",
+  icons: {
+    icon: [{ url: "/icone.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icone.svg" }],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Consagração",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {

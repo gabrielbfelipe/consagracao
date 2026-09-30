@@ -309,6 +309,81 @@ body {
 }
 
 /* ==========================================================================
+   Parallax arquitetônico — camadas que andam em velocidades diferentes.
+   O deslocamento é de poucos pixels: a intenção é profundidade, não efeito.
+   ========================================================================== */
+
+@keyframes deslocar {
+  from {
+    translate: 0 var(--deslocamento-inicio, -3%);
+  }
+  to {
+    translate: 0 var(--deslocamento-fim, 3%);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .camada-funda {
+      animation: deslocar linear both;
+      animation-timeline: view();
+      --deslocamento-inicio: -4%;
+      --deslocamento-fim: 4%;
+    }
+
+    .camada-rasa {
+      animation: deslocar linear both;
+      animation-timeline: view();
+      --deslocamento-inicio: -1.5%;
+      --deslocamento-fim: 1.5%;
+    }
+  }
+}
+
+/* ==========================================================================
+   Transições entre páginas — passa-se de uma sala a outra, não se troca
+   de aba. A dissolução é lenta o bastante para ser sentida e curta o
+   bastante para não atrasar ninguém.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: dissolver-saida 420ms var(--ease-santuario) both;
+  }
+
+  ::view-transition-new(root) {
+    animation: dissolver-entrada 620ms var(--ease-santuario) both;
+  }
+}
+
+@keyframes dissolver-saida {
+  to {
+    opacity: 0;
+    scale: 0.994;
+  }
+}
+
+@keyframes dissolver-entrada {
+  from {
+    opacity: 0;
+    scale: 1.008;
+  }
+}
+
+/* Respiração lenta, para dar ritmo ao silêncio sem dar instrução. */
+@keyframes respirar {
+  0%,
+  100% {
+    opacity: 0.45;
+    scale: 0.92;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.08;
+  }
+}
+
+/* ==========================================================================
    Movimento — respeitado por quem pediu menos movimento.
    ========================================================================== */
 

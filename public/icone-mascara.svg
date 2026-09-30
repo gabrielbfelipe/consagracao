@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Um arco com uma estrela">
+  <defs>
+    <linearGradient id="ouro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0dfa8"/>
+      <stop offset="55%" stop-color="#c2a15c"/>
+      <stop offset="100%" stop-color="#8a6b2e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sem cantos arredondados e com o desenho recuado para o círculo de
+       segurança: o sistema operacional é quem recorta a forma. -->
+  <rect width="512" height="512" fill="#1c130d"/>
+
+  <path d="M 186 382 L 186 282 A 70 70 0 0 1 326 282 L 326 382"
+        fill="none" stroke="url(#ouro)" stroke-width="15" stroke-linecap="round"/>
+
+  <path d="M 256 254 Q 262 300 296 308 Q 262 316 256 362 Q 250 316 216 308 Q 250 300 256 254 Z"
+        fill="url(#ouro)"/>
+</svg>

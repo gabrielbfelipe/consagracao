@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Colunata } from "@/components/jornada/Colunata";
+import { Portico } from "@/components/navegacao/Portico";
 import { TOTAL_DIAS, etapaDoDia } from "@/lib/jornada/etapas";
 import {
   diaCorrente,
@@ -41,12 +42,12 @@ function Moldura({
   children: React.ReactNode;
 }) {
   return (
-    <main
-      data-sala={sala}
-      className="luz-alta flex min-h-dvh flex-col justify-center px-6 py-20 sm:px-10"
-    >
-      <div className="mx-auto w-full max-w-4xl text-center">{children}</div>
-    </main>
+    <div data-sala={sala} className="flex min-h-dvh flex-col">
+      <Portico autenticado />
+      <main className="luz-alta flex flex-1 flex-col justify-center px-6 py-16 sm:px-10">
+        <div className="mx-auto w-full max-w-4xl text-center">{children}</div>
+      </main>
+    </div>
   );
 }
 
@@ -167,9 +168,7 @@ function GrandeDia({ jornada }: { jornada: Jornada }) {
         {porExtenso(jornada.consagracao)}, na festa de {jornada.festa.nome},
         você faz sua consagração.
       </p>
-      <p className="mt-10 text-sm text-[var(--texto-suave)]">
-        O guia completo deste dia está sendo preparado.
-      </p>
+      <Botao href="/grande-dia">Abrir o guia de hoje</Botao>
     </Moldura>
   );
 }
@@ -190,6 +189,7 @@ function Consagrado({ jornada }: { jornada: Jornada }) {
         {dias === 1 ? "dia" : "dias"}. O que se prometeu num dia vive-se nos
         outros, e é essa parte que queremos acompanhar com você.
       </p>
+      <Botao href="/carta">Reler a carta do primeiro dia</Botao>
       <p className="mt-10 text-sm text-[var(--texto-suave)]">
         A jornada de pós-consagração está sendo preparada.
       </p>
