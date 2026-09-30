@@ -51,7 +51,38 @@ async function api(caminho, opcoes = {}) {
   return corpo ? JSON.parse(corpo) : null;
 }
 
+/**
+ * O que existe na pasta mas não seria enviado.
+ *
+ * Publica-se o que o Git rastreia, e um arquivo novo sem commit sumiria em
+ * silêncio — o deploy diria "pronto" sem levar o que se acabou de escrever.
+ * Melhor recusar do que publicar pela metade.
+ */
+function pendencias() {
+  const saida = execFileSync(
+    "git",
+    ["status", "--porcelain", "--untracked-files=normal"],
+    { cwd: RAIZ, encoding: "utf8" },
+  );
+  return saida
+    .split("\n")
+    .filter(Boolean)
+    .map((linha) => ({ marca: linha.slice(0, 2), arquivo: linha.slice(3) }));
+}
+
 // --- 1. Ler e resumir cada arquivo ------------------------------------------
+
+const soltos = pendencias();
+if (soltos.length > 0 && !process.argv.includes("--mesmo-assim")) {
+  console.error("Há mudanças que não seriam publicadas, porque o Git não as segue:\n");
+  soltos.forEach(({ marca, arquivo }) =>
+    console.error(`  ${marca.trim() === "??" ? "novo " : "alterado"}  ${arquivo}`),
+  );
+  console.error(
+    "\nFaça commit antes de publicar, ou repita com --mesmo-assim para ignorar.",
+  );
+  process.exit(1);
+}
 
 const caminhos = arquivosRastreados();
 console.log(`${caminhos.length} arquivos rastreados pelo Git.`);
