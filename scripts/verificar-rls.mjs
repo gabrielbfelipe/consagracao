@@ -141,6 +141,44 @@ try {
     `viu ${diarioAlheio?.length ?? 0}`,
   );
 
+  // --- Meu motivo -----------------------------------------------------------
+
+  await ana.cliente
+    .from("meu_motivo")
+    .upsert(
+      { jornada_id: jornada.id, texto: "primeiro motivo" },
+      { onConflict: "jornada_id" },
+    );
+  const { error: erroRegravar } = await ana.cliente
+    .from("meu_motivo")
+    .upsert(
+      { jornada_id: jornada.id, texto: "motivo revisto" },
+      { onConflict: "jornada_id" },
+    );
+  const { data: motivo } = await ana.cliente
+    .from("meu_motivo")
+    .select("texto")
+    .single();
+  conferir(
+    "o motivo pode ser reescrito quantas vezes for preciso",
+    !erroRegravar && motivo?.texto === "motivo revisto",
+  );
+
+  const { data: motivoAlheio } = await bento.cliente
+    .from("meu_motivo")
+    .select("texto");
+  conferir("o motivo não vaza para outra pessoa", (motivoAlheio?.length ?? 0) === 0);
+
+  // --- Tabela de controle ----------------------------------------------------
+
+  const { data: migracoes, error: erroMigracoes } = await ana.cliente
+    .from("migracoes")
+    .select("nome");
+  conferir(
+    "a tabela de migrações não é alcançável pela API",
+    !!erroMigracoes || (migracoes?.length ?? 0) === 0,
+  );
+
   // --- Carta do primeiro dia ------------------------------------------------
 
   const { error: erroCarta } = await ana.cliente

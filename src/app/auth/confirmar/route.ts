@@ -25,7 +25,18 @@ export async function GET(requisicao: NextRequest) {
     });
 
     if (!error) {
-      return NextResponse.redirect(new URL(paraOnde, origin));
+      // Quem ainda não consentiu passa primeiro pela acolhida; nada é
+      // guardado antes disso.
+      const { data: perfil } = await supabase
+        .from("perfis")
+        .select("consentimento_em")
+        .maybeSingle<{ consentimento_em: string | null }>();
+
+      const destinoFinal = perfil?.consentimento_em
+        ? paraOnde
+        : "/conta/bem-vindo";
+
+      return NextResponse.redirect(new URL(destinoFinal, origin));
     }
   }
 

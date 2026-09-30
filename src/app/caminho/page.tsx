@@ -141,6 +141,17 @@ function EmCurso({ jornada }: { jornada: Jornada }) {
       )}
 
       <Botao href={`/dia/${dia}`}>Entrar no dia {dia}</Botao>
+
+      <p className="mt-10">
+        <Link
+          href="/carta"
+          className="text-sm text-[var(--texto-suave)] underline
+            decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
+            transition-colors hover:text-[var(--color-pergaminho)]"
+        >
+          A carta do primeiro dia e o meu motivo
+        </Link>
+      </p>
     </Moldura>
   );
 }
