@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "migrar": "node --env-file=.env.local scripts/migrar.mjs",
-    "verificar:rls": "node --env-file=.env.local scripts/verificar-rls.mjs"
+    "verificar:rls": "node --env-file=.env.local scripts/verificar-rls.mjs",
+    "publicar": "node --env-file=.env.local scripts/publicar.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
