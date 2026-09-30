@@ -83,6 +83,20 @@
   --luz-forca: 0.14;
 }
 
+/* Pedra: a sala clara. Uma catedral não é uniformemente escura — há
+   calcário, mármore e a luz que bate neles. Sem esta sala, a casa inteira
+   vira um porão. */
+[data-sala="pedra"] {
+  --fundo: #ebe3d1;
+  --fundo-longe: #d9cdb2;
+  --texto: #2a1d12;
+  --texto-suave: color-mix(in oklab, #2a1d12 74%, transparent);
+  /* O ouro claro some sobre pedra; aqui ele é o bronze escuro. */
+  --realce: #7a5a32;
+  --luz-cor: 255 244 214;
+  --luz-forca: 0.5;
+}
+
 /* O Grande Dia: a biblioteca amanhecendo. */
 [data-sala="altar"] {
   --fundo: #101d45;
@@ -150,6 +164,18 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Sobre pedra clara o ouro claro desaparece: o metal escurece para ser lido. */
+[data-sala="pedra"] .ouro {
+  background-image: linear-gradient(
+    100deg,
+    #6b4a1e 0%,
+    #8a6b2e 30%,
+    #b08d3f 50%,
+    #8a6b2e 70%,
+    #6b4a1e 100%
+  );
 }
 
 /* Reflexo que percorre a borda — só na interação, nunca sozinho. */

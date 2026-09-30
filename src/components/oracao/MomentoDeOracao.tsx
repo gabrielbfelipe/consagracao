@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { LIMITE, SOCORROS, type Socorro } from "@/content/socorro";
 
@@ -14,11 +14,8 @@ type Etapa = "escolher" | "acolhida" | "palavra" | "oracao" | "silencio" | "fim"
 export function MomentoDeOracao() {
   const [socorro, setSocorro] = useState<Socorro | null>(null);
   const [etapa, setEtapa] = useState<Etapa>("escolher");
-  const semMovimento = useReducedMotion();
 
-  const transicao = semMovimento
-    ? { duration: 0 }
-    : { duration: 0.7, ease: [0.22, 0.61, 0.36, 1] as const };
+  const transicao = { duration: 0.7, ease: [0.22, 0.61, 0.36, 1] as const };
 
   function escolher(s: Socorro) {
     setSocorro(s);
@@ -30,7 +27,7 @@ export function MomentoDeOracao() {
       <AnimatePresence mode="wait">
         <motion.div
           key={etapa}
-          initial={{ opacity: 0, y: semMovimento ? 0 : 10 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={transicao}
@@ -46,7 +43,7 @@ export function MomentoDeOracao() {
                     <button
                       type="button"
                       onClick={() => escolher(s)}
-                      className="superficie-madeira block w-full px-7 py-6
+                      className="superficie-vidro block w-full px-7 py-6
                         font-[family-name:var(--font-livro)] text-xl text-[var(--color-marfim)]
                         transition-colors duration-500 ease-[var(--ease-santuario)]
                         hover:text-[var(--color-ouro-luz)]"

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ORACOES, oracaoPorId } from "@/content/oracoes";
+import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
+import { Rodape } from "@/components/vitrine/Rodape";
 
 export function generateStaticParams() {
   return ORACOES.map((o) => ({ oracao: o.id }));
@@ -12,7 +14,7 @@ type Props = { params: Promise<{ oracao: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { oracao } = await params;
   const o = oracaoPorId(oracao);
-  return { title: o?.nome ?? "Oração" };
+  return { title: o?.nome ?? "Oração", description: o?.proposito };
 }
 
 export default async function PaginaDaOracao({ params }: Props) {
@@ -21,73 +23,84 @@ export default async function PaginaDaOracao({ params }: Props) {
   if (!o) notFound();
 
   return (
-    <main data-sala="capela" className="luz-alta min-h-dvh px-6 py-16 sm:px-10">
-      <div className="mx-auto max-w-[60ch]">
-        <Link
-          href="/biblioteca"
-          className="text-sm text-[var(--texto-suave)] underline
-            decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
-            transition-colors hover:text-[var(--color-pergaminho)]"
-        >
-          Biblioteca
-        </Link>
+    <div className="min-h-dvh">
+      <PorticoPublico />
 
-        <h1 className="mt-10 font-[family-name:var(--font-livro)] text-[clamp(2rem,1.5rem+2.4vw,3.25rem)] leading-tight text-[var(--color-marfim)]">
-          {o.nome}
-        </h1>
+      {/* Uma oração se reza sobre papel claro, não no escuro. */}
+      <main data-sala="pedra" className="bg-[var(--fundo)]">
+        <div className="mx-auto max-w-[62ch] px-6 py-20 sm:px-10">
+          <Link
+            href="/biblioteca"
+            className="text-sm text-[var(--texto-suave)] underline
+              decoration-[color-mix(in_oklab,var(--realce)_40%,transparent)] underline-offset-[6px]
+              transition-colors hover:text-[var(--realce)]"
+          >
+            Biblioteca
+          </Link>
 
-        {o.origem && (
-          <p className="mt-3 font-[family-name:var(--font-livro)] text-lg text-[var(--color-ouro)] italic">
-            {o.origem}
-          </p>
-        )}
+          <header className="mt-12 text-center">
+            {o.origem && (
+              <p className="font-[family-name:var(--font-livro)] text-[var(--realce)] italic">
+                {o.origem}
+              </p>
+            )}
 
-        <div
-          aria-hidden
-          className="mt-9 h-px w-24 bg-[linear-gradient(to_right,var(--color-ouro),transparent)]"
-        />
+            <h1 className="mt-3 font-[family-name:var(--font-livro)] text-[clamp(2rem,1.4rem+2.6vw,3.25rem)] leading-[1.08] text-balance text-[var(--texto)] uppercase">
+              {o.nome}
+            </h1>
 
-        <p className="voz-livro mt-9 text-[var(--texto-suave)]">{o.proposito}</p>
+            <div
+              aria-hidden
+              className="mx-auto mt-8 h-px w-24 bg-[linear-gradient(to_right,transparent,var(--realce),transparent)]"
+            />
 
-        {/* O texto para rezar, em pergaminho, com espaço para respirar. */}
-        <div className="superficie-pergaminho mt-14 px-8 py-11 sm:px-11">
-          {o.portugues.map((estrofe, i) => (
-            <p
-              key={i}
-              className={`font-[family-name:var(--font-livro)] text-[1.2rem] leading-[1.85] whitespace-pre-line text-[#2a1d12] ${
-                i > 0 ? "mt-7" : ""
-              }`}
-            >
-              {estrofe}
+            <p className="voz-livro mx-auto mt-8 text-[var(--texto-suave)]">
+              {o.proposito}
             </p>
-          ))}
+          </header>
+
+          {/* O texto para rezar: centrado, largo de entrelinha, sem ruído. */}
+          <div className="mt-16 text-center">
+            {o.portugues.map((estrofe, i) => (
+              <p
+                key={i}
+                className={`font-[family-name:var(--font-livro)] text-[clamp(1.2rem,1.05rem+0.6vw,1.45rem)] leading-[1.9] whitespace-pre-line text-[var(--texto)] ${
+                  i > 0 ? "mt-9" : ""
+                }`}
+              >
+                {estrofe}
+              </p>
+            ))}
+          </div>
+
+          {o.latim && (
+            <details className="mt-16 border-t border-[color-mix(in_oklab,var(--realce)_30%,transparent)] pt-9">
+              <summary className="cursor-pointer list-none text-center font-[family-name:var(--font-livro)] text-lg tracking-[0.1em] text-[var(--realce)] uppercase transition-opacity hover:opacity-75">
+                Ver o original em latim
+              </summary>
+              <div className="mt-9 text-center">
+                {o.latim.map((estrofe, i) => (
+                  <p
+                    key={i}
+                    className={`font-[family-name:var(--font-livro)] text-[1.05rem] leading-[1.85] whitespace-pre-line text-[color-mix(in_oklab,var(--texto)_68%,transparent)] italic ${
+                      i > 0 ? "mt-7" : ""
+                    }`}
+                  >
+                    {estrofe}
+                  </p>
+                ))}
+              </div>
+            </details>
+          )}
+
+          <p className="mt-14 border-t border-[color-mix(in_oklab,var(--realce)_25%,transparent)] pt-7 text-sm leading-relaxed text-[color-mix(in_oklab,var(--texto)_55%,transparent)]">
+            {o.procedencia}
+            {!o.revisada && " Esta tradução ainda não passou por revisão."}
+          </p>
         </div>
+      </main>
 
-        {o.latim && (
-          <details className="mt-10 group">
-            <summary className="cursor-pointer list-none font-[family-name:var(--font-livro)] text-lg
-              text-[var(--color-ouro)] transition-colors hover:text-[var(--color-ouro-luz)]">
-              Ver o original em latim
-            </summary>
-            <div className="superficie-madeira mt-5 px-7 py-8">
-              {o.latim.map((estrofe, i) => (
-                <p
-                  key={i}
-                  className={`font-[family-name:var(--font-livro)] text-[1.05rem] leading-[1.8] whitespace-pre-line
-                    text-[var(--texto-suave)] italic ${i > 0 ? "mt-6" : ""}`}
-                >
-                  {estrofe}
-                </p>
-              ))}
-            </div>
-          </details>
-        )}
-
-        <p className="mt-12 text-sm leading-relaxed text-[color-mix(in_oklab,var(--color-pergaminho)_48%,transparent)]">
-          {o.procedencia}
-          {!o.revisada && " Esta tradução ainda não passou por revisão."}
-        </p>
-      </div>
-    </main>
+      <Rodape />
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import type { Dia } from "@/content/jornada";
 import { PASSOS, TOTAL_PASSOS, type PassoId } from "@/lib/jornada/passos";
@@ -33,7 +33,6 @@ export function CondutorDoDia({
   const [indice, setIndice] = useState(0);
   const [feitos, setFeitos] = useState<Set<PassoId>>(new Set(passosFeitos));
   const passo = PASSOS[indice];
-  const semMovimento = useReducedMotion();
 
   const [reflexao, setReflexao] = useState(textos.reflexao);
   const [registro, setRegistro] = useState(textos.registro);
@@ -47,9 +46,7 @@ export function CondutorDoDia({
     setIndice(novo);
   }
 
-  const transicao = semMovimento
-    ? { duration: 0 }
-    : { duration: 0.55, ease: [0.22, 0.61, 0.36, 1] as const };
+  const transicao = { duration: 0.55, ease: [0.22, 0.61, 0.36, 1] as const };
 
   return (
     <div className="mx-auto w-full max-w-[64ch]">
@@ -87,9 +84,9 @@ export function CondutorDoDia({
       <AnimatePresence mode="wait">
         <motion.section
           key={passo.id}
-          initial={{ opacity: 0, y: semMovimento ? 0 : 12 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: semMovimento ? 0 : -8 }}
+          exit={{ opacity: 0, y: -8 }}
           transition={transicao}
           className="pt-10"
         >

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Archivo } from "next/font/google";
+import { Movimento } from "@/components/atmosphere/Movimento";
 import "./globals.css";
 
 /* A voz do livro: desenho francês do século XVI, a letra dos devocionários. */
@@ -45,7 +46,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       className={`${ebGaramond.variable} ${archivo.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Movimento>{children}</Movimento>
+      </body>
     </html>
   );
 }

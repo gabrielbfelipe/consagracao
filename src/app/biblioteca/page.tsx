@@ -5,6 +5,9 @@ import { ORACOES } from "@/content/oracoes";
 import { IMAGENS, urlDaImagem } from "@/lib/imagens";
 import { Portico } from "@/components/navegacao/Portico";
 import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
+import { TituloDeSecao } from "@/components/vitrine/TituloDeSecao";
+import { EloDeTexto } from "@/components/vitrine/Botao";
+import { Rodape } from "@/components/vitrine/Rodape";
 import { usuarioAtual } from "@/lib/supabase/servidor";
 
 export const metadata: Metadata = {
@@ -17,92 +20,119 @@ export default async function Biblioteca() {
   const autenticado = Boolean(await usuarioAtual());
 
   return (
-    <div data-sala="estudo" className="min-h-dvh">
-      {/* Quem já tem jornada navega pelas salas; quem não tem, pelo menu
-          de apresentação, que é o que lhe serve. */}
-      {autenticado ? <Portico autenticado /> : <PorticoPublico />}
+    <div className="min-h-dvh">
+      {autenticado ? <Portico autenticado /> : <PorticoPublico sobreImagem />}
 
-      <main className="luz-alta px-6 pb-28 sm:px-10">
-        <header className="mx-auto max-w-[62ch] pt-16 text-center">
-          <h1 className="font-[family-name:var(--font-livro)] text-[clamp(2rem,1.5rem+2.4vw,3.25rem)] leading-tight text-[var(--color-marfim)]">
+      <header
+        data-sala="estudo"
+        className="relative flex min-h-[50svh] items-end overflow-hidden"
+      >
+        <Image
+          src={urlDaImagem("bibliotecaBarroca", { largura: 2000, qualidade: 76 })}
+          alt={IMAGENS.bibliotecaBarroca.alt}
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[linear-gradient(to_top,rgba(8,5,3,0.96)_8%,rgba(8,5,3,0.5)_55%,rgba(8,5,3,0.55))]"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[linear-gradient(to_right,rgba(8,5,3,0.66),transparent_60%)]"
+        />
+
+        <div className="relative w-full px-6 pb-14 sm:px-12 lg:px-20">
+          <p className="font-[family-name:var(--font-livro)] text-[clamp(1.1rem,0.95rem+0.7vw,1.6rem)] text-[var(--color-ouro)] italic">
+            Orações, formação e o livro
+          </p>
+          <h1 className="mt-3 font-[family-name:var(--font-livro)] text-[clamp(2.25rem,1.5rem+3.4vw,4.5rem)] leading-[1.03] text-[var(--color-marfim)] uppercase">
             Biblioteca
           </h1>
-          <div
-            aria-hidden
-            className="mx-auto mt-8 h-px w-24 bg-[linear-gradient(to_right,transparent,var(--color-ouro),transparent)]"
-          />
-          <p className="voz-livro mx-auto mt-8 text-[var(--texto-suave)]">
-            As orações que atravessam os trinta e três dias, e o livro que
-            caminha ao lado desta preparação.
-          </p>
-        </header>
+        </div>
+      </header>
 
-        {/* O livro, primeiro, porque é dele que a jornada depende. */}
-        <section className="mx-auto mt-20 max-w-4xl">
-          <div className="superficie-madeira grid gap-0 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-            <div className="relative min-h-[240px] overflow-hidden">
-              <Image
-                src={urlDaImagem("livroAberto", { largura: 800 })}
-                alt={IMAGENS.livroAberto.alt}
-                fill
-                sizes="(max-width: 40rem) 100vw, 20rem"
-                className="object-cover"
-              />
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-[linear-gradient(to_right,transparent_40%,var(--color-nogueira))] sm:bg-[linear-gradient(to_right,transparent_55%,var(--color-nogueira))]"
-              />
-            </div>
+      {/* O livro, primeiro, porque é dele que a jornada depende. */}
+      <section data-sala="estudo" className="bg-[var(--fundo)]">
+        <div className="grid lg:grid-cols-2">
+          <div className="relative min-h-[40svh] lg:min-h-[64svh]">
+            <Image
+              src={urlDaImagem("livroAberto", { largura: 1400 })}
+              alt={IMAGENS.livroAberto.alt}
+              fill
+              sizes="(max-width: 64rem) 100vw, 50vw"
+              className="object-cover"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-[linear-gradient(to_top,var(--fundo)_3%,transparent_55%)] lg:bg-[linear-gradient(to_right,transparent_50%,var(--fundo))]"
+            />
+          </div>
 
-            <div className="px-8 py-10">
-              <h2 className="font-[family-name:var(--font-livro)] text-2xl leading-snug text-[var(--color-marfim)]">
-                Tratado da Verdadeira Devoção à Santíssima Virgem
-              </h2>
-              <p className="mt-2 font-[family-name:var(--font-livro)] text-lg text-[var(--color-ouro)] italic">
-                São Luís Maria Grignion de Montfort
-              </p>
-              <p className="voz-livro mt-5 text-[0.98rem] text-[var(--texto-suave)]">
+          <div className="flex items-center px-6 py-20 sm:px-12 lg:px-16">
+            <div className="max-w-[50ch]">
+              <TituloDeSecao
+                sobrenome="São Luís Maria Grignion de Montfort"
+                titulo="Tratado da Verdadeira Devoção"
+              />
+
+              <p className="voz-livro mt-8 text-[var(--texto-suave)]">
                 Este é o livro da preparação. Não o reproduzimos aqui, por
                 respeito ao trabalho das editoras e dos tradutores — a cada dia
-                indicamos quais parágrafos ler no seu exemplar.
+                indicamos quais parágrafos ler no seu exemplar, e aqui você
+                anota e marca o que quiser.
               </p>
-              <Link
-                href="/sobre/o-livro"
-                className="mt-7 inline-block font-[family-name:var(--font-livro)] text-base tracking-[0.14em] uppercase
-                  text-[var(--color-ouro)] underline decoration-[color-mix(in_oklab,var(--color-ouro)_45%,transparent)]
-                  underline-offset-[7px] transition-colors hover:text-[var(--color-ouro-luz)]"
-              >
+
+              <EloDeTexto href="/sobre/o-livro" className="mt-8">
                 Como escolher sua edição
-              </Link>
+              </EloDeTexto>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Orações */}
-        <section className="mx-auto mt-24 max-w-4xl">
-          <h2 className="text-center font-[family-name:var(--font-livro)] text-3xl text-[var(--color-marfim)]">
-            Orações
-          </h2>
+      {/* As orações, sobre pedra clara — são para ler. */}
+      <section
+        data-sala="pedra"
+        className="bg-[var(--fundo)] px-6 py-24 sm:px-10 lg:py-32"
+      >
+        <div className="mx-auto max-w-[100rem]">
+          <TituloDeSecao
+            sobrenome="Rezadas ao longo dos trinta e três dias"
+            titulo="As orações da preparação"
+            centrado
+          />
 
-          <ul className="mt-12 space-y-px">
-            {ORACOES.map((o) => (
-              <li key={o.id}>
-                <Link
-                  href={`/biblioteca/${o.id}`}
-                  className="brilho-borda superficie-madeira group block px-7 py-7
-                    transition-[box-shadow] duration-700 ease-[var(--ease-santuario)]
-                    hover:shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ouro)_55%,transparent)]"
-                >
-                  <h3 className="font-[family-name:var(--font-livro)] text-2xl text-[var(--color-marfim)]
-                    transition-colors duration-500 group-hover:text-[var(--color-ouro-luz)]">
+          <ul className="mx-auto mt-16 grid max-w-[76rem] gap-x-12 gap-y-12 md:grid-cols-2">
+            {ORACOES.map((o, i) => (
+              <li key={o.id} className="assenta">
+                <Link href={`/biblioteca/${o.id}`} className="group block h-full">
+                  <div className="flex items-baseline gap-4">
+                    <span
+                      aria-hidden
+                      className="font-[family-name:var(--font-livro)] text-2xl text-[color-mix(in_oklab,var(--realce)_45%,transparent)] tabular-nums"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div
+                      aria-hidden
+                      className="h-px flex-1 bg-[color-mix(in_oklab,var(--realce)_35%,transparent)]"
+                    />
+                  </div>
+
+                  <h3 className="mt-5 font-[family-name:var(--font-livro)] text-[1.7rem] leading-snug text-[var(--texto)] transition-colors duration-500 group-hover:text-[var(--realce)]">
                     {o.nome}
                   </h3>
+
                   {o.origem && (
-                    <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--color-pergaminho)_45%,transparent)]">
+                    <p className="mt-1.5 font-[family-name:var(--font-livro)] text-[var(--realce)] italic">
                       {o.origem}
                     </p>
                   )}
-                  <p className="voz-livro mt-3 text-[0.98rem] text-[var(--texto-suave)]">
+
+                  <p className="voz-livro mt-4 text-[0.98rem] text-[var(--texto-suave)]">
                     {o.proposito}
                   </p>
                 </Link>
@@ -110,13 +140,15 @@ export default async function Biblioteca() {
             ))}
           </ul>
 
-          <p className="mx-auto mt-12 max-w-[60ch] text-center text-sm leading-relaxed text-[color-mix(in_oklab,var(--color-pergaminho)_50%,transparent)]">
+          <p className="mx-auto mt-16 max-w-[62ch] text-center text-sm leading-relaxed text-[color-mix(in_oklab,var(--texto)_55%,transparent)]">
             As traduções ao português são próprias, feitas a partir do latim
-            para este aplicativo, e ainda aguardam revisão. As ladainhas e o
-            Rosário entrarão em seguida.
+            para este aplicativo, e trazem o original ao lado para conferência.
+            Aguardam revisão. As ladainhas e o Rosário entrarão em seguida.
           </p>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      <Rodape />
     </div>
   );
 }
