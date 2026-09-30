@@ -13,6 +13,11 @@ import { IMAGENS, urlDaImagem, type NomeDaImagem } from "@/lib/imagens";
  * O ritmo é calmo, mas não arrastado: cinco a seis segundos por quadro,
  * tirados do próprio texto. Para quem pediu menos movimento, ele
  * simplesmente não anda sozinho.
+ *
+ * Nada além disso o detém. Nem o ponteiro pousado em cima — e ele pousa
+ * quase sempre, porque o hero ocupa a tela inteira —, nem o foco esquecido
+ * num número do índice depois do clique. Quem rola para baixo e volta
+ * encontra a apresentação onde ela chegou, ainda andando.
  */
 
 type Quadro = {
@@ -99,8 +104,16 @@ function duracaoDoQuadro(q: Quadro): number {
 
 export function Hero() {
   const [atual, setAtual] = useState(0);
-  /** Enquanto o ponteiro ou o foco estão aqui, o ciclo espera. */
-  const [visitado, setVisitado] = useState(false);
+  /**
+   * Sobe sempre que a aba volta a ficar visível.
+   *
+   * Em aba escondida o navegador estrangula os temporizadores — depois de
+   * alguns minutos, um por minuto. O ciclo não morre, mas volta devendo:
+   * quem retorna pode encarar um quadro parado por um tempo que não é o
+   * dele. Isto reinicia a contagem do quadro em cena no instante em que a
+   * página reaparece, de modo que ela está sempre andando quando é vista.
+   */
+  const [retomada, setRetomada] = useState(0);
   const semMovimento = useReducedMotion();
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -114,21 +127,25 @@ export function Hero() {
   );
 
   useEffect(() => {
-    if (semMovimento || visitado) return;
+    const aoVoltar = () => {
+      if (document.visibilityState === "visible") setRetomada((n) => n + 1);
+    };
+    document.addEventListener("visibilitychange", aoVoltar);
+    return () => document.removeEventListener("visibilitychange", aoVoltar);
+  }, []);
+
+  useEffect(() => {
+    if (semMovimento) return;
     temporizador.current = setTimeout(avancar, duracao);
     return () => {
       if (temporizador.current) clearTimeout(temporizador.current);
     };
-  }, [atual, visitado, semMovimento, avancar, duracao]);
+  }, [atual, retomada, semMovimento, avancar, duracao]);
 
   return (
     <section
       aria-roledescription="apresentação"
       aria-label="Apresentação do santuário"
-      onMouseEnter={() => setVisitado(true)}
-      onMouseLeave={() => setVisitado(false)}
-      onFocusCapture={() => setVisitado(true)}
-      onBlurCapture={() => setVisitado(false)}
       className="relative flex min-h-[92svh] flex-col justify-center overflow-hidden"
     >
       {/* As fotografias, uma de cada vez, com aproximação quase imperceptível. */}
@@ -273,7 +290,9 @@ export function Hero() {
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
-                  {/* A linha corre enquanto o quadro está no ar. */}
+                  {/* A linha corre enquanto o quadro está no ar. É refeita
+                      junto com a contagem quando a aba volta — senão
+                      chegaria ao fim bem antes de o quadro sair. */}
                   <span
                     aria-hidden
                     className={`relative h-px overflow-hidden transition-all duration-700 ease-[var(--ease-santuario)] ${
@@ -284,13 +303,11 @@ export function Hero() {
                   >
                     {ativo && (
                       <span
-                        key={atual}
-                        data-pausado={visitado || undefined}
+                        key={`${atual}-${retomada}`}
                         style={{ animationDuration: `${duracao}ms` }}
                         className="absolute inset-0 origin-left bg-[var(--color-ouro-luz)]
                           motion-safe:animate-[percorrer_linear_forwards]
-                          motion-reduce:scale-x-100
-                          data-[pausado]:[animation-play-state:paused]"
+                          motion-reduce:scale-x-100"
                       />
                     )}
                   </span>

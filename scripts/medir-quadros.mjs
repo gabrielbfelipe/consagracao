@@ -17,7 +17,15 @@ const QUADROS_ESPERADOS = [
   "Entregue‑se inteiro",
 ];
 
-const navegador = await chromium.launch();
+// Sem isto, um renderizador headless ocioso estrangula os temporizadores e
+// as durações medidas saem maiores do que as reais.
+const navegador = await chromium.launch({
+  args: [
+    "--disable-background-timer-throttling",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-renderer-backgrounding",
+  ],
+});
 const pagina = await navegador.newPage({
   viewport: { width: 1440, height: 860 },
   reducedMotion: "no-preference",
@@ -45,8 +53,8 @@ await pagina.evaluate(() => {
   });
 });
 
-// Deixa o ponteiro longe: sobre o hero, a pausa de cortesia congelaria tudo.
-await pagina.mouse.move(5, 850);
+// O ponteiro pode ficar onde quiser: nada detém o ciclo.
+await pagina.mouse.move(700, 400);
 
 console.log("Observando um ciclo inteiro…\n");
 await pagina.waitForTimeout(30000);
