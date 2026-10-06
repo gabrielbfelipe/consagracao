@@ -190,7 +190,7 @@ export default function Entrada() {
             </ol>
 
             <div className="mt-20 text-center">
-              <Botao href="/entrar">Iniciar preparação</Botao>
+              <Botao href="/cadastro">Iniciar preparação</Botao>
             </div>
           </div>
         </section>
@@ -316,7 +316,7 @@ export default function Entrada() {
             </p>
 
             <div className="mt-12">
-              <Botao href="/entrar">Iniciar preparação</Botao>
+              <Botao href="/cadastro">Iniciar preparação</Botao>
             </div>
           </div>
         </section>

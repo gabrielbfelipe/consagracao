@@ -102,7 +102,7 @@ export function PorticoPublico({
           </Link>
 
           <Link
-            href="/entrar"
+            href="/cadastro"
             className="brilho-borda hidden items-center px-8 py-3
               font-[family-name:var(--font-livro)] text-sm tracking-[0.22em] indent-[0.22em] whitespace-nowrap
               text-[var(--color-marfim)] uppercase
@@ -178,7 +178,7 @@ export function PorticoPublico({
 
             <div className="px-6 pb-16 sm:px-10">
               <Link
-                href="/entrar"
+                href="/cadastro"
                 onClick={() => setAberto(false)}
                 className="brilho-borda flex items-center justify-center px-10 py-4
                   font-[family-name:var(--font-livro)] text-base tracking-[0.28em] indent-[0.28em] uppercase

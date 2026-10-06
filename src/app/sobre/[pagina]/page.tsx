@@ -155,7 +155,7 @@ export default async function Sobre({ params }: Props) {
               depois.
             </p>
             <div className="mt-10">
-              <Botao href="/entrar">Iniciar preparação</Botao>
+              <Botao href="/cadastro">Iniciar preparação</Botao>
             </div>
           </div>
         </section>

@@ -59,6 +59,11 @@ export function Rodape() {
                 </Link>
               </li>
               <li>
+                <Link href="/cadastro" className={ELO}>
+                  Criar conta
+                </Link>
+              </li>
+              <li>
                 <Link href="/entrar" className={ELO}>
                   Entrar
                 </Link>

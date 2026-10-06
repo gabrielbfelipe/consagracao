@@ -238,7 +238,7 @@ export function Hero() {
 
         <div className="mt-11 flex flex-wrap items-center gap-x-9 gap-y-4">
           <Link
-            href="/entrar"
+            href="/cadastro"
             className="brilho-borda group inline-flex items-center px-8 py-3.5 sm:px-11 sm:py-4
               font-[family-name:var(--font-livro)] text-sm tracking-[0.22em] indent-[0.22em] uppercase sm:text-base sm:tracking-[0.28em] sm:indent-[0.28em]
               text-[var(--color-marfim)] shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-marfim)_45%,transparent)]
