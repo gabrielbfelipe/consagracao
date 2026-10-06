@@ -114,24 +114,47 @@ export function CondutorDoDia({
 
             {passo.id === "leia" && (
               <div>
-                {dia.leitura.paragrafos ? (
-                  <div className="superficie-pergaminho px-7 py-7">
-                    <p className="font-[family-name:var(--font-livro)] text-sm tracking-wide text-[#6b4f2e]">
-                      No seu exemplar do Tratado da Verdadeira Devoção
+                {/* Duas leituras possíveis, e nem todo dia tem as duas: os
+                    doze dias preliminares não têm leitura marcada no Tratado,
+                    e a maior parte das três semanas não tem passagem bíblica.
+                    Cada uma aparece só quando existe. */}
+                <div className="space-y-4">
+                  {dia.leitura.paragrafos && (
+                    <div className="superficie-pergaminho px-7 py-7">
+                      <p className="font-[family-name:var(--font-livro)] text-sm tracking-wide text-[#6b4f2e]">
+                        No seu exemplar do Tratado da Verdadeira Devoção
+                      </p>
+                      <p className="mt-2 font-[family-name:var(--font-livro)] text-3xl text-[#2a1d12]">
+                        {dia.leitura.paragrafos}
+                      </p>
+                      <p className="mt-4 text-sm leading-relaxed text-[#4a3524]">
+                        Leia devagar. Quando terminar, volte aqui para a
+                        explicação.
+                      </p>
+                    </div>
+                  )}
+
+                  {dia.leitura.evangelho && (
+                    <div className="superficie-madeira px-7 py-7">
+                      <p className="font-[family-name:var(--font-livro)] text-sm tracking-wide text-[var(--color-ouro)]">
+                        Na Bíblia
+                      </p>
+                      <p className="mt-2 font-[family-name:var(--font-livro)] text-3xl text-[var(--color-marfim)]">
+                        {dia.leitura.evangelho}
+                      </p>
+                      <p className="mt-4 text-sm leading-relaxed text-[var(--texto-suave)]">
+                        Na sua Bíblia, na tradução que você já usa.
+                      </p>
+                    </div>
+                  )}
+
+                  {!dia.leitura.paragrafos && !dia.leitura.evangelho && (
+                    <p className="voz-livro text-[var(--texto-suave)]">
+                      Hoje não há leitura marcada. O dia é de reflexão sobre o
+                      caminho já percorrido.
                     </p>
-                    <p className="mt-2 font-[family-name:var(--font-livro)] text-3xl text-[#2a1d12]">
-                      {dia.leitura.paragrafos}
-                    </p>
-                    <p className="mt-4 text-sm leading-relaxed text-[#4a3524]">
-                      Leia devagar. Quando terminar, volte aqui para a
-                      explicação.
-                    </p>
-                  </div>
-                ) : (
-                  <p className="voz-livro text-[var(--texto-suave)]">
-                    Hoje não há leitura no Tratado.
-                  </p>
-                )}
+                  )}
+                </div>
 
                 <div className="voz-livro mt-9 text-[var(--texto-suave)]">
                   {dia.leitura.comentario.map((p, i) => (
@@ -162,9 +185,21 @@ export function CondutorDoDia({
                 <p className="voz-livro mt-5 text-[var(--texto-suave)]">
                   {dia.oracao.motivo}
                 </p>
-                <p className="mt-8 text-sm text-[var(--texto-suave)]">
-                  O texto completo e o áudio desta oração ficarão na biblioteca.
-                </p>
+                {dia.oracao.id ? (
+                  <Link
+                    href={`/biblioteca/${dia.oracao.id}`}
+                    className="mt-8 inline-block font-[family-name:var(--font-livro)] text-base text-[var(--color-ouro)] underline
+                      decoration-[color-mix(in_oklab,var(--color-ouro)_45%,transparent)] underline-offset-[7px]
+                      transition-colors duration-500 hover:text-[var(--color-ouro-luz)]"
+                  >
+                    Ler o texto completo na biblioteca
+                  </Link>
+                ) : (
+                  <p className="mt-8 text-sm leading-relaxed text-[var(--texto-suave)]">
+                    Esta oração ainda não está na biblioteca. Até lá, reze-a
+                    pelo seu devocionário ou pelo exemplar do Tratado.
+                  </p>
+                )}
               </div>
             )}
 
@@ -291,8 +326,14 @@ function Escrita({
     "parado",
   );
   const tempo = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // A gravação é adiada 900ms, e nesse intervalo a prop pode mudar. Guardá-la
+  // numa ref deixa `agendar` estável sem que o temporizador dispare a versão
+  // velha. A escrita vai num efeito: durante o render o React pode descartar
+  // o resultado, e uma ref escrita num render descartado fica errada.
   const gravarRef = useRef(gravar);
-  gravarRef.current = gravar;
+  useEffect(() => {
+    gravarRef.current = gravar;
+  }, [gravar]);
 
   const agendar = useCallback((texto: string) => {
     if (tempo.current) clearTimeout(tempo.current);

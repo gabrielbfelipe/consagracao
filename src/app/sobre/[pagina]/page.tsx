@@ -1,9 +1,9 @@
 import Image from "next/image";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PAGINAS, paginaPorSlug, proximaPagina } from "@/content/sobre";
 import { IMAGENS, urlDaImagem } from "@/lib/imagens";
-import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
 import { Botao, EloDeTexto } from "@/components/vitrine/Botao";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
@@ -31,7 +31,7 @@ export default async function Sobre({ params }: Props) {
   return (
     <Passagem>
       <div className="min-h-dvh">
-        <PorticoPublico sobreImagem />
+        <PorticoDaSala sobreImagem />
 
         {/* A fachada: fotografia em tela larga com o título sobreposto. */}
         <header

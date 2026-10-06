@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { aceitarEContinuar, type EstadoAcolhida } from "@/app/conta/acoes";
+import { useFusoDoAparelho } from "@/lib/conta/fusoDoAparelho";
 
 /**
  * A primeira conversa com quem acabou de entrar.
@@ -20,15 +21,13 @@ export function Acolhida({ emailDaConta }: { emailDaConta: string }) {
 
   // O fuso do aparelho é uma sugestão, não uma imposição: fica visível e
   // editável, porque quem viaja ou mora fora precisa poder corrigir.
-  const [fuso, setFuso] = useState("America/Sao_Paulo");
-  useEffect(() => {
-    try {
-      const detectado = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (detectado) setFuso(detectado);
-    } catch {
-      // Sem detecção, fica o padrão brasileiro.
-    }
-  }, []);
+  //
+  // O que a pessoa digita vive à parte do que o aparelho informou. Guardar
+  // os dois separados evita escrever por cima do detectado num efeito — que
+  // é render em cascata — e faz "campo intocado" significar exatamente isso.
+  const detectado = useFusoDoAparelho();
+  const [escolhido, setEscolhido] = useState<string | null>(null);
+  const fuso = escolhido ?? detectado;
 
   return (
     <form action={acao} className="mx-auto w-full max-w-[52ch] text-left">
@@ -61,7 +60,7 @@ export function Acolhida({ emailDaConta }: { emailDaConta: string }) {
           type="text"
           name="fuso"
           value={fuso}
-          onChange={(e) => setFuso(e.target.value)}
+          onChange={(e) => setEscolhido(e.target.value)}
           className="superficie-vidro mt-3 block w-full px-5 py-3.5
             font-[family-name:var(--font-interface)] text-base text-[var(--color-marfim)]
             focus:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--color-ouro)]"

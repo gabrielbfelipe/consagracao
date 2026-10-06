@@ -40,18 +40,34 @@ Next.js 16 (App Router) · TypeScript · Tailwind v4 · Supabase (Postgres com R
 
 ### Entrada sem verificação de e-mail — provisório
 
-A conta é criada com e-mail e senha, e nasce com o endereço já dado por
-confirmado, para que ninguém espere mensagem nenhuma. **Isso é temporário.**
+A conta nasce em `/cadastro`, com o endereço já dado por confirmado, para que
+ninguém espere mensagem nenhuma. **Isso é temporário.**
 
 Sem verificação, nada impede alguém de se cadastrar com um e-mail que não é
 seu; quem controla a conta é quem escolheu a senha. Antes de abrir ao público,
-volte a exigir confirmação — basta trocar `src/app/entrar/acoes.ts` pelo envio
-de link, que o resto do sistema não muda.
+volte a exigir confirmação — basta trocar `src/app/cadastro/acoes.ts` pelo
+envio de link, que o resto do sistema não muda.
 
-A ordem das tentativas nessa ação é deliberada: cria-se primeiro e só então se
-entra. Se o e-mail já existe, a criação falha e a senha de quem já tinha conta
-permanece intacta. O inverso permitiria sobrescrever a senha alheia, e
-`npm run verificar:entrada` existe para provar que isso não acontece.
+O que a falta de verificação torna crítico é que cadastrar-se com um e-mail já
+usado **não** troque a senha de quem o tem: seria a tomada de conta alheia mais
+barata possível. `npm run verificar:cadastro` prova que não acontece, junto com
+o resto do fluxo.
+
+### A sessão não sobrevive ao navegador
+
+Entrar é um gesto feito a cada visita; não há "continuar conectado". São duas
+travas, porque uma só não basta. Os cookies do Supabase perdem a validade e
+viram cookies de sessão, que o navegador descarta ao fechar. E, porque
+navegador configurado para restaurar a sessão devolveria esses cookies, o
+`src/proxy.ts` carimba o início da sessão à parte e recusa qualquer uma com
+mais de doze horas — trava de servidor, que nenhuma configuração do navegador
+contorna. Tudo isto mora em `src/lib/supabase/sessao.ts`.
+
+### Quem está dentro fica dentro
+
+Uma vez autenticada, a pessoa só volta à vitrine clicando em "Sair". As salas
+públicas trocam de pórtico sozinhas (`PorticoDaSala`), e o proxy devolve `/`,
+`/entrar` e `/cadastro` para `/caminho` enquanto houver sessão.
 
 ### Decisões que valem saber
 

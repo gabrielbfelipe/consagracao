@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { clienteServidor, usuarioAtual } from "@/lib/supabase/servidor";
+import { COOKIE_ABERTURA } from "@/lib/supabase/sessao";
 
 export type EstadoAcolhida =
   | { situacao: "inicial" }
@@ -79,12 +81,18 @@ export async function apagarTudo() {
     .eq("id", usuario.id);
 
   await supabase.auth.signOut();
+  (await cookies()).delete(COOKIE_ABERTURA);
   redirect("/");
 }
 
+/**
+ * Sai da conta. É o único caminho de volta à vitrine: enquanto houver
+ * sessão, o proxy mantém quem está dentro, dentro.
+ */
 export async function sair() {
   const supabase = await clienteServidor();
   await supabase.auth.signOut();
+  (await cookies()).delete(COOKIE_ABERTURA);
   redirect("/");
 }
 

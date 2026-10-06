@@ -8,22 +8,26 @@ import { usuarioAtual } from "@/lib/supabase/servidor";
 import { Passagem } from "@/components/atmosphere/Passagem";
 
 export const metadata: Metadata = {
-  title: "Iniciar preparação",
-  description: "Crie sua conta e escolha a data da sua consagração.",
+  title: "Entrar",
+  description: "Entre na sua conta para continuar a preparação.",
 };
 
 const PASSOS = [
-  { n: "Primeiro", t: "Sua conta", d: "E-mail e senha. Entra na hora." },
-  { n: "Depois", t: "A data", d: "A festa em que deseja se consagrar." },
-  { n: "Então", t: "O caminho", d: "No dia certo, a jornada se abre." },
+  {
+    n: "Primeiro",
+    t: "Sua conta",
+    d: "Nome, e-mail e senha. Entra na hora, sem confirmação por e-mail.",
+  },
+  { n: "Depois", t: "A data", d: "A festa de Nossa Senhora em que deseja se consagrar." },
+  { n: "Então", t: "O caminho", d: "No dia certo, a jornada se abre sozinha." },
 ] as const;
 
 export default async function Entrar({
   searchParams,
 }: {
-  searchParams: Promise<{ destino?: string }>;
+  searchParams: Promise<{ destino?: string; expirou?: string }>;
 }) {
-  const { destino } = await searchParams;
+  const { destino, expirou } = await searchParams;
 
   if (await usuarioAtual()) redirect("/caminho");
 
@@ -64,11 +68,11 @@ export default async function Entrar({
           >
             <div className="mx-auto w-full max-w-[42ch]">
               <p className="font-[family-name:var(--font-livro)] text-[clamp(1.1rem,0.95rem+0.6vw,1.5rem)] text-[var(--realce)] italic">
-                Em um minuto
+                Bem-vindo de volta
               </p>
 
               <h1 className="mt-3 font-[family-name:var(--font-livro)] text-[clamp(2rem,1.5rem+2vw,3rem)] leading-[1.06] text-[var(--texto)] uppercase">
-                Iniciar preparação
+                Entrar
               </h1>
 
               <div
@@ -76,11 +80,18 @@ export default async function Entrar({
                 className="mt-7 h-px w-20 bg-[linear-gradient(to_right,var(--realce),transparent)]"
               />
 
-              <p className="voz-livro mt-8 text-[var(--texto-suave)]">
-                Informe seu e-mail e escolha uma senha. Se ainda não tem conta,
-                ela é criada na hora e você entra direto — não há e-mail de
-                confirmação a esperar.
-              </p>
+              {expirou ? (
+                <p className="voz-livro mt-8 border-l-2 border-[var(--realce)] pl-5 text-[var(--texto)]">
+                  Sua sessão foi encerrada. Por aqui a entrada não fica
+                  guardada: cada visita começa com você dizendo quem é.
+                </p>
+              ) : (
+                <p className="voz-livro mt-8 text-[var(--texto-suave)]">
+                  Informe o e-mail e a senha da sua conta. A entrada não fica
+                  guardada de uma visita para a outra — é pedida de novo a cada
+                  vez, de propósito.
+                </p>
+              )}
 
               <FormularioEntrada destino={destino ?? "/caminho"} />
 

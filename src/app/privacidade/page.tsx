@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
 
@@ -76,7 +76,7 @@ export default function Privacidade() {
   return (
     <Passagem>
       <div className="min-h-dvh">
-        <PorticoPublico />
+        <PorticoDaSala />
 
         <main data-sala="pedra" className="bg-[var(--fundo)]">
           <article className="mx-auto max-w-[66ch] px-6 py-20 sm:px-10 lg:py-28">

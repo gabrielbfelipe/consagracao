@@ -16,7 +16,14 @@ const SALAS = [
   { href: "/calendario", nome: "Calendário" },
 ] as const;
 
-export function Portico({ autenticado }: { autenticado: boolean }) {
+export function Portico({
+  autenticado,
+  saudacao,
+}: {
+  autenticado: boolean;
+  /** "Boa tarde, Gabriel". Aparece em todas as salas internas. */
+  saudacao?: string;
+}) {
   return (
     <header className="relative z-20 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 px-6 py-5 sm:px-10">
       <nav
@@ -38,6 +45,14 @@ export function Portico({ autenticado }: { autenticado: boolean }) {
       </nav>
 
       <div className="flex items-center gap-7">
+        {/* A saudação some antes dos links quando a tela aperta: é a parte
+            mais gentil e a menos necessária da faixa. */}
+        {saudacao && (
+          <p className="hidden font-[family-name:var(--font-livro)] text-[0.95rem] text-[color-mix(in_oklab,var(--texto)_62%,transparent)] lg:block">
+            {saudacao}
+          </p>
+        )}
+
         <Link
           href="/oracao"
           className="font-[family-name:var(--font-livro)] text-[0.9rem] tracking-[0.14em]

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Colunata } from "@/components/jornada/Colunata";
-import { Portico } from "@/components/navegacao/Portico";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { TOTAL_DIAS, etapaDoDia } from "@/lib/jornada/etapas";
 import {
   diaCorrente,
@@ -43,7 +43,7 @@ function Moldura({
 }) {
   return (
     <div data-sala={sala} className="flex min-h-dvh flex-col">
-      <Portico autenticado />
+      <PorticoDaSala />
       <main className="luz-alta flex flex-1 flex-col justify-center px-6 py-16 sm:px-10">
         <div className="mx-auto w-full max-w-4xl text-center">{children}</div>
       </main>

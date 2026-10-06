@@ -44,3 +44,8 @@ next-env.d.ts
 
 # retratos de tela, material de trabalho
 .retratos/
+
+# O Tratado em PDF. Serve de fonte para montar o roteiro dos 33 dias e
+# conferir os parágrafos, e NUNCA pode ser versionado: a tradução tem dono,
+# e este repositório é público.
+*.pdf

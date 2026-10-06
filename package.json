@@ -11,7 +11,7 @@
     "test:watch": "vitest",
     "migrar": "node --env-file=.env.local scripts/migrar.mjs",
     "verificar:rls": "node --env-file=.env.local scripts/verificar-rls.mjs",
-    "verificar:entrada": "node --env-file=.env.local scripts/verificar-entrada.mjs",
+    "verificar:cadastro": "node --env-file=.env.local scripts/verificar-cadastro.mjs",
     "publicar": "node --env-file=.env.local scripts/publicar.mjs"
   },
   "dependencies": {

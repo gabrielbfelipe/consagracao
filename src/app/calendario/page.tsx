@@ -1,11 +1,9 @@
 import Link from "next/link";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import type { Metadata } from "next";
 import { FESTAS } from "@/lib/agenda/festas";
 import { opcoesDeData } from "@/lib/agenda/cronograma";
 import { diaEMes, hojeEm, porExtenso } from "@/lib/agenda/dataSimples";
-import { Portico } from "@/components/navegacao/Portico";
-import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
-import { usuarioAtual } from "@/lib/supabase/servidor";
 import { Passagem } from "@/components/atmosphere/Passagem";
 
 export const metadata: Metadata = {
@@ -23,7 +21,6 @@ const GRAU: Record<string, string> = {
 };
 
 export default async function Calendario() {
-  const autenticado = Boolean(await usuarioAtual());
 
   // Enquanto não há perfil, o calendário fala a partir do Brasil.
   const hoje = hojeEm("America/Sao_Paulo");
@@ -32,7 +29,7 @@ export default async function Calendario() {
   return (
     <Passagem>
       <div data-sala="manuscrito" className="min-h-dvh">
-        {autenticado ? <Portico autenticado /> : <PorticoPublico />}
+        <PorticoDaSala />
 
         <main className="luz-alta px-6 pt-10 pb-24 sm:px-10 lg:px-16">
           <header className="mx-auto max-w-[62ch] text-center">

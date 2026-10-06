@@ -1,8 +1,8 @@
 import Link from "next/link";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ORACOES, oracaoPorId } from "@/content/oracoes";
-import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
 
@@ -26,7 +26,7 @@ export default async function PaginaDaOracao({ params }: Props) {
   return (
     <Passagem>
       <div className="min-h-dvh">
-        <PorticoPublico />
+        <PorticoDaSala />
 
         {/* Uma oração se reza sobre papel claro, não no escuro. */}
         <main data-sala="pedra" className="bg-[var(--fundo)]">

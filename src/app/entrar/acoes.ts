@@ -1,32 +1,38 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { clienteServidor } from "@/lib/supabase/servidor";
-import { clienteAdmin } from "@/lib/supabase/admin";
+import {
+  clienteServidor,
+  marcarAberturaDaSessao,
+} from "@/lib/supabase/servidor";
 
 export type EstadoEntrada =
   | { situacao: "inicial" }
-  | { situacao: "erro"; mensagem: string };
-
-const SENHA_MINIMA = 8;
+  | {
+      situacao: "erro";
+      mensagem: string;
+      /** O e-mail digitado volta: errar a senha não deve custar o endereço. */
+      email: string;
+      /** Sobe a cada recusa, e serve de chave para reaplicar o padrão. */
+      tentativa: number;
+    };
 
 /**
- * Entra na conta, criando-a se ainda não existir.
+ * Entra numa conta que já existe. Nada mais.
  *
- * POR ENQUANTO SEM VERIFICAÇÃO DE E-MAIL. A conta nasce com o endereço já
- * dado por confirmado, de modo que ninguém precisa esperar mensagem alguma.
+ * Esta tela já criou contas sozinha, quando o e-mail não era encontrado.
+ * Era cômodo e estava errado por dois motivos: um erro de digitação no
+ * endereço abria uma conta nova e vazia em vez de avisar, e a pessoa que
+ * fosse cadastrar-se nunca chegava a responder as perguntas do cadastro.
+ * Criar conta agora é um gesto próprio, em /cadastro.
  *
- * O preço disso é real: sem verificação, nada impede alguém de se cadastrar
- * com um e-mail que não é seu. Quem controla a conta é quem escolheu a
- * senha. Para voltar a exigir confirmação, basta trocar este arquivo pelo
- * envio de link — o resto do sistema não muda.
- *
- * A ordem das tentativas importa. Criamos primeiro: se o e-mail já existe, a
- * criação falha e a senha de quem já tem conta permanece intacta. Só então
- * tentamos entrar. O contrário permitiria sobrescrever a senha alheia.
+ * A mensagem de falha não distingue "não existe" de "senha errada": dizer
+ * qual dos dois foi entrega a quem tenta adivinhar a informação de que um
+ * e-mail está ou não cadastrado aqui — e, neste sistema, isso é dizer algo
+ * sobre a fé de alguém.
  */
-export async function entrarOuCriar(
-  _anterior: EstadoEntrada,
+export async function entrar(
+  anterior: EstadoEntrada,
   dados: FormData,
 ): Promise<EstadoEntrada> {
   const email = String(dados.get("email") ?? "")
@@ -35,51 +41,30 @@ export async function entrarOuCriar(
   const senha = String(dados.get("senha") ?? "");
   const destinoPedido = String(dados.get("destino") ?? "/caminho");
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return { situacao: "erro", mensagem: "Confira o endereço de e-mail." };
-  }
-
-  if (senha.length < SENHA_MINIMA) {
-    return {
-      situacao: "erro",
-      mensagem: `A senha precisa ter ao menos ${SENHA_MINIMA} caracteres.`,
-    };
-  }
-
-  const admin = clienteAdmin();
-  const { error: erroCriacao } = await admin.auth.admin.createUser({
+  const tentativa = anterior.situacao === "erro" ? anterior.tentativa + 1 : 1;
+  const recusar = (mensagem: string): EstadoEntrada => ({
+    situacao: "erro",
+    mensagem,
     email,
-    password: senha,
-    email_confirm: true,
+    tentativa,
   });
 
-  const jaExistia =
-    erroCriacao !== null &&
-    (erroCriacao.code === "email_exists" ||
-      erroCriacao.status === 422 ||
-      /already/i.test(erroCriacao.message));
-
-  if (erroCriacao && !jaExistia) {
-    return {
-      situacao: "erro",
-      mensagem: "Não foi possível criar a conta agora. Tente novamente.",
-    };
+  if (!email || !senha) {
+    return recusar("Informe o e-mail e a senha.");
   }
 
   const supabase = await clienteServidor();
-  const { error: erroEntrada } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
     password: senha,
   });
 
-  if (erroEntrada) {
-    return {
-      situacao: "erro",
-      mensagem: jaExistia
-        ? "Já existe uma conta com este e-mail, e a senha não confere."
-        : "Não foi possível entrar agora. Tente novamente.",
-    };
+  if (error) {
+    return recusar("E-mail ou senha não conferem. Confira e tente de novo.");
   }
+
+  // O relógio da sessão começa a contar agora. Ver lib/supabase/sessao.ts.
+  await marcarAberturaDaSessao();
 
   // Quem ainda não consentiu passa pela acolhida; nada é guardado antes.
   const { data: perfil } = await supabase

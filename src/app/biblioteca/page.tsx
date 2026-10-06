@@ -1,14 +1,12 @@
 import Link from "next/link";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { ORACOES } from "@/content/oracoes";
 import { IMAGENS, urlDaImagem } from "@/lib/imagens";
-import { Portico } from "@/components/navegacao/Portico";
-import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
 import { TituloDeSecao } from "@/components/vitrine/TituloDeSecao";
 import { EloDeTexto } from "@/components/vitrine/Botao";
 import { Rodape } from "@/components/vitrine/Rodape";
-import { usuarioAtual } from "@/lib/supabase/servidor";
 import { Passagem } from "@/components/atmosphere/Passagem";
 
 export const metadata: Metadata = {
@@ -18,12 +16,11 @@ export const metadata: Metadata = {
 };
 
 export default async function Biblioteca() {
-  const autenticado = Boolean(await usuarioAtual());
 
   return (
     <Passagem>
       <div className="min-h-dvh">
-        {autenticado ? <Portico autenticado /> : <PorticoPublico sobreImagem />}
+        <PorticoDaSala />
 
         <header
           data-sala="estudo"

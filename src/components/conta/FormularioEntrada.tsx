@@ -2,21 +2,32 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { entrarOuCriar, type EstadoEntrada } from "@/app/entrar/acoes";
+import Link from "next/link";
+import { entrar, type EstadoEntrada } from "@/app/entrar/acoes";
 
 /**
- * E-mail e senha. Um único formulário cria a conta ou entra na que já existe,
- * porque para a pessoa é o mesmo gesto e não faz sentido perguntar antes.
+ * E-mail e senha, e só. Criar conta é outro gesto, em /cadastro: aqui um
+ * endereço digitado errado tem de dar erro, e não abrir uma conta nova e
+ * vazia sem a pessoa perceber.
  *
  * As cores vêm da sala, e não de valores fixos: o mesmo formulário aparece
  * sobre pedra clara e sobre madeira escura.
  */
 export function FormularioEntrada({ destino }: { destino: string }) {
-  const [estado, acao] = useActionState<EstadoEntrada, FormData>(
-    entrarOuCriar,
-    { situacao: "inicial" },
-  );
+  const [estado, acao] = useActionState<EstadoEntrada, FormData>(entrar, {
+    situacao: "inicial",
+  });
   const [mostrarSenha, setMostrarSenha] = useState(false);
+
+  // O React limpa os campos depois de uma ação de formulário. Sem isto,
+  // errar a senha apagava também o e-mail já digitado.
+  //
+  // A chave vai no CAMPO, nunca no <form>. Remontar o formulário inteiro
+  // deixa o useFormStatus do botão presa em "enviando", e o botão nunca mais
+  // reabilita — o segundo envio simplesmente não acontece. Trocar a chave só
+  // do campo reaplica o valor padrão e deixa o formulário de pé.
+  const email = estado.situacao === "erro" ? estado.email : "";
+  const tentativa = estado.situacao === "erro" ? estado.tentativa : 0;
 
   return (
     <form action={acao} className="mt-10 w-full text-left">
@@ -27,10 +38,12 @@ export function FormularioEntrada({ destino }: { destino: string }) {
           Seu e-mail
         </span>
         <input
+          key={`email-${tentativa}`}
           type="email"
           name="email"
           required
           autoComplete="email"
+          defaultValue={email}
           placeholder="nome@exemplo.com"
           className={`${CAMPO} mt-2`}
         />
@@ -41,7 +54,7 @@ export function FormularioEntrada({ destino }: { destino: string }) {
           Sua senha
         </span>
         <span className="mt-0.5 block text-sm text-[color-mix(in_oklab,var(--texto)_58%,transparent)]">
-          Ao menos oito caracteres. Se já tem conta, use a mesma de sempre.
+          A que você escolheu ao criar a conta.
         </span>
         <input
           type={mostrarSenha ? "text" : "password"}
@@ -73,6 +86,16 @@ export function FormularioEntrada({ destino }: { destino: string }) {
       )}
 
       <Continuar />
+
+      <p className="mt-7 text-center text-sm text-[var(--texto-suave)]">
+        Ainda não tem conta?{" "}
+        <Link
+          href="/cadastro"
+          className="underline decoration-[color-mix(in_oklab,var(--realce)_50%,transparent)] underline-offset-[5px] transition-colors hover:text-[var(--realce)]"
+        >
+          Criar a minha agora
+        </Link>
+      </p>
     </form>
   );
 }

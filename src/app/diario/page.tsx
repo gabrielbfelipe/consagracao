@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Portico } from "@/components/navegacao/Portico";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { jornadaAtual } from "@/lib/jornada/repositorio";
 import { clienteServidor } from "@/lib/supabase/servidor";
 import { etapaDoDia } from "@/lib/jornada/etapas";
@@ -50,7 +50,7 @@ export default async function Diario() {
 
   return (
     <div data-sala="estudo" className="min-h-dvh">
-      <Portico autenticado />
+      <PorticoDaSala />
 
       <main className="luz-alta px-6 pb-28 sm:px-10">
         <header className="mx-auto max-w-[62ch] pt-16 text-center">

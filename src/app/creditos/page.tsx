@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import type { Metadata } from "next";
 import {
   CREDITOS,
@@ -6,7 +7,6 @@ import {
   urlDaImagem,
   type NomeDaImagem,
 } from "@/lib/imagens";
-import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
 
@@ -21,7 +21,7 @@ export default function Creditos() {
   return (
     <Passagem>
       <div className="min-h-dvh">
-        <PorticoPublico />
+        <PorticoDaSala />
 
         <main data-sala="pedra" className="bg-[var(--fundo)]">
           <div className="mx-auto max-w-[100rem] px-6 py-20 sm:px-10 lg:py-28">
