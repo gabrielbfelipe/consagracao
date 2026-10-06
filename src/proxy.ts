@@ -30,6 +30,37 @@ const PORTAS = ["/", "/entrar", "/cadastro"];
 
 export async function proxy(requisicao: NextRequest) {
   let resposta = NextResponse.next({ request: requisicao });
+  const caminho = requisicao.nextUrl.pathname;
+
+  // A trava de duração, decidida só pelos cookies e ANTES de falar com o
+  // Supabase. Ver lib/supabase/sessao.ts.
+  //
+  // A ordem importa, e custou uma medição para descobrir. Uma navegação
+  // dispara mais de um pedido ao mesmo tempo para a mesma rota. Se a decisão
+  // dependesse de getUser(), o primeiro pedido encerraria a sessão e o
+  // segundo — já com o token invalidado — cairia no ramo de página
+  // reservada, mandando a pessoa para a entrada sem dizer por quê. Qual dos
+  // dois vencia a corrida era sorte. Olhando só para os cookies, que os dois
+  // pedidos ainda carregam iguais, os dois tomam o mesmo caminho.
+  const temToken = requisicao.cookies
+    .getAll()
+    .some((c) => c.name.startsWith("sb-"));
+
+  if (temToken && expirou(requisicao.cookies.get(COOKIE_ABERTURA)?.value)) {
+    const entrar = requisicao.nextUrl.clone();
+    entrar.pathname = "/entrar";
+    entrar.search = "";
+    entrar.searchParams.set("expirou", "1");
+    if (!PORTAS.includes(caminho)) entrar.searchParams.set("destino", caminho);
+
+    const saida = NextResponse.redirect(entrar);
+    for (const { name } of requisicao.cookies.getAll()) {
+      if (name.startsWith("sb-") || name === COOKIE_ABERTURA) {
+        saida.cookies.delete(name);
+      }
+    }
+    return saida;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -56,30 +87,6 @@ export async function proxy(requisicao: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const caminho = requisicao.nextUrl.pathname;
-
-  // A trava de duração, que o navegador não contorna. Sessão sem carimbo ou
-  // velha demais é encerrada aqui mesmo, antes de qualquer página responder.
-  if (user && expirou(requisicao.cookies.get(COOKIE_ABERTURA)?.value)) {
-    await supabase.auth.signOut();
-
-    const entrar = requisicao.nextUrl.clone();
-    entrar.pathname = "/entrar";
-    entrar.search = "";
-    entrar.searchParams.set("expirou", "1");
-    if (caminho !== "/" && !PORTAS.includes(caminho)) {
-      entrar.searchParams.set("destino", caminho);
-    }
-
-    const saida = NextResponse.redirect(entrar);
-    for (const { name } of requisicao.cookies.getAll()) {
-      if (name.startsWith("sb-") || name === COOKIE_ABERTURA) {
-        saida.cookies.delete(name);
-      }
-    }
-    return saida;
-  }
 
   const reservada = RESERVADAS.some(
     (r) => caminho === r || caminho.startsWith(`${r}/`),

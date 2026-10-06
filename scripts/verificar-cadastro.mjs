@@ -302,9 +302,19 @@ try {
   // Esperar doze horas não é opção: envelhece-se o carimbo. É justamente
   // este o caso que o cookie de sessão sozinho não cobre — navegador que
   // restaura a sessão ao reabrir devolveria o token com o carimbo antigo.
+  // Espera a navegação assentar antes de mexer nos cookies: envelhecer o
+  // carimbo no meio de uma troca de página faz o pedido seguinte chegar sem
+  // a sessão inteira, e aí quem responde é a trava de página reservada, não
+  // a de duração — a prova passaria a medir outra coisa.
+  await p2.waitForLoadState("networkidle");
   const agora = await ctx2.cookies();
   const carimbo = agora.find((c) => c.name === "sessao_aberta_em");
   prova("a sessão leva carimbo de abertura", Boolean(carimbo));
+  prova(
+    "e o token da sessão está no lugar",
+    agora.some((c) => c.name.startsWith("sb-")),
+    agora.map((c) => c.name).join(" "),
+  );
 
   await ctx2.addCookies([
     {
