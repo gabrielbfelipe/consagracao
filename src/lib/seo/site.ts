@@ -76,6 +76,31 @@ export const PALAVRAS_CHAVE = [
   "calendário mariano",
 ];
 
+/**
+ * O código de verificação do Google Search Console.
+ *
+ * COMO OBTER
+ * No Search Console, ao acrescentar a propriedade, escolha "Prefixo do URL",
+ * depois o método "Tag HTML". Ele mostra uma linha assim:
+ *
+ *   <meta name="google-site-verification" content="AbC-123..." />
+ *
+ * Cole aqui **só o valor do content**, sem a tag à volta. A partir daí a
+ * meta aparece no <head> de todas as páginas e o botão "Verificar" funciona.
+ *
+ * Fica escrito no código, e não numa variável de ambiente, pela mesma razão
+ * do código do AdSense: não é segredo — sai no HTML, à vista de qualquer um
+ * que abra o código-fonte — e assim não há como esquecer de o configurar na
+ * Vercel e descobrir semanas depois que a verificação nunca passou.
+ *
+ * Vazio, nenhuma meta é emitida. Não se põe uma tag de verificação com valor
+ * inventado: o Google trata isso como tentativa de verificação falhada.
+ *
+ * ATENÇÃO: depois de verificado, não apague isto. O Google revalida de tempos
+ * a tempos, e a propriedade perde a verificação se a tag sumir.
+ */
+export const VERIFICACAO_GOOGLE = "";
+
 /** Transforma "/cadeias" em "https://.../cadeias". */
 export function urlAbsoluta(caminho: string): string {
   if (caminho === "/" || caminho === "") return `${SITE_URL}/`;

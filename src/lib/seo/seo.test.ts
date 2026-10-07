@@ -11,6 +11,7 @@ import {
   DESCRICAO_HOME,
   SITE_URL,
   TITULO_HOME,
+  VERIFICACAO_GOOGLE,
   urlAbsoluta,
 } from "@/lib/seo/site";
 
@@ -262,5 +263,27 @@ describe("o cartão de partilha", () => {
       tipo: "article",
     });
     expect(artigo.openGraph).toMatchObject({ type: "article" });
+  });
+});
+
+describe("a verificação do Search Console", () => {
+  /**
+   * O erro provável aqui não é esquecer: é colar a linha inteira que o
+   * Google mostra — `<meta name="..." content="..." />` — em vez de só o
+   * valor. O Next emitiria então uma meta com uma tag dentro de uma tag, a
+   * verificação falharia, e a mensagem do Google ("não encontramos a tag")
+   * mandaria procurar no lugar errado.
+   */
+  it("é só o valor, nunca a linha inteira", () => {
+    expect(VERIFICACAO_GOOGLE).not.toContain("<");
+    expect(VERIFICACAO_GOOGLE).not.toContain("content=");
+    expect(VERIFICACAO_GOOGLE).not.toContain("google-site-verification");
+  });
+
+  it("ou está vazio, ou tem a forma de um código do Google", () => {
+    // Vazio é um estado legítimo: não se emite uma tag de verificação com
+    // valor inventado, que o Google conta como tentativa falhada.
+    if (VERIFICACAO_GOOGLE === "") return;
+    expect(VERIFICACAO_GOOGLE).toMatch(/^[A-Za-z0-9_-]{30,100}$/);
   });
 });

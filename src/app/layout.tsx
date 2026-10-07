@@ -10,6 +10,7 @@ import {
   SITE_NOME,
   SITE_URL,
   TITULO_HOME,
+  VERIFICACAO_GOOGLE,
 } from "@/lib/seo/site";
 import "./globals.css";
 
@@ -95,6 +96,12 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   manifest: "/manifest.webmanifest",
+  // A meta de verificação do Search Console, quando houver código. Espalhada
+  // por todas as páginas de propósito: o Google verifica pelo endereço que
+  // você registar, e assim qualquer um deles serve.
+  ...(VERIFICACAO_GOOGLE
+    ? { verification: { google: VERIFICACAO_GOOGLE } }
+    : {}),
 };
 
 export const viewport: Viewport = {
