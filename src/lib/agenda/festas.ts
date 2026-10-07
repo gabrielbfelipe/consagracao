@@ -1,10 +1,4 @@
-import {
-  criarData,
-  hojeEm,
-  somarDias,
-  type DataSimples,
-} from "./dataSimples";
-import { MODO_ENSAIO } from "@/lib/ensaio/modo";
+import { criarData, type DataSimples } from "./dataSimples";
 
 /**
  * As celebrações marianas em que a consagração pode ser feita.
@@ -38,10 +32,7 @@ export type FestaId =
   | "apresentacao-de-maria"
   | "nossa-senhora-das-gracas"
   | "imaculada-conceicao"
-  | "nossa-senhora-de-guadalupe"
-  // Não é festa de Nossa Senhora: é a data de ensaio, que só existe com
-  // NEXT_PUBLIC_MODO_ENSAIO=1. Ver lib/ensaio/modo.ts.
-  | "dia-de-ensaio";
+  | "nossa-senhora-de-guadalupe";
 
 /** Grau litúrgico, quando a celebração tem um no calendário romano. */
 export type Grau = "solenidade" | "festa" | "memoria" | "memoria-facultativa" | "devocao";
@@ -60,12 +51,6 @@ export type Festa = {
   sobre: string;
   /** O que pesa na decisão: padroeira, feriado, ligação com Montfort. */
   nota?: string;
-  /**
-   * Verdadeiro só na data de ensaio, que não é celebração nenhuma e serve
-   * para percorrer o sistema. Fica fora da lista quando o modo está
-   * desligado, e a sua data é sempre daqui a trinta e três dias.
-   */
-  ensaio?: true;
 };
 
 export const FESTAS: readonly Festa[] = [
@@ -317,36 +302,7 @@ export const FESTAS: readonly Festa[] = [
     nota: "Padroeira da América Latina.",
   },
 
-  /* ----------------------------------------------------------------------
-     A data de ensaio. Não é celebração nenhuma, e por isso vem depois das
-     vinte e quatro, separada. Só aparece com NEXT_PUBLIC_MODO_ENSAIO=1.
-     ---------------------------------------------------------------------- */
-  {
-    id: "dia-de-ensaio",
-    ensaio: true,
-    nome: "Dia de ensaio",
-    // Ignorados: a data desta entrada é sempre hoje mais trinta e três.
-    mes: 1,
-    dia: 1,
-    grau: "devocao",
-    resumo: "Para percorrer o sistema sem esperar trinta e três dias.",
-    sobre:
-      "Esta não é uma festa de Nossa Senhora, e não serve para a consagração. É uma data de ensaio: a preparação começa hoje, e os controles de ensaio permitem andar de dia em dia até o fim para conferir o funcionamento do sistema.",
-    nota: "Visível apenas com o modo de ensaio ligado.",
-  },
 ] as const;
-
-/**
- * As vinte e quatro celebrações marianas, sem a data de ensaio.
- *
- * É esta a lista que o calendário mostra quando o modo de ensaio está
- * desligado — o padrão. A regra continua inteira: só se consagra numa festa
- * de Nossa Senhora.
- */
-export const FESTAS_REAIS = FESTAS.filter((f) => !f.ensaio);
-
-/** O que o calendário deve oferecer agora, conforme o modo de ensaio. */
-export const FESTAS_OFERECIDAS = MODO_ENSAIO ? FESTAS : FESTAS_REAIS;
 
 const POR_ID = new Map(FESTAS.map((f) => [f.id, f]));
 
@@ -356,15 +312,8 @@ export function festaPorId(id: FestaId): Festa {
   return f;
 }
 
-/**
- * A data em que a festa cai num determinado ano.
- *
- * A data de ensaio é a exceção: ela não tem dia no calendário, é sempre
- * daqui a trinta e três dias, para que a preparação comece hoje — hoje e em
- * qualquer dia em que alguém a abra. O ano é ignorado nela, de propósito.
- */
+/** A data em que a festa cai num determinado ano. */
 export function dataDaFesta(festa: Festa, ano: number): DataSimples {
-  if (festa.ensaio) return somarDias(hojeEm("America/Sao_Paulo"), 33);
   return criarData(ano, festa.mes, festa.dia);
 }
 

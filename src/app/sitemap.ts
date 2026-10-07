@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { FESTAS_REAIS } from "@/lib/agenda/festas";
+import { FESTAS } from "@/lib/agenda/festas";
 import { ORACOES } from "@/content/oracoes";
 import { PAGINAS } from "@/content/sobre";
 import { urlAbsoluta } from "@/lib/seo/site";
@@ -18,12 +18,6 @@ import { urlAbsoluta } from "@/lib/seo/site";
  * texto — isso exigiria consultar o histórico do git durante a compilação,
  * e o ganho seria nenhum: o Google trata o lastmod como pista, e desconfia
  * dele quando não corresponde a mudanças reais.
- *
- * SOBRE A DATA DE ENSAIO
- * A lista é FESTAS_REAIS, nunca FESTAS. Com o modo de ensaio ligado existe
- * uma "festa" que não é celebração nenhuma, criada para percorrer o sistema
- * sem esperar trinta e três dias. Submetê-la ao Google seria pedir a
- * indexação de uma página de teste. Há um teste que garante isto.
  *
  * O que não está aqui: as salas pessoais (fechadas por sessão), /entrar e
  * /cadastro (noindex, por serem formulários sem conteúdo) e /silencio (uma
@@ -49,7 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // As vinte e quatro festas de Nossa Senhora. Cada uma é uma página com
     // texto próprio sobre a celebração e a conta dos dias até ela: é por aqui
     // que alguém procurando "consagração em 8 de dezembro" chega ao site.
-    ...FESTAS_REAIS.map((festa) => ({
+    ...FESTAS.map((festa) => ({
       url: urlAbsoluta(`/calendario/${festa.id}`),
       lastModified: publicacao,
       changeFrequency: "yearly" as const,

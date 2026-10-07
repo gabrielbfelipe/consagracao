@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
-import { FESTAS, FESTAS_REAIS } from "@/lib/agenda/festas";
+import { FESTAS } from "@/lib/agenda/festas";
 import { ORACOES } from "@/content/oracoes";
 import { PAGINAS } from "@/content/sobre";
 import { ETAPAS } from "@/lib/jornada/etapas";
@@ -71,7 +71,7 @@ describe("o sitemap", () => {
   });
 
   it("traz todas as festas verdadeiras do calendário", () => {
-    for (const f of FESTAS_REAIS) {
+    for (const f of FESTAS) {
       expect(enderecos).toContain(urlAbsoluta(`/calendario/${f.id}`));
     }
   });
@@ -79,19 +79,6 @@ describe("o sitemap", () => {
   it("traz todas as orações da biblioteca", () => {
     for (const o of ORACOES) {
       expect(enderecos).toContain(urlAbsoluta(`/biblioteca/${o.id}`));
-    }
-  });
-
-  /**
-   * O modo de ensaio acrescenta às FESTAS uma data que não é celebração
-   * nenhuma. Se um dia alguém trocar FESTAS_REAIS por FESTAS neste arquivo —
-   * e é um erro de uma letra —, o site passa a pedir ao Google a indexação
-   * de uma página de teste. É este teste que cai.
-   */
-  it("nunca submete a data de ensaio", () => {
-    const ensaio = FESTAS.filter((f) => f.ensaio);
-    for (const f of ensaio) {
-      expect(enderecos).not.toContain(urlAbsoluta(`/calendario/${f.id}`));
     }
   });
 

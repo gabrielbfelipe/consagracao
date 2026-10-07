@@ -62,9 +62,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "33 dias de preparação",
     ],
     ...cartao({ titulo, descricao, caminho, tipo: "article" }),
-    // A data de ensaio não é celebração nenhuma: existe para percorrer o
-    // sistema sem esperar trinta e três dias, e não tem o que fazer no índice.
-    ...(festa.ensaio ? { robots: { index: false, follow: false } } : {}),
   };
 }
 

@@ -14,7 +14,6 @@
     "verificar:rls": "node --env-file=.env.local scripts/verificar-rls.mjs",
     "verificar:cadastro": "node --env-file=.env.local scripts/verificar-cadastro.mjs",
     "verificar:troca": "node --env-file=.env.local scripts/verificar-troca-de-data.mjs",
-    "verificar:ensaio": "node --env-file=.env.local scripts/verificar-ensaio.mjs",
     "verificar:seo": "node scripts/verificar-seo.mjs",
     "publicar": "node --env-file=.env.local scripts/publicar.mjs"
   },
