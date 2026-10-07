@@ -66,6 +66,7 @@ const SECOES = [
     paragrafos: [
       "Algumas páginas abertas ao público — a inicial, o calendário, a biblioteca, as páginas de apresentação e a das cadeias — podem exibir anúncios do Google AdSense, sempre no pé da página e identificados com a palavra “Publicidade”. É assim que o site se paga.",
       "Não há anúncio nenhum nas páginas da sua preparação: os trinta e três dias, o diário, a carta do primeiro dia, o Grande Dia, o Meu Caminho, as orações e a página de socorro não exibem publicidade, e não exibirão. Quem está com a conta aberta não vê anúncio em lugar nenhum.",
+      "Para que a conta de publicidade seja aprovada, o Google exige que o programa dele seja carregado em todas as páginas do site, inclusive nas que nunca exibem anúncio. É o que fazemos. A diferença continua inteira: carregar o programa não é exibir anúncio, e nas páginas acima não há espaço de anúncio nenhum para ele preencher.",
       "Para escolher o que mostrar, o Google e seus parceiros podem usar cookies no seu navegador, inclusive o cookie DART, e informações como a página que você está vendo e o seu país. Você pode desligar a publicidade personalizada nas configurações de anúncios do Google, em google.com/settings/ads.",
       "O que você escreve aqui — diário, reflexões, Meu Motivo, a carta — nunca é enviado ao Google nem a qualquer rede de publicidade, nem usado para escolher anúncios. Essas duas coisas não se encontram em lugar nenhum do sistema.",
     ],

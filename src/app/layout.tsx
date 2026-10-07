@@ -11,6 +11,7 @@ import {
   TITULO_HOME,
   VERIFICACAO_GOOGLE,
 } from "@/lib/seo/site";
+import { ANUNCIOS_LIGADOS, EDITOR } from "@/content/anuncios";
 import "./globals.css";
 
 /* A voz do livro: desenho francês do século XVI, a letra dos devocionários. */
@@ -114,6 +115,31 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${ebGaramond.variable} ${archivo.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
+        {/* O script da rede de publicidade.
+            O AdSense pede este trecho dentro do <head> de **todas** as
+            páginas, e não só nas que exibem anúncio: é por ele que a
+            verificação de propriedade do site acontece, e sem ele a conta
+            não é aprovada.
+
+            É um <script> comum, e não o next/script, de propósito. O React
+            19 iça um <script async> para o <head> sozinho e não o repete —
+            que é exatamente o que o Google pede, e é o que foi conferido no
+            HTML servido. Com o next/script ele seria injetado pelo cliente,
+            mais tarde e fora do <head>.
+
+            Antes ele vivia dentro do componente do espaço de anúncio, para
+            não alcançar as páginas de oração e o diário. A verificação do
+            AdSense não aceita isso. O que continua valendo é o que importa:
+            nenhuma dessas páginas tem bloco de anúncio, e nenhuma delas vai
+            ter. Ver content/anuncios.ts. */}
+        {ANUNCIOS_LIGADOS && (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${EDITOR}`}
+            crossOrigin="anonymous"
+          />
+        )}
+
         <Movimento>{children}</Movimento>
       </body>
     </html>

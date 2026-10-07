@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Script from "next/script";
 import { EDITOR, ROTULO, type Formato } from "@/content/anuncios";
 
 declare global {
@@ -86,24 +85,6 @@ export function Espaco({
       aria-label={ROTULO}
       className={`mx-auto w-full max-w-5xl px-6 py-14 sm:px-10 ${PEDIDO[formato].altura}`}
     >
-      {/* O script da rede vive aqui, e não no layout.
-          Posto no layout, ele seria baixado em todas as páginas — inclusive
-          nas de oração e no diário, que não têm anúncio nenhum —, e com ele
-          os cookies da rede. Aqui, só chega às páginas que realmente têm um
-          espaço a preencher. O next/script carrega o mesmo endereço uma vez
-          só, mesmo que a página tenha dois espaços.
-
-          `lazyOnload` espera o navegador ficar ocioso. Rende um pouco menos
-          do que carregar cedo, e é a escolha certa quando todos os espaços
-          estão no pé da página: ninguém os vê antes de rolar até lá, e
-          enquanto isso o script não disputa a rede com a fotografia que a
-          pessoa veio ver. */}
-      <Script
-        id="rede-de-anuncios"
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${EDITOR}`}
-        strategy="lazyOnload"
-        crossOrigin="anonymous"
-      />
 
       {/* O filete e o rótulo, no mesmo desenho dos separadores da casa. O
           rótulo é pequeno mas legível: tem de ser possível saber que aquilo

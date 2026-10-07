@@ -8,6 +8,10 @@
  * 3. No painel do AdSense, crie um bloco de anúncio para cada espaço abaixo
  *    e cole o número do bloco em `unidade`.
  *
+ * O programa da rede é carregado no layout, em todas as páginas — é o que o
+ * AdSense exige para verificar a propriedade do site e aprovar a conta. O que
+ * decide onde aparece anúncio não é isso, é a lista de espaços abaixo.
+ *
  * Enquanto `unidade` estiver vazia, o espaço não existe: não ocupa lugar, não
  * baixa script nenhum, não deixa buraco na página. Dá para ligar um de cada
  * vez e ver o resultado antes de ligar o seguinte.
