@@ -53,6 +53,23 @@ const SECOES = [
       "Não vendemos nem cedemos seus dados. Usamos fornecedores de infraestrutura para hospedar o aplicativo, guardar o banco de dados e enviar e-mails, que tratam os dados apenas para nos prestar esse serviço.",
     ],
   },
+  /**
+   * Publicidade.
+   *
+   * Esta seção existe mesmo antes de haver um anúncio no ar, e não por
+   * excesso de zelo: o AdSense só aprova um site cuja política já declare o
+   * uso de cookies de publicidade, e a LGPD exige dizer antes, não depois.
+   * Escrita em português de gente, como o resto desta página.
+   */
+  {
+    titulo: "Publicidade",
+    paragrafos: [
+      "Algumas páginas abertas ao público — a inicial, o calendário, a biblioteca, as páginas de apresentação e a das cadeias — podem exibir anúncios do Google AdSense, sempre no pé da página e identificados com a palavra “Publicidade”. É assim que o site se paga.",
+      "Não há anúncio nenhum nas páginas da sua preparação: os trinta e três dias, o diário, a carta do primeiro dia, o Grande Dia, o Meu Caminho, as orações e a página de socorro não exibem publicidade, e não exibirão. Quem está com a conta aberta não vê anúncio em lugar nenhum.",
+      "Para escolher o que mostrar, o Google e seus parceiros podem usar cookies no seu navegador, inclusive o cookie DART, e informações como a página que você está vendo e o seu país. Você pode desligar a publicidade personalizada nas configurações de anúncios do Google, em google.com/settings/ads.",
+      "O que você escreve aqui — diário, reflexões, Meu Motivo, a carta — nunca é enviado ao Google nem a qualquer rede de publicidade, nem usado para escolher anúncios. Essas duas coisas não se encontram em lugar nenhum do sistema.",
+    ],
+  },
   {
     titulo: "Apagar tudo",
     paragrafos: [

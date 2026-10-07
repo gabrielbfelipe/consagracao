@@ -9,6 +9,7 @@ import { TituloDeSecao } from "@/components/vitrine/TituloDeSecao";
 import { EloDeTexto } from "@/components/vitrine/Botao";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
+import { Anuncio } from "@/components/anuncios/Anuncio";
 
 export const metadata: Metadata = {
   title: "Biblioteca",
@@ -160,6 +161,8 @@ export default async function Biblioteca() {
             </p>
           </div>
         </section>
+
+        <Anuncio posicao="biblioteca-pe" />
 
         <Rodape />
       </div>

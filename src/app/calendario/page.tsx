@@ -6,6 +6,7 @@ import { FESTAS_OFERECIDAS } from "@/lib/agenda/festas";
 import { opcoesDeData } from "@/lib/agenda/cronograma";
 import { diaEMes, hojeEm, porExtenso } from "@/lib/agenda/dataSimples";
 import { Passagem } from "@/components/atmosphere/Passagem";
+import { Anuncio } from "@/components/anuncios/Anuncio";
 import { jornadaAtual } from "@/lib/jornada/repositorio";
 
 export const metadata: Metadata = {
@@ -161,6 +162,8 @@ export default async function Calendario() {
               );
             })}
           </ul>
+
+          <Anuncio posicao="calendario-pe" />
         </main>
       </div>
     </Passagem>

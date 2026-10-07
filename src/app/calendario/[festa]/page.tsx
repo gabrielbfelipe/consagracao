@@ -16,6 +16,7 @@ import {
 import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
 import { grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
 import { cartao } from "@/lib/seo/cartao";
+import { Anuncio } from "@/components/anuncios/Anuncio";
 
 export function generateStaticParams() {
   return FESTAS.map((f) => ({ festa: f.id }));
@@ -287,6 +288,8 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
             Ver esta mesma festa em {anoEscolhido + 1}
           </Link>
         </div>
+
+        <Anuncio posicao="festa-pe" />
       </main>
     </div>
   );

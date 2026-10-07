@@ -5,6 +5,7 @@ import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { Passagem } from "@/components/atmosphere/Passagem";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Carrossel } from "@/components/loja/Carrossel";
+import { Anuncio } from "@/components/anuncios/Anuncio";
 import { APRESENTACAO, AVISO_DE_AFILIADO, PRODUTOS } from "@/content/produtos";
 import fotosGuardadas from "@/content/produtos-fotos.json";
 import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
@@ -135,6 +136,7 @@ export default async function Cadeias() {
               O que você realmente precisa é do livro
             </Link>
           </div>
+          <Anuncio posicao="cadeias-pe" />
         </main>
 
         <Rodape />

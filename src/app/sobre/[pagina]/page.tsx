@@ -7,6 +7,7 @@ import { IMAGENS, urlDaImagem } from "@/lib/imagens";
 import { Botao, EloDeTexto } from "@/components/vitrine/Botao";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
+import { Anuncio } from "@/components/anuncios/Anuncio";
 import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
 import { grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
 import { cartao } from "@/lib/seo/cartao";
@@ -155,6 +156,8 @@ export default async function Sobre({ params }: Props) {
               </nav>
             )}
           </article>
+
+          <Anuncio posicao="sobre-fim" />
         </main>
 
         {/* O chamado, sempre ao fim de cada sala. */}

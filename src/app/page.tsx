@@ -6,6 +6,7 @@ import { Hero } from "@/components/vitrine/Hero";
 import { Algarismo, TituloDeSecao } from "@/components/vitrine/TituloDeSecao";
 import { Botao, EloDeTexto } from "@/components/vitrine/Botao";
 import { Rodape } from "@/components/vitrine/Rodape";
+import { Anuncio } from "@/components/anuncios/Anuncio";
 import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
 import { IMAGENS, urlDaImagem } from "@/lib/imagens";
 import { ETAPAS } from "@/lib/jornada/etapas";
@@ -347,6 +348,11 @@ export default function Entrada() {
             </div>
           </div>
         </section>
+
+        {/* Depois do convite, nunca antes dele: o que esta página tem a
+            fazer é levar alguém a começar, e um anúncio entre o texto e o
+            botão disputaria exatamente o clique que importa. */}
+        <Anuncio posicao="home-pe" />
 
         <Rodape />
       </div>
