@@ -9,6 +9,17 @@ export const metadata: Metadata = {
   title: "Criar conta",
   description:
     "Crie sua conta para começar a preparação de trinta e três dias para a Consagração a Nossa Senhora.",
+  alternates: { canonical: "/cadastro" },
+  /**
+   * Formulário não é conteúdo. Indexar a página de cadastro seria oferecer ao
+   * Google uma página sem texto a competir com as que têm — e quem procura
+   * "consagração a Nossa Senhora" não quer cair num campo de senha.
+   *
+   * `follow: true` é deliberado: a página continua a ser lida e os elos que
+   * saem dela continuam a valer. É por isso que o robots.txt **não** a
+   * bloqueia; ver os comentários lá.
+   */
+  robots: { index: false, follow: true },
 };
 
 export default function Cadastro() {

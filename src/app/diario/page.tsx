@@ -7,7 +7,16 @@ import { clienteServidor } from "@/lib/supabase/servidor";
 import { etapaDoDia } from "@/lib/jornada/etapas";
 import { diaPorNumero } from "@/content/jornada";
 
-export const metadata: Metadata = { title: "Diário" };
+export const metadata: Metadata = {
+  title: "Diário",
+  /**
+   * Fora do índice, e com razão: esta sala não abre sem sessão. O que o
+   * Googlebot encontraria aqui é o desvio para a entrada, e um índice cheio
+   * de endereços que mostram todos a mesma tela de entrada só dilui o site.
+   * O robots.txt também a pede de fora — este é o cinto, aquele é o tirante.
+   */
+  robots: { index: false, follow: false },
+};
 
 const NOME_DO_TIPO: Record<string, string> = {
   reflexao: "Reflexão",

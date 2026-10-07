@@ -7,6 +7,9 @@ import { IMAGENS, urlDaImagem } from "@/lib/imagens";
 import { Botao, EloDeTexto } from "@/components/vitrine/Botao";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
+import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
+import { grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
+import { cartao } from "@/lib/seo/cartao";
 
 export function generateStaticParams() {
   return PAGINAS.map((p) => ({ pagina: p.slug }));
@@ -18,7 +21,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { pagina } = await params;
   const p = paginaPorSlug(pagina);
   if (!p) return {};
-  return { title: p.titulo, description: p.resumo };
+
+  const caminho = `/sobre/${p.slug}`;
+  // A descrição é o resumo, que foi escrito para a home e serve aqui pelo
+  // mesmo motivo: é a página em uma frase. Cortado a 155 caracteres, que é
+  // onde o Google deixa de mostrar.
+  const descricao =
+    p.resumo.length > 155 ? `${p.resumo.slice(0, 152).trimEnd()}…` : p.resumo;
+
+  return {
+    title: p.titulo,
+    description: descricao,
+    ...cartao({
+      titulo: p.titulo,
+      descricao,
+      caminho,
+      tipo: "article",
+    }),
+  };
 }
 
 export default async function Sobre({ params }: Props) {
@@ -31,6 +51,13 @@ export default async function Sobre({ params }: Props) {
   return (
     <Passagem>
       <div className="min-h-dvh">
+        <DadosEstruturados
+          dados={grafoDeMigalhas([
+            { nome: "A preparação", caminho: "/sobre/a-consagracao" },
+            { nome: p.titulo, caminho: `/sobre/${p.slug}` },
+          ])}
+        />
+
         <PorticoDaSala sobreImagem />
 
         {/* A fachada: fotografia em tela larga com o título sobreposto. */}

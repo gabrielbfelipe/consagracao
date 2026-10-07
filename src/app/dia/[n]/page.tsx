@@ -11,7 +11,13 @@ type Props = { params: Promise<{ n: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { n } = await params;
-  return { title: `Dia ${n} de ${TOTAL_DIAS}` };
+  return {
+    title: `Dia ${n} de ${TOTAL_DIAS}`,
+    // Trinta e três páginas que só abrem para quem tem jornada em curso, e
+    // que indicam parágrafos do Tratado sem os reproduzir. Nada disto é para
+    // ser achado pelo Google: é o caderno de uma pessoa.
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function DiaDaJornada({ params }: Props) {

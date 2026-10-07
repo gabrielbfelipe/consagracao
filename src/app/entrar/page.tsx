@@ -10,6 +10,17 @@ import { Passagem } from "@/components/atmosphere/Passagem";
 export const metadata: Metadata = {
   title: "Entrar",
   description: "Entre na sua conta para continuar a preparação.",
+  alternates: { canonical: "/entrar" },
+  /**
+   * Formulário não é conteúdo. Indexar a página de entrada seria oferecer ao
+   * Google uma página sem texto a competir com as que têm — e quem procura
+   * "consagração a Nossa Senhora" não quer cair num campo de senha.
+   *
+   * `follow: true` é deliberado: a página continua a ser lida e os elos que
+   * saem dela continuam a valer. É por isso que o robots.txt **não** a
+   * bloqueia; ver os comentários lá.
+   */
+  robots: { index: false, follow: true },
 };
 
 const PASSOS = [

@@ -3,7 +3,16 @@ import { redirect } from "next/navigation";
 import { Acolhida } from "@/components/conta/Acolhida";
 import { clienteServidor, usuarioAtual } from "@/lib/supabase/servidor";
 
-export const metadata: Metadata = { title: "Bem-vindo" };
+export const metadata: Metadata = {
+  title: "Bem-vindo",
+  /**
+   * Fora do índice, e com razão: esta sala não abre sem sessão. O que o
+   * Googlebot encontraria aqui é o desvio para a entrada, e um índice cheio
+   * de endereços que mostram todos a mesma tela de entrada só dilui o site.
+   * O robots.txt também a pede de fora — este é o cinto, aquele é o tirante.
+   */
+  robots: { index: false, follow: false },
+};
 
 export default async function BemVindo() {
   const usuario = await usuarioAtual();

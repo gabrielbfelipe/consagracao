@@ -5,6 +5,9 @@ import type { Metadata } from "next";
 import { ORACOES, oracaoPorId } from "@/content/oracoes";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
+import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
+import { grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
+import { cartao } from "@/lib/seo/cartao";
 
 export function generateStaticParams() {
   return ORACOES.map((o) => ({ oracao: o.id }));
@@ -15,7 +18,20 @@ type Props = { params: Promise<{ oracao: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { oracao } = await params;
   const o = oracaoPorId(oracao);
-  return { title: o?.nome ?? "Oração", description: o?.proposito };
+  if (!o) return {};
+
+  const caminho = `/biblioteca/${o.id}`;
+  return {
+    title: o.nome,
+    description: o.proposito,
+    keywords: [o.nome, "oração", "consagração a Nossa Senhora"],
+    ...cartao({
+      titulo: o.nome,
+      descricao: o.proposito,
+      caminho,
+      tipo: "article",
+    }),
+  };
 }
 
 export default async function PaginaDaOracao({ params }: Props) {
@@ -26,6 +42,13 @@ export default async function PaginaDaOracao({ params }: Props) {
   return (
     <Passagem>
       <div className="min-h-dvh">
+        <DadosEstruturados
+          dados={grafoDeMigalhas([
+            { nome: "Biblioteca", caminho: "/biblioteca" },
+            { nome: o.nome, caminho: `/biblioteca/${o.id}` },
+          ])}
+        />
+
         <PorticoDaSala />
 
         {/* Uma oração se reza sobre papel claro, não no escuro. */}

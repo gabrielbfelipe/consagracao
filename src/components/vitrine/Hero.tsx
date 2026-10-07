@@ -213,6 +213,20 @@ export function Hero() {
 
       {/* O texto */}
       <div className="relative z-10 w-full px-6 pt-28 pb-56 sm:px-12 sm:pb-40 lg:px-20">
+        {/* O cabeçalho da página, e o único <h1> dela.
+            Não aparece na tela, e isso é uma escolha, não um atalho: o
+            lugar do título visível é ocupado por três frases que se
+            sucedem, e um cabeçalho que muda não serve nem ao buscador nem
+            ao leitor de tela. Esta linha diz, de uma vez e para sempre, do
+            que é a página — exatamente o que o resto dela mostra, só em
+            palavras inteiras. Não há nada aqui que não esteja no título, na
+            descrição e no texto visível; se houvesse, seria texto oculto
+            para enganar o buscador, e isso é motivo de penalização. */}
+        <h1 className="sr-only">
+          Consagração a Nossa Senhora: trinta e três dias de preparação
+          segundo São Luís Maria Grignion de Montfort
+        </h1>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={atual}
@@ -226,9 +240,16 @@ export function Hero() {
               {quadro.sobrenome}
             </p>
 
-            <h1 className="mt-4 font-[family-name:var(--font-livro)] text-[clamp(2.75rem,1.6rem+5.6vw,6.5rem)] leading-[0.98] tracking-[0.01em] text-balance text-[var(--color-marfim)] uppercase">
+            {/* Era um <h1>, e estava errado por dois motivos.
+                Para o Google, o cabeçalho principal da página inicial dizia
+                "COMECE O CAMINHO" — três palavras que ninguém procura, e que
+                mudavam a cada seis segundos. Para quem navega por leitor de
+                tela, o título da página trocava sozinho enquanto se lia.
+                A letra é a mesma; o papel de cabeçalho passou para o <h1>
+                estável acima. */}
+            <p className="mt-4 font-[family-name:var(--font-livro)] text-[clamp(2.75rem,1.6rem+5.6vw,6.5rem)] leading-[0.98] tracking-[0.01em] text-balance text-[var(--color-marfim)] uppercase">
               {quadro.titulo}
-            </h1>
+            </p>
 
             <p className="mt-8 max-w-[52ch] font-[family-name:var(--font-livro)] text-[clamp(1.05rem,0.95rem+0.5vw,1.35rem)] leading-[1.7] text-[color-mix(in_oklab,var(--color-pergaminho)_88%,transparent)]">
               {quadro.texto}

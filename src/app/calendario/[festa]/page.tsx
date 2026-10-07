@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FESTAS, festaPorId, type FestaId } from "@/lib/agenda/festas";
 import { montarCronograma, situacao } from "@/lib/agenda/cronograma";
@@ -12,6 +13,9 @@ import {
   hojeEm,
   porExtenso,
 } from "@/lib/agenda/dataSimples";
+import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
+import { grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
+import { cartao } from "@/lib/seo/cartao";
 
 export function generateStaticParams() {
   return FESTAS.map((f) => ({ festa: f.id }));
@@ -21,6 +25,62 @@ type Props = {
   params: Promise<{ festa: string }>;
   searchParams: Promise<{ ano?: string }>;
 };
+
+/**
+ * Vinte e quatro páginas com título e descrição próprios.
+ *
+ * É a maior superfície de busca do site: quem procura "consagração em 8 de
+ * dezembro" ou "me consagrar em Aparecida" está a procurar uma data, não
+ * uma plataforma, e é aqui que a resposta existe. Sem isto, as vinte e
+ * quatro herdavam o mesmo título do layout e competiam entre si pela mesma
+ * frase — que é a forma mais eficiente de nenhuma delas aparecer.
+ *
+ * `tambemChamada` entra nas palavras-chave porque a mesma celebração tem
+ * nomes diferentes em regiões diferentes: quem procura Nossa Senhora dos
+ * Navegantes e quem procura Apresentação do Senhor querem o dia 2 de
+ * fevereiro.
+ */
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { festa: id } = await params;
+  const festa = FESTAS.find((f) => f.id === id);
+  if (!festa) return {};
+
+  const dia = `${festa.dia} de ${MESES[festa.mes - 1]}`;
+  const caminho = `/calendario/${festa.id}`;
+
+  const titulo = `Consagração em ${dia} — ${festa.nome}`;
+  const descricao = `${festa.resumo} A preparação de 33 dias começa 33 dias antes de ${dia}: veja a data exata de início e as etapas do método de Montfort.`;
+
+  return {
+    title: titulo,
+    description: descricao,
+    keywords: [
+      `consagração ${dia}`,
+      `consagração ${festa.nome}`,
+      ...(festa.tambemChamada ?? []),
+      "33 dias de preparação",
+    ],
+    ...cartao({ titulo, descricao, caminho, tipo: "article" }),
+    // A data de ensaio não é celebração nenhuma: existe para percorrer o
+    // sistema sem esperar trinta e três dias, e não tem o que fazer no índice.
+    ...(festa.ensaio ? { robots: { index: false, follow: false } } : {}),
+  };
+}
+
+const MESES = [
+  "janeiro",
+  "fevereiro",
+  "março",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro",
+];
 
 export default async function DetalheDaFesta({ params, searchParams }: Props) {
   const { festa: id } = await params;
@@ -48,6 +108,13 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
 
   return (
     <div data-sala="manuscrito" className="min-h-dvh">
+      <DadosEstruturados
+        dados={grafoDeMigalhas([
+          { nome: "Calendário mariano", caminho: "/calendario" },
+          { nome: festa.nome, caminho: `/calendario/${festa.id}` },
+        ])}
+      />
+
       <PorticoDaSala />
 
       <main className="luz-alta px-6 pt-10 pb-16 sm:px-10">

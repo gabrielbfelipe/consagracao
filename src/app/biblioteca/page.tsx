@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { cartao } from "@/lib/seo/cartao";
 import { ORACOES } from "@/content/oracoes";
 import { IMAGENS, urlDaImagem } from "@/lib/imagens";
 import { TituloDeSecao } from "@/components/vitrine/TituloDeSecao";
@@ -13,6 +14,12 @@ export const metadata: Metadata = {
   title: "Biblioteca",
   description:
     "As orações da preparação, o livro que acompanha a jornada e os textos de formação.",
+  ...cartao({
+    titulo: "Biblioteca de orações da consagração",
+    descricao:
+      "As orações da preparação, o livro que acompanha a jornada e os textos de formação.",
+    caminho: "/biblioteca",
+  }),
 };
 
 export default async function Biblioteca() {

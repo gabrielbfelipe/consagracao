@@ -1,16 +1,25 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { cartao } from "@/lib/seo/cartao";
 import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { Passagem } from "@/components/atmosphere/Passagem";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Carrossel } from "@/components/loja/Carrossel";
 import { APRESENTACAO, AVISO_DE_AFILIADO, PRODUTOS } from "@/content/produtos";
 import fotosGuardadas from "@/content/produtos-fotos.json";
+import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
+import { grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
 
 export const metadata: Metadata = {
   title: "Cadeias de consagração",
   description:
     "As cadeiazinhas que São Luís de Montfort propõe como sinal da escravidão de amor, e onde encontrá-las.",
+  ...cartao({
+    titulo: "Cadeias de consagração",
+    descricao:
+      "As cadeiazinhas que São Luís de Montfort propõe como sinal da escravidão de amor, e onde encontrá-las.",
+    caminho: "/cadeias",
+  }),
 };
 
 type FotosGuardadas = Record<
@@ -50,6 +59,14 @@ export default async function Cadeias() {
   return (
     <Passagem>
       <div data-sala="pedra" className="min-h-dvh bg-[var(--fundo)]">
+        {/* Só a trilha de migalhas. Não há `Product` nem `Offer` aqui: o
+            preço e a disponibilidade vivem na loja e mudam sem avisar, e
+            declarar um preço que não se confere é como o Google encontra
+            dados estruturados enganosos. */}
+        <DadosEstruturados
+          dados={grafoDeMigalhas([{ nome: "Cadeias", caminho: "/cadeias" }])}
+        />
+
         <PorticoDaSala />
 
         <main className="px-6 pt-10 pb-24 sm:px-10 lg:px-16">

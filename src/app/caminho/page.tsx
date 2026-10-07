@@ -11,7 +11,16 @@ import {
 } from "@/lib/jornada/repositorio";
 import { diaEMes, porExtenso } from "@/lib/agenda/dataSimples";
 
-export const metadata: Metadata = { title: "Meu Caminho" };
+export const metadata: Metadata = {
+  title: "Meu Caminho",
+  /**
+   * Fora do índice, e com razão: esta sala não abre sem sessão. O que o
+   * Googlebot encontraria aqui é o desvio para a entrada, e um índice cheio
+   * de endereços que mostram todos a mesma tela de entrada só dilui o site.
+   * O robots.txt também a pede de fora — este é o cinto, aquele é o tirante.
+   */
+  robots: { index: false, follow: false },
+};
 
 export default async function Caminho() {
   const jornada = await jornadaAtual();

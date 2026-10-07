@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { cartao } from "@/lib/seo/cartao";
 import { MomentoDeOracao } from "@/components/oracao/MomentoDeOracao";
 import { Poeira } from "@/components/atmosphere/Poeira";
 import { Passagem } from "@/components/atmosphere/Passagem";
@@ -10,6 +11,12 @@ export const metadata: Metadata = {
   title: "Um momento de oração",
   description:
     "Uma oração breve para os momentos difíceis: uma palavra, uma prece e um silêncio.",
+  ...cartao({
+    titulo: "Um momento de oração",
+    descricao:
+      "Uma oração breve para os momentos difíceis: uma palavra, uma prece e um silêncio.",
+    caminho: "/oracao",
+  }),
 };
 
 /**

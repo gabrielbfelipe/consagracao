@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import { Passagem } from "@/components/atmosphere/Passagem";
 import Link from "next/link";
 import { Hero } from "@/components/vitrine/Hero";
@@ -9,6 +10,30 @@ import { PorticoPublico } from "@/components/navegacao/PorticoPublico";
 import { IMAGENS, urlDaImagem } from "@/lib/imagens";
 import { ETAPAS } from "@/lib/jornada/etapas";
 import { PAGINAS } from "@/content/sobre";
+import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
+import { grafoDaHome } from "@/lib/seo/dadosEstruturados";
+import { DESCRICAO_HOME, TITULO_HOME } from "@/lib/seo/site";
+import { cartao } from "@/lib/seo/cartao";
+
+/**
+ * O título e a descrição desta página são o cartão de visita do site inteiro
+ * na lista de resultados do Google, e por isso vivem em lib/seo/site.ts com
+ * os limites de tamanho explicados.
+ *
+ * `absolute` é indispensável: o layout aplica o molde "%s · Consagração a
+ * Nossa Senhora" a todos os títulos, e aqui o nome já está no próprio
+ * título — sem `absolute` ele apareceria duas vezes e o Google cortaria o
+ * resultado no meio.
+ */
+export const metadata: Metadata = {
+  title: { absolute: TITULO_HOME },
+  description: DESCRICAO_HOME,
+  ...cartao({
+    titulo: TITULO_HOME,
+    descricao: DESCRICAO_HOME,
+    caminho: "/",
+  }),
+};
 
 const PASSOS = [
   {
@@ -32,6 +57,8 @@ export default function Entrada() {
   return (
     <Passagem>
       <div className="min-h-dvh">
+        <DadosEstruturados dados={grafoDaHome()} />
+
         <PorticoPublico sobreImagem />
 
         <div data-sala="biblioteca">
@@ -108,7 +135,7 @@ export default function Entrada() {
           <div className="relative mx-auto max-w-[100rem]">
             <TituloDeSecao
               sobrenome="Trinta e três dias"
-              titulo="As quatro etapas do caminho"
+              titulo="As quatro etapas do caminho de Montfort"
               centrado
             />
 
@@ -163,7 +190,7 @@ export default function Entrada() {
 
           <div className="relative mx-auto max-w-[100rem]">
             <TituloDeSecao
-              sobrenome="Como funciona"
+              sobrenome="Como funciona a preparação online"
               titulo="Você escolhe a data. O caminho é preparado."
               centrado
             />

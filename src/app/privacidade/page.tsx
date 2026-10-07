@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cartao } from "@/lib/seo/cartao";
 import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
@@ -7,6 +8,12 @@ export const metadata: Metadata = {
   title: "Política de privacidade",
   description:
     "O que guardamos, por quanto tempo, com quem compartilhamos e como apagar tudo.",
+  ...cartao({
+    titulo: "Política de privacidade",
+    descricao:
+      "O que guardamos, por quanto tempo, com quem compartilhamos e como apagar tudo.",
+    caminho: "/privacidade",
+  }),
 };
 
 /**

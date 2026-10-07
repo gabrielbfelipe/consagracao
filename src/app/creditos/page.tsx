@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import type { Metadata } from "next";
+import { cartao } from "@/lib/seo/cartao";
 import {
   CREDITOS,
   IMAGENS,
@@ -13,6 +14,11 @@ import { Passagem } from "@/components/atmosphere/Passagem";
 export const metadata: Metadata = {
   title: "Créditos das imagens",
   description: "Quem fez as fotografias que compõem este santuário.",
+  ...cartao({
+    titulo: "Créditos das imagens",
+    descricao: "Quem fez as fotografias que compõem este santuário.",
+    caminho: "/creditos",
+  }),
 };
 
 export default function Creditos() {

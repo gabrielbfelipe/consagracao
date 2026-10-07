@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import type { Metadata } from "next";
+import { cartao } from "@/lib/seo/cartao";
 import { FESTAS_OFERECIDAS } from "@/lib/agenda/festas";
 import { opcoesDeData } from "@/lib/agenda/cronograma";
 import { diaEMes, hojeEm, porExtenso } from "@/lib/agenda/dataSimples";
@@ -11,6 +12,12 @@ export const metadata: Metadata = {
   title: "Calendário Mariano",
   description:
     "Escolha a festa de Nossa Senhora em que deseja se consagrar. O caminho até ela é calculado para você.",
+  ...cartao({
+    titulo: "Calendário Mariano: 24 datas para se consagrar",
+    descricao:
+      "Escolha a festa de Nossa Senhora em que deseja se consagrar. O caminho até ela é calculado para você.",
+    caminho: "/calendario",
+  }),
 };
 
 const GRAU: Record<string, string> = {
