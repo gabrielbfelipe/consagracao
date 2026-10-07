@@ -1,5 +1,9 @@
 import { PASSOS } from "@/lib/jornada/passos";
-import { DISCIPLINA_DAS_SEMANAS, diaPorNumero } from "@/content/jornada";
+import {
+  DISCIPLINA_DAS_SEMANAS,
+  diaPorNumero,
+  faixaDeLeitura,
+} from "@/content/jornada";
 import { diaEMes, type DataSimples } from "@/lib/agenda/dataSimples";
 
 /**
@@ -46,8 +50,8 @@ export function Previa({
           Todo dia, sete passos
         </h3>
         <p className="voz-livro mt-4 text-[var(--texto-suave)]">
-          Cada passo pede uma coisa só, e só depois abre o seguinte. Entre
-          vinte e trinta minutos, no horário que você escolher.
+          Cada passo pede uma coisa só, e só depois abre o seguinte. Entre vinte
+          e trinta minutos, no horário que você escolher.
         </p>
 
         <ol className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2">
@@ -130,7 +134,7 @@ export function Previa({
                 A leitura
               </dt>
               <dd className="mt-1 font-[family-name:var(--font-livro)] text-lg text-[#2a1d12]">
-                {primeiro.leitura.paragrafos ?? primeiro.leitura.evangelho}
+                {faixaDeLeitura(primeiro.leitura)}
               </dd>
             </div>
 
@@ -164,9 +168,9 @@ export function Previa({
         <ul className="mt-7 space-y-6">
           <Item titulo="Um exemplar do Tratado da Verdadeira Devoção">
             A leitura de cada dia aponta para os parágrafos numerados do livro,
-            que são os mesmos em qualquer edição. Não reproduzimos o texto
-            aqui: as traduções pertencem a quem as fez. Procure uma edição com
-            os parágrafos numerados — é por eles que o caminho se orienta.
+            que são os mesmos em qualquer edição. Não reproduzimos o texto aqui:
+            as traduções pertencem a quem as fez. Procure uma edição com os
+            parágrafos numerados — é por eles que o caminho se orienta.
           </Item>
 
           <Item titulo="Vinte a trinta minutos por dia, sempre no mesmo horário">
@@ -188,8 +192,8 @@ export function Previa({
       </div>
 
       <p className="mt-10 text-center text-sm leading-relaxed text-[var(--texto-suave)]">
-        Nada aqui é definitivo. Depois de escolher, você pode pausar, retomar
-        ou trocar de data — o que você escrever fica guardado.
+        Nada aqui é definitivo. Depois de escolher, você pode pausar, retomar ou
+        trocar de data — o que você escrever fica guardado.
       </p>
     </section>
   );

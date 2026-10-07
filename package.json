@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "migrar": "node --env-file=.env.local scripts/migrar.mjs",
+    "produtos": "node scripts/buscar-fotos.mjs",
     "verificar:rls": "node --env-file=.env.local scripts/verificar-rls.mjs",
     "verificar:cadastro": "node --env-file=.env.local scripts/verificar-cadastro.mjs",
     "verificar:troca": "node --env-file=.env.local scripts/verificar-troca-de-data.mjs",

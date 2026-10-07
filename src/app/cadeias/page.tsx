@@ -1,0 +1,200 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
+import { Passagem } from "@/components/atmosphere/Passagem";
+import { Rodape } from "@/components/vitrine/Rodape";
+import { Carrossel } from "@/components/loja/Carrossel";
+import { APRESENTACAO, AVISO_DE_AFILIADO, PRODUTOS } from "@/content/produtos";
+import fotosGuardadas from "@/content/produtos-fotos.json";
+
+export const metadata: Metadata = {
+  title: "Cadeias de consagração",
+  description:
+    "As cadeiazinhas que São Luís de Montfort propõe como sinal da escravidão de amor, e onde encontrá-las.",
+};
+
+type FotosGuardadas = Record<
+  string,
+  { titulo: string | null; loja: string; fotos: string[]; buscadoEm: string }
+>;
+
+/**
+ * A sala da loja.
+ *
+ * Fica aberta a quem não entrou e a quem entrou — o pórtico resolve-se
+ * sozinho —, porque a cadeia interessa antes de a pessoa ter conta e depois
+ * de ela ter terminado a preparação.
+ *
+ * O que se vende aqui não é necessário à consagração, e a página diz isso
+ * em voz alta antes de mostrar qualquer preço. Montfort chama estas práticas
+ * de exteriores, e seria desonesto deixar alguém com a impressão de que
+ * precisa comprar alguma coisa para se consagrar.
+ */
+export default async function Cadeias() {
+  const guardadas = fotosGuardadas as FotosGuardadas;
+
+  const produtos = PRODUTOS.map((p) => {
+    const buscado = guardadas[p.id];
+    return {
+      ...p,
+      // O que está escrito à mão vence o que foi buscado, sempre.
+      fotos: p.fotos ?? buscado?.fotos ?? [],
+      titulo: p.titulo ?? buscado?.titulo ?? "Cadeia de consagração",
+      loja: buscado?.loja ?? null,
+    };
+  });
+
+  const emDestaque = produtos.filter((p) => p.destaque);
+  const demais = produtos.filter((p) => !p.destaque);
+
+  return (
+    <Passagem>
+      <div data-sala="pedra" className="min-h-dvh bg-[var(--fundo)]">
+        <PorticoDaSala />
+
+        <main className="px-6 pt-10 pb-24 sm:px-10 lg:px-16">
+          <header className="mx-auto max-w-[62ch] text-center">
+            <p className="font-[family-name:var(--font-livro)] text-[clamp(1.1rem,0.95rem+0.6vw,1.5rem)] text-[var(--realce)] italic">
+              {APRESENTACAO.sobrenome}
+            </p>
+
+            <h1 className="mt-3 font-[family-name:var(--font-livro)] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] leading-tight text-[var(--texto)]">
+              {APRESENTACAO.titulo}
+            </h1>
+
+            <div
+              aria-hidden
+              className="mx-auto mt-8 h-px w-24 bg-[linear-gradient(to_right,transparent,var(--realce),transparent)]"
+            />
+
+            <p className="voz-livro mx-auto mt-8 text-[var(--texto-suave)]">
+              {APRESENTACAO.texto}
+            </p>
+
+            {/* O aviso vem antes dos produtos, e não no rodapé. */}
+            <p className="mx-auto mt-8 max-w-[54ch] border-l-2 border-[var(--realce)] pl-5 text-left text-[0.95rem] leading-relaxed text-[var(--texto)]">
+              {APRESENTACAO.nota}
+            </p>
+          </header>
+
+          {produtos.length === 0 ? (
+            <Vazia />
+          ) : (
+            <>
+              {emDestaque.length > 0 && (
+                <ul className="mx-auto mt-20 grid max-w-5xl gap-10 lg:grid-cols-2">
+                  {emDestaque.map((p) => (
+                    <li key={p.id}>
+                      <Cartao produto={p} destaque />
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {demais.length > 0 && (
+                <ul className="mx-auto mt-10 grid max-w-6xl gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+                  {demais.map((p) => (
+                    <li key={p.id}>
+                      <Cartao produto={p} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <p className="mx-auto mt-20 max-w-[58ch] text-center text-sm leading-relaxed text-[var(--texto-suave)]">
+                {AVISO_DE_AFILIADO}
+              </p>
+            </>
+          )}
+
+          <div className="mt-20 text-center">
+            <Link
+              href="/sobre/o-livro"
+              className="font-[family-name:var(--font-livro)] text-base tracking-[0.14em] uppercase
+                text-[var(--texto-suave)] underline
+                decoration-[color-mix(in_oklab,var(--realce)_50%,transparent)] underline-offset-[9px]
+                transition-colors duration-500 hover:text-[var(--realce)]"
+            >
+              O que você realmente precisa é do livro
+            </Link>
+          </div>
+        </main>
+
+        <Rodape />
+      </div>
+    </Passagem>
+  );
+}
+
+function Cartao({
+  produto,
+  destaque = false,
+}: {
+  produto: {
+    id: string;
+    link: string;
+    titulo: string;
+    nota?: string;
+    fotos: readonly string[];
+    loja: string | null;
+  };
+  destaque?: boolean;
+}) {
+  return (
+    <article className="flex h-full flex-col">
+      <Carrossel fotos={produto.fotos} alt={produto.titulo} destaque={destaque} />
+
+      <h2
+        className={`mt-6 font-[family-name:var(--font-livro)] leading-snug text-[var(--texto)] ${
+          destaque ? "text-[clamp(1.5rem,1.2rem+1vw,2rem)]" : "text-xl"
+        }`}
+      >
+        {produto.titulo}
+      </h2>
+
+      {produto.nota && (
+        <p className="mt-3 text-[0.98rem] leading-relaxed text-[var(--texto-suave)]">
+          {produto.nota}
+        </p>
+      )}
+
+      <div className="mt-auto pt-7">
+        <a
+          href={produto.link}
+          target="_blank"
+          rel="nofollow sponsored noopener noreferrer"
+          className="brilho-borda inline-flex items-center px-8 py-3.5
+            font-[family-name:var(--font-livro)] text-sm tracking-[0.22em] indent-[0.22em] uppercase
+            text-[var(--texto)]
+            shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--realce)_70%,transparent)]
+            transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]
+            hover:text-[var(--realce)] hover:shadow-[inset_0_0_0_2px_var(--realce)]"
+        >
+          Ver na loja
+        </a>
+
+        {produto.loja && (
+          <p className="mt-3 text-xs tracking-wide text-[color-mix(in_oklab,var(--texto)_50%,transparent)] uppercase">
+            {produto.loja}
+          </p>
+        )}
+      </div>
+    </article>
+  );
+}
+
+/** Enquanto não houver produto nenhum, a sala diz o que falta — e a quem. */
+function Vazia() {
+  return (
+    <div className="mx-auto mt-20 max-w-[54ch] text-center">
+      <p className="voz-livro text-[var(--texto-suave)]">
+        Ainda não há cadeias indicadas aqui. Elas aparecem assim que forem
+        escolhidas, uma a uma, entre as que valem a pena.
+      </p>
+      <p className="mt-6 text-sm text-[var(--texto-suave)]">
+        Enquanto isso, procure em livrarias católicas e em paróquias — muitas
+        vendem as cadeiazinhas, e ali você vê antes de levar.
+      </p>
+    </div>
+  );
+}

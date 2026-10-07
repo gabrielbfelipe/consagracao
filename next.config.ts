@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
+      // As fotos dos produtos ficam nas CDNs das próprias lojas: são elas
+      // que o vendedor publicou, e é de lá que o navegador as carrega.
+      { protocol: "https", hostname: "http2.mlstatic.com" },
+      { protocol: "https", hostname: "**.mlstatic.com" },
+      { protocol: "https", hostname: "m.media-amazon.com" },
+      { protocol: "https", hostname: "images-na.ssl-images-amazon.com" },
     ],
   },
   async redirects() {

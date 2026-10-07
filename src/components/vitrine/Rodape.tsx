@@ -44,6 +44,11 @@ export function Rodape() {
                 </Link>
               </li>
               <li>
+                <Link href="/cadeias" className={ELO}>
+                  Cadeias
+                </Link>
+              </li>
+              <li>
                 <Link href="/biblioteca" className={ELO}>
                   Biblioteca de orações
                 </Link>

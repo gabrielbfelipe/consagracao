@@ -14,6 +14,7 @@ const SALAS = [
   { href: "/biblioteca", nome: "Biblioteca" },
   { href: "/diario", nome: "Diário" },
   { href: "/calendario", nome: "Calendário" },
+  { href: "/cadeias", nome: "Cadeias" },
 ] as const;
 
 export function Portico({

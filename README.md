@@ -69,6 +69,30 @@ Uma vez autenticada, a pessoa só volta à vitrine clicando em "Sair". As salas
 públicas trocam de pórtico sozinhas (`PorticoDaSala`), e o proxy devolve `/`,
 `/entrar` e `/cadastro` para `/caminho` enquanto houver sessão.
 
+### A leitura atravessa o Tratado uma vez, para a frente
+
+Os trinta e três dias cobrem do § 1 ao § 273 sem repetir e sem saltar: o dia
+seguinte começa exatamente onde o anterior parou. Os cortes caem em fronteiras
+do livro — fim de artigo, fim de capítulo —, e não em contas de dividir, e por
+isso os dias variam entre cinco e dezoito parágrafos. A regra é guardada por
+teste (`src/content/jornada.test.ts`), e não por boa vontade: a faixa de cada
+dia é um par de números, de modo que um salto ou uma repetição derruba a suíte.
+
+### A loja das cadeias
+
+`/cadeias` é pública e aparece também para quem entrou. Os produtos ficam em
+`src/content/produtos.ts` — sem limite de quantos — e `npm run produtos` abre
+cada link, descobre o título e baixa o carrossel de fotos do vendedor para
+`produtos-fotos.json`, que vai versionado.
+
+Buscar no servidor, a cada visita, seria lento e frágil: as lojas bloqueiam
+leitura automática. Medido: o Mercado Livre devolve **403** tanto na página
+quanto na sua API pública, e só responde com credencial de aplicação própria
+(`ML_ACCESS_TOKEN`); a Amazon ora responde, ora bloqueia. Por isso o campo
+`fotos`, preenchido à mão, sempre vence o que foi buscado — é o caminho que
+nunca quebra, e dá melhor resultado, porque escolher as fotos é melhor do que
+aceitar as que vierem.
+
 ### Trocar a data não custa nada
 
 A data da consagração pode ser trocada a qualquer momento, em qualquer fase —

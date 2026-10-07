@@ -24,6 +24,7 @@ import { PAGINAS } from "@/content/sobre";
  */
 const EXTRAS = [
   { href: "/calendario", rotulo: "Calendário", so2xl: false },
+  { href: "/cadeias", rotulo: "Cadeias", so2xl: false },
   { href: "/biblioteca", rotulo: "Biblioteca", so2xl: true },
 ] as const;
 

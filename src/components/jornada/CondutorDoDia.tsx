@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import type { Dia } from "@/content/jornada";
 import { PASSOS, TOTAL_PASSOS, type PassoId } from "@/lib/jornada/passos";
 import type { Etapa } from "@/lib/jornada/etapas";
 import { marcarPasso, salvarTexto } from "@/lib/jornada/acoes";
+import { faixaDeLeitura, tamanhoDaLeitura, type Dia } from "@/content/jornada";
 
 type Props = {
   dia: Dia;
@@ -114,46 +114,23 @@ export function CondutorDoDia({
 
             {passo.id === "leia" && (
               <div>
-                {/* Duas leituras possíveis, e nem todo dia tem as duas: os
-                    doze dias preliminares não têm leitura marcada no Tratado,
-                    e a maior parte das três semanas não tem passagem bíblica.
-                    Cada uma aparece só quando existe. */}
-                <div className="space-y-4">
-                  {dia.leitura.paragrafos && (
-                    <div className="superficie-pergaminho px-7 py-7">
-                      <p className="font-[family-name:var(--font-livro)] text-sm tracking-wide text-[#6b4f2e]">
-                        No seu exemplar do Tratado da Verdadeira Devoção
-                      </p>
-                      <p className="mt-2 font-[family-name:var(--font-livro)] text-3xl text-[#2a1d12]">
-                        {dia.leitura.paragrafos}
-                      </p>
-                      <p className="mt-4 text-sm leading-relaxed text-[#4a3524]">
-                        Leia devagar. Quando terminar, volte aqui para a
-                        explicação.
-                      </p>
-                    </div>
-                  )}
-
-                  {dia.leitura.evangelho && (
-                    <div className="superficie-madeira px-7 py-7">
-                      <p className="font-[family-name:var(--font-livro)] text-sm tracking-wide text-[var(--color-ouro)]">
-                        Na Bíblia
-                      </p>
-                      <p className="mt-2 font-[family-name:var(--font-livro)] text-3xl text-[var(--color-marfim)]">
-                        {dia.leitura.evangelho}
-                      </p>
-                      <p className="mt-4 text-sm leading-relaxed text-[var(--texto-suave)]">
-                        Na sua Bíblia, na tradução que você já usa.
-                      </p>
-                    </div>
-                  )}
-
-                  {!dia.leitura.paragrafos && !dia.leitura.evangelho && (
-                    <p className="voz-livro text-[var(--texto-suave)]">
-                      Hoje não há leitura marcada. O dia é de reflexão sobre o
-                      caminho já percorrido.
-                    </p>
-                  )}
+                {/* A leitura do dia, que continua exatamente onde a de
+                    ontem parou. Ver content/jornada.ts. */}
+                <div className="superficie-pergaminho px-7 py-7">
+                  <p className="font-[family-name:var(--font-livro)] text-sm tracking-wide text-[#6b4f2e]">
+                    No seu exemplar do Tratado da Verdadeira Devoção
+                  </p>
+                  <p className="mt-2 font-[family-name:var(--font-livro)] text-3xl text-[#2a1d12]">
+                    {faixaDeLeitura(dia.leitura)}
+                  </p>
+                  <p className="mt-4 text-sm leading-relaxed text-[#4a3524]">
+                    {tamanhoDaLeitura(dia.leitura)}{" "}
+                    {tamanhoDaLeitura(dia.leitura) === 1
+                      ? "parágrafo"
+                      : "parágrafos"}
+                    . Leia devagar. Quando terminar, volte aqui para a
+                    explicação.
+                  </p>
                 </div>
 
                 <div className="voz-livro mt-9 text-[var(--texto-suave)]">
