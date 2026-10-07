@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Archivo } from "next/font/google";
 import { Movimento } from "@/components/atmosphere/Movimento";
+import { BarraDeEnsaioSeHouver } from "@/components/ensaio/BarraDeEnsaioSeHouver";
 import "./globals.css";
 
 /* A voz do livro: desenho francês do século XVI, a letra dos devocionários. */
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <Movimento>{children}</Movimento>
+        <BarraDeEnsaioSeHouver />
       </body>
     </html>
   );

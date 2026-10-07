@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { dataSimples, diferencaEmDias, hojeEm } from "./dataSimples";
-import { FESTAS, dataDaFesta, festaPorId } from "./festas";
+import {
+  FESTAS,
+  FESTAS_OFERECIDAS,
+  FESTAS_REAIS,
+  dataDaFesta,
+  festaPorId,
+} from "./festas";
 import {
   comecarHoje,
   dataDoDia,
@@ -142,7 +148,7 @@ describe("comecarHoje", () => {
 
 describe("festas", () => {
   it("todas as datas são fixas e se repetem todo ano", () => {
-    for (const festa of FESTAS) {
+    for (const festa of FESTAS_REAIS) {
       const a = dataDaFesta(festa, 2026);
       const b = dataDaFesta(festa, 2027);
       expect(a.slice(5)).toBe(b.slice(5));
@@ -150,8 +156,55 @@ describe("festas", () => {
   });
 
   it("não há duas festas no mesmo dia", () => {
-    const chaves = FESTAS.map((f) => `${f.mes}-${f.dia}`);
-    expect(new Set(chaves).size).toBe(FESTAS.length);
+    const chaves = FESTAS_REAIS.map((f) => `${f.mes}-${f.dia}`);
+    expect(new Set(chaves).size).toBe(FESTAS_REAIS.length);
+  });
+
+  it("são as vinte e quatro celebrações marianas, e só elas", () => {
+    expect(FESTAS_REAIS).toHaveLength(24);
+    expect(FESTAS_REAIS.some((f) => f.ensaio)).toBe(false);
+  });
+});
+
+describe("a data de ensaio", () => {
+  const ensaio = FESTAS.find((f) => f.ensaio)!;
+
+  it("existe, e está marcada como ensaio", () => {
+    expect(ensaio).toBeDefined();
+    expect(ensaio.id).toBe("dia-de-ensaio");
+  });
+
+  it("fica fora do calendário quando o modo está desligado", () => {
+    // Nos testes a variável não está definida, que é o estado de produção.
+    expect(FESTAS_OFERECIDAS).toBe(FESTAS_REAIS);
+    expect(FESTAS_OFERECIDAS.some((f) => f.ensaio)).toBe(false);
+  });
+
+  it("não tem dia no calendário: é sempre daqui a trinta e três dias", () => {
+    // O mes/dia da entrada são marcadores inertes; quem manda é o relógio.
+    // É por isso que a prova de unicidade acima olha só as festas reais —
+    // o marcador 1/1 colide de propósito com Santa Maria, Mãe de Deus.
+    const hoje = hojeEm("America/Sao_Paulo");
+    const esperada = dataSimples(
+      new Date(Date.UTC(
+        Number(hoje.slice(0, 4)),
+        Number(hoje.slice(5, 7)) - 1,
+        Number(hoje.slice(8, 10)) + TOTAL_DIAS,
+      ))
+        .toISOString()
+        .slice(0, 10),
+    );
+
+    expect(dataDaFesta(ensaio, 2026)).toBe(esperada);
+    // O ano pedido é ignorado, de propósito.
+    expect(dataDaFesta(ensaio, 2030)).toBe(esperada);
+  });
+
+  it("começa hoje, que é a razão de ela existir", () => {
+    const hoje = hojeEm("America/Sao_Paulo");
+    const c = montarCronograma(ensaio, 2026);
+    expect(c.inicio).toBe(hoje);
+    expect(diferencaEmDias(c.inicio, c.consagracao)).toBe(TOTAL_DIAS);
   });
 });
 

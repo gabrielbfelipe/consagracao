@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clienteServidor, usuarioAtual } from "@/lib/supabase/servidor";
 import { dataDaFesta, festaPorId, type FestaId } from "@/lib/agenda/festas";
+import { MODO_ENSAIO } from "@/lib/ensaio/modo";
 import { cronogramaPara } from "@/lib/agenda/cronograma";
 import { dataSimples, hojeEm } from "@/lib/agenda/dataSimples";
 import { TOTAL_DIAS } from "./etapas";
@@ -29,6 +30,13 @@ export async function escolherData(dados: FormData) {
   const festa = festaPorId(festaId);
   if (!Number.isInteger(ano)) {
     throw new Error("Ano inválido.");
+  }
+
+  // A data de ensaio não é festa de Nossa Senhora. Com o modo desligado ela
+  // nem aparece no calendário, mas quem conhecesse o endereço ainda poderia
+  // enviar o formulário; é aqui que isso para.
+  if (festa.ensaio && !MODO_ENSAIO) {
+    throw new Error("Esta data não está disponível.");
   }
 
   const cronograma = cronogramaPara(festa, dataDaFesta(festa, ano));

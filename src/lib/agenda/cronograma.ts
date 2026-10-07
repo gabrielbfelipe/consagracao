@@ -144,6 +144,14 @@ export function opcoesDeData(
       }),
     )
     .filter((o) => o.viavel)
+    // A mesma festa aparece para este ano e para o seguinte; a de ensaio
+    // devolve a mesma data nas duas voltas e apareceria em duplicata.
+    .filter(
+      (o, i, todas) =>
+        todas.findIndex(
+          (x) => x.festa.id === o.festa.id && x.data === o.data,
+        ) === i,
+    )
     .sort((a, b) => a.data.localeCompare(b.data))
     .slice(0, quantidade);
 }

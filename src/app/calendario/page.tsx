@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import type { Metadata } from "next";
-import { FESTAS } from "@/lib/agenda/festas";
+import { FESTAS_OFERECIDAS } from "@/lib/agenda/festas";
 import { opcoesDeData } from "@/lib/agenda/cronograma";
 import { diaEMes, hojeEm, porExtenso } from "@/lib/agenda/dataSimples";
 import { Passagem } from "@/components/atmosphere/Passagem";
@@ -24,7 +24,7 @@ export default async function Calendario() {
 
   // Enquanto não há perfil, o calendário fala a partir do Brasil.
   const hoje = hojeEm("America/Sao_Paulo");
-  const opcoes = opcoesDeData(hoje, FESTAS, 24);
+  const opcoes = opcoesDeData(hoje, FESTAS_OFERECIDAS, 25);
 
   return (
     <Passagem>
@@ -91,8 +91,14 @@ export default async function Calendario() {
                     {festa.resumo}
                   </p>
 
-                  <p className="mt-auto pt-7 text-xs text-[color-mix(in_oklab,var(--color-pergaminho)_48%,transparent)]">
-                    {GRAU[festa.grau]}
+                  <p
+                    className={`mt-auto pt-7 text-xs ${
+                      festa.ensaio
+                        ? "font-[family-name:var(--font-interface)] tracking-wide text-[#e8b964] uppercase"
+                        : "text-[color-mix(in_oklab,var(--color-pergaminho)_48%,transparent)]"
+                    }`}
+                  >
+                    {festa.ensaio ? "Ensaio — não é consagração" : GRAU[festa.grau]}
                   </p>
 
                   <p className="mt-3 text-sm text-[var(--color-ouro)]">
