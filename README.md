@@ -69,6 +69,26 @@ Uma vez autenticada, a pessoa só volta à vitrine clicando em "Sair". As salas
 públicas trocam de pórtico sozinhas (`PorticoDaSala`), e o proxy devolve `/`,
 `/entrar` e `/cadastro` para `/caminho` enquanto houver sessão.
 
+### Trocar a data não custa nada
+
+A data da consagração pode ser trocada a qualquer momento, em qualquer fase —
+inclusive no próprio Grande Dia, porque quem precisa adiar costuma precisar no
+pior momento. A troca **altera a jornada que existe** em vez de abrir outra, e
+é por isso que o diário, a carta do primeiro dia, o motivo e os dias já acesos
+atravessam intactos: tudo isso pende da jornada, e uma jornada nova deixaria o
+histórico órfão e invisível. `npm run verificar:troca` prova exatamente isso —
+compara o identificador da jornada antes e depois, e não só as datas.
+
+### Modo de ensaio
+
+`NEXT_PUBLIC_MODO_ENSAIO=1` põe no calendário uma data cuja preparação começa
+sempre hoje, e uma régua no pé da tela que anda pelos 33 dias sem esperar 33
+dias — movendo as datas da jornada, nunca o relógio. Sem a variável, a data
+some do calendário e o servidor recusa-a mesmo para quem souber o endereço;
+as 24 datas marianas continuam a ser a regra. Na Vercel está ligada apenas
+para prévias. `npm run verificar:ensaio` percorre a jornada inteira, incluindo
+a carta que só se abre no Grande Dia.
+
 ### Decisões que valem saber
 
 **A luz é o estado.** Um dia concluído não fica verde nem ganha um símbolo de

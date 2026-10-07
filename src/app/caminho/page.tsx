@@ -74,6 +74,32 @@ function Botao({
 
 /* -------------------------------------------------------------------------- */
 
+/**
+ * A saída para trocar a data já escolhida.
+ *
+ * Discreta de propósito, e presente em todas as fases: quem precisa adiar
+ * costuma precisar no pior momento — uma doença na véspera, uma viagem que
+ * caiu em cima da preparação —, e descobrir que a data é irreversível seria
+ * motivo para abandonar tudo.
+ *
+ * Não leva embora nada: a troca move as datas da mesma jornada, e o diário,
+ * a carta, o motivo e os dias já acesos continuam onde estavam.
+ */
+function TrocarAData() {
+  return (
+    <p className="mt-10">
+      <Link
+        href="/calendario?trocar=1"
+        className="text-sm text-[var(--texto-suave)] underline
+          decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
+          transition-colors hover:text-[var(--color-pergaminho)]"
+      >
+        Trocar a data da consagração
+      </Link>
+    </p>
+  );
+}
+
 function SemJornada() {
   return (
     <Moldura sala="biblioteca">
@@ -104,6 +130,7 @@ function Aguardando({ jornada, faltam }: { jornada: Jornada; faltam: number }) {
         pode ler o guia e providenciar seu exemplar do Tratado.
       </p>
       <Botao href="/sobre/a-preparacao">Ler sobre a preparação</Botao>
+      <TrocarAData />
     </Moldura>
   );
 }
@@ -159,6 +186,8 @@ function EmCurso({ jornada }: { jornada: Jornada }) {
           A carta do primeiro dia e o meu motivo
         </Link>
       </p>
+
+      <TrocarAData />
     </Moldura>
   );
 }
@@ -175,6 +204,7 @@ function GrandeDia({ jornada }: { jornada: Jornada }) {
         você faz sua consagração.
       </p>
       <Botao href="/grande-dia">Abrir o guia de hoje</Botao>
+      <TrocarAData />
     </Moldura>
   );
 }
@@ -199,6 +229,7 @@ function Consagrado({ jornada }: { jornada: Jornada }) {
       <p className="mt-10 text-sm text-[var(--texto-suave)]">
         A jornada de pós-consagração está sendo preparada.
       </p>
+      <TrocarAData />
     </Moldura>
   );
 }

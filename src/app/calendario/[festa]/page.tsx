@@ -5,6 +5,7 @@ import { montarCronograma, situacao } from "@/lib/agenda/cronograma";
 import { escolherData } from "@/lib/jornada/acoes";
 import { Previa } from "@/components/jornada/Previa";
 import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
+import { jornadaAtual } from "@/lib/jornada/repositorio";
 import {
   diaEMes,
   diferencaEmDias,
@@ -28,10 +29,19 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
   const festa = FESTAS.find((f) => f.id === id);
   if (!festa) notFound();
 
-  const hoje = hojeEm("America/Sao_Paulo");
+  // Quem já tem jornada não está a escolher: está a trocar, e a tela tem de
+  // dizer isso antes do clique — e também o que acontece com o que já
+  // escreveu, que é a dúvida que trava qualquer um.
+  const jornada = await jornadaAtual().catch(() => null);
+
+  const hoje = jornada?.hoje ?? hojeEm("America/Sao_Paulo");
   const anoEscolhido = Number(ano) || Number(hoje.slice(0, 4));
   const c = montarCronograma(festaPorId(festa.id as FestaId), anoEscolhido);
   const s = situacao(c, hoje);
+
+  const trocando = Boolean(jornada);
+  const jaEMinha =
+    jornada?.festa.id === festa.id && jornada?.consagracao === c.consagracao;
 
   const diasAteComecar = diferencaEmDias(hoje, c.inicio);
   const diasAteConsagracao = diferencaEmDias(hoje, c.consagracao);
@@ -159,6 +169,11 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
               Esta data já passou neste ano. Escolha outra celebração, ou esta
               mesma no ano que vem.
             </p>
+          ) : jaEMinha ? (
+            <p className="max-w-[46ch] text-center text-[var(--texto-suave)]">
+              Esta já é a sua data. Não há nada a fazer aqui — sua preparação
+              segue para {porExtenso(c.consagracao)}.
+            </p>
           ) : (
             <form action={escolherData}>
               <input type="hidden" name="festa" value={festa.id} />
@@ -171,9 +186,29 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
               hover:text-[var(--color-ouro-luz)]
               hover:shadow-[inset_0_0_0_1px_var(--color-ouro),0_0_32px_-10px_color-mix(in_oklab,var(--color-ouro)_70%,transparent)]"
               >
-                Escolher esta data
+                {trocando ? "Trocar para esta data" : "Escolher esta data"}
               </button>
+
+              {trocando && (
+                <p className="mx-auto mt-6 max-w-[48ch] text-center text-sm leading-relaxed text-[var(--texto-suave)]">
+                  Sua data passa de {porExtenso(jornada!.consagracao)} para{" "}
+                  {porExtenso(c.consagracao)}. O diário, a carta do primeiro
+                  dia, o seu motivo e os dias já acesos continuam seus — e você
+                  pode trocar de novo quando quiser.
+                </p>
+              )}
             </form>
+          )}
+
+          {trocando && (
+            <Link
+              href="/caminho"
+              className="text-sm text-[var(--texto-suave)] underline
+              decoration-[color-mix(in_oklab,var(--color-ouro)_40%,transparent)] underline-offset-[6px]
+              transition-colors hover:text-[var(--color-pergaminho)]"
+            >
+              Deixar como está e voltar ao meu caminho
+            </Link>
           )}
 
           <Link

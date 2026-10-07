@@ -11,10 +11,22 @@ import { TOTAL_DIAS } from "./etapas";
 import { PASSOS, type PassoId } from "./passos";
 
 /**
- * Registra a data escolhida e abre a jornada.
+ * Registra a data escolhida e abre a jornada — ou troca a data já escolhida.
  *
  * As datas são recalculadas aqui a partir do identificador da festa: o que
  * vem do formulário é apenas a escolha, nunca o cronograma já pronto.
+ *
+ * Quando já existe jornada, esta ação ALTERA aquela linha em vez de abrir
+ * outra. A diferença importa por dois motivos. O primeiro é que o progresso,
+ * o diário, o motivo e a carta pendem da jornada: abrir uma segunda deixaria
+ * tudo isso preso à primeira, invisível e vivo — e era o que acontecia antes,
+ * porque a tela mostra sempre a jornada mais recente. O segundo é que trocar
+ * de data não é desistir: o que a pessoa escreveu continua dela.
+ *
+ * O progresso é guardado por número de dia, e não por data, de modo que ele
+ * atravessa a troca intacto. Quem adiar a consagração volta a um dia menor
+ * com dias à frente já acesos; é estranho de ver e é honesto — aqueles dias
+ * foram mesmo vividos.
  */
 export async function escolherData(dados: FormData) {
   const festaId = String(dados.get("festa") ?? "") as FestaId;
@@ -49,17 +61,33 @@ export async function escolherData(dados: FormData) {
   }
 
   const supabase = await clienteServidor();
-  const { error } = await supabase.from("jornadas").insert({
-    perfil_id: usuario.id,
+
+  // O RLS já limita o que se enxerga à própria pessoa; esta consulta serve
+  // só para saber se é a primeira escolha ou uma troca.
+  const { data: existente } = await supabase
+    .from("jornadas")
+    .select("id")
+    .order("criado_em", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string }>();
+
+  const campos = {
     festa_id: festa.id,
     consagracao: cronograma.consagracao,
     inicio: cronograma.inicio,
     status: cronograma.inicio === hoje ? "ativa" : "planejada",
-  });
+  } as const;
+
+  const { error } = existente
+    ? await supabase.from("jornadas").update(campos).eq("id", existente.id)
+    : await supabase
+        .from("jornadas")
+        .insert({ perfil_id: usuario.id, ...campos });
 
   if (error) throw new Error(error.message);
 
-  revalidatePath("/caminho");
+  // Layout, e não página: a jornada aparece em salas que não são /caminho.
+  revalidatePath("/", "layout");
   redirect("/caminho");
 }
 
