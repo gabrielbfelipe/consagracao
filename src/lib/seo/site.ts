@@ -12,6 +12,17 @@
  * domínio, ponha NEXT_PUBLIC_SITE_URL nas variáveis da Vercel e nada mais
  * precisa mudar.
  *
+ * ESTE VALOR JÁ ESTEVE ERRADO, E NINGUÉM TERIA REPARADO.
+ * Durante um tempo ele foi consagracao-plum.vercel.app, que era o endereço
+ * de então. O projeto ganhou domínio próprio, o antigo deixou de existir, e
+ * o site continuou a servir páginas perfeitas cujo canonical apontava para
+ * um endereço que devolve 404. Para o Google, isso é cada página a dizer
+ * "o original está noutro sítio" — e o outro sítio não existe.
+ *
+ * Nada falha quando isto acontece: o site funciona, os testes passam, a
+ * compilação passa. Só a indexação morre, em silêncio. Ao mudar de domínio,
+ * mude aqui primeiro.
+ *
  * ATENÇÃO: o endereço canónico tem de ser um endereço que você controla.
  * Apontar o canonical para um domínio alheio é pedir ao Google que tire o
  * site do índice e credite o conteúdo a outra pessoa.
@@ -23,7 +34,7 @@ function semBarraFinal(url: string): string {
 
 /** O endereço de produção. É daqui que saem todos os canonicals. */
 export const SITE_URL = semBarraFinal(
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://consagracao-plum.vercel.app",
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://verdadeiradevocao.vercel.app",
 );
 
 export const SITE_NOME = "Consagração a Nossa Senhora";
