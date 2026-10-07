@@ -80,6 +80,9 @@ export function Espaco({
 
   return (
     <aside
+      // A marca que o globals.css usa para esconder o espaço enquanto a rede
+      // não o preencher. Ver a regra lá, com o motivo.
+      data-anuncio
       aria-label={ROTULO}
       className={`mx-auto w-full max-w-5xl px-6 py-14 sm:px-10 ${PEDIDO[formato].altura}`}
     >

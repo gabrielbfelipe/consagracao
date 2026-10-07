@@ -43,14 +43,26 @@ export type Produto = {
   destaque?: boolean;
 };
 
+/*
+ * SOBRE ESTES LINKS, PARA QUEM MEXER AQUI DEPOIS
+ *
+ * São links de afiliado gerados no aplicativo do Mercado Livre. Não abrem a
+ * página do produto: caem todos em mercadolivre.com.br/social/gabrielbfelipe,
+ * uma vitrine com dezenas de peças. O produto de cada um vive no parâmetro
+ * `ref`, que é opaco — mas o Mercado Livre resolve-o no servidor e põe o
+ * título e a foto certos nas etiquetas Open Graph, que é de onde o
+ * `npm run produtos` os tira. Por isso cada um traz uma foto, e não o
+ * carrossel inteiro do vendedor.
+ *
+ * Para ter o carrossel completo, gere o link na própria página do produto
+ * (o que resolve para /MLB-… ou /p/MLB…) e rode `npm run produtos -- --tudo`.
+ */
 export const PRODUTOS: readonly Produto[] = [
-  // Exemplo do formato — apague esta entrada ao pôr a primeira de verdade.
-  // {
-  //   id: "cadeia-aco-inox",
-  //   link: "https://mercadolivre.com/sec/SEU-LINK",
-  //   nota: "Aço inoxidável, fecho resistente. A que eu uso.",
-  //   destaque: true,
-  // },
+  { id: "cadeia-nossa-senhora-inox", link: "https://meli.la/2ZqzNmu" },
+  { id: "cadeia-fatima-sao-bento", link: "https://meli.la/2Us1RFu" },
+  { id: "cadeia-sao-jose", link: "https://meli.la/1FEwWet" },
+  { id: "cadeia-tres-medalhas", link: "https://meli.la/2P1toUo" },
+  { id: "cadeia-aparecida", link: "https://meli.la/1sYRVHU" },
 ] as const;
 
 /**
@@ -61,7 +73,18 @@ export const PRODUTOS: readonly Produto[] = [
  * exigência, quem lê tem direito de saber que o link rende comissão.
  */
 export const AVISO_DE_AFILIADO =
-  "Os links desta página são de afiliado: se você comprar por eles, uma parte do valor volta para manter este site, sem nenhum custo a mais para você. Como Associado da Amazon, recebo por compras qualificadas.";
+  "Os links desta página são de afiliado: se você comprar por eles, uma parte do valor volta para manter este site, sem nenhum custo a mais para você.";
+
+/**
+ * A frase que a Amazon exige de quem participa do programa dela.
+ *
+ * Fica à parte porque só é verdade quando há produto da Amazon na página. A
+ * página junta-a ao aviso quando houver, e omite-a quando não houver —
+ * declarar-se Associado da Amazon numa página sem um único link da Amazon é
+ * uma afirmação falsa, ainda que inofensiva.
+ */
+export const AVISO_DA_AMAZON =
+  "Como Associado da Amazon, recebo por compras qualificadas.";
 
 /** Texto de abertura da página, editável sem mexer no código da tela. */
 export const APRESENTACAO = {

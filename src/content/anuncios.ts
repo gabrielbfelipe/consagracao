@@ -57,34 +57,45 @@ export type Espaco = {
  * que se fecha. Aqui o anúncio aparece quando a pessoa chegou ao fim do que
  * foi ler — que é também quando ela está mais disposta a olhar para o lado.
  */
+/**
+ * O bloco criado no painel do AdSense.
+ *
+ * É um só, usado nos seis espaços — o AdSense permite repetir um bloco em
+ * vários lugares. O que se perde é o relatório separado: você vê quanto
+ * rendeu o conjunto, não quanto rendeu o pé do calendário contra o pé da
+ * página inicial. Quando quiser essa conta, crie um bloco por espaço no
+ * painel e troque o número de cada um abaixo, um a um.
+ */
+const BLOCO_UNICO = "8582824254";
+
 export const ESPACOS = {
   "home-pe": {
-    unidade: "",
+    unidade: BLOCO_UNICO,
     formato: "faixa",
     onde: "Página inicial, depois do convite final e antes do rodapé",
   },
   "calendario-pe": {
-    unidade: "",
+    unidade: BLOCO_UNICO,
     formato: "faixa",
     onde: "Calendário mariano, depois das vinte e quatro festas",
   },
   "festa-pe": {
-    unidade: "",
+    unidade: BLOCO_UNICO,
     formato: "retangulo",
     onde: "Página de uma festa, depois do cronograma e do botão",
   },
   "sobre-fim": {
-    unidade: "",
+    unidade: BLOCO_UNICO,
     formato: "retangulo",
     onde: "Fim de cada página de apresentação, antes do convite",
   },
   "biblioteca-pe": {
-    unidade: "",
+    unidade: BLOCO_UNICO,
     formato: "faixa",
     onde: "Índice da biblioteca, depois da lista de orações",
   },
   "cadeias-pe": {
-    unidade: "",
+    unidade: BLOCO_UNICO,
     formato: "faixa",
     onde: "Sala das cadeias, depois dos produtos",
   },
@@ -92,8 +103,20 @@ export const ESPACOS = {
 
 export type Posicao = keyof typeof ESPACOS;
 
-/** O código de editor. Sem ele, não há publicidade em lugar nenhum. */
-export const EDITOR = process.env.NEXT_PUBLIC_ADSENSE_ID ?? "";
+/**
+ * O código de editor do AdSense.
+ *
+ * Fica escrito aqui, e não só no ambiente, porque não é segredo nenhum: sai
+ * no HTML de toda página com anúncio, à vista de quem abrir o código-fonte.
+ * Escondê-lo numa variável de ambiente daria o trabalho de a configurar
+ * também na Vercel, com o risco de alguém esquecer e a publicidade sumir em
+ * produção sem ninguém perceber.
+ *
+ * A variável continua a valer, e serve para o contrário: pondo-a vazia,
+ * desliga-se a publicidade do site inteiro sem mexer no código.
+ */
+export const EDITOR =
+  process.env.NEXT_PUBLIC_ADSENSE_ID ?? "ca-pub-6151388769385390";
 
 export const ANUNCIOS_LIGADOS = EDITOR.startsWith("ca-pub-");
 

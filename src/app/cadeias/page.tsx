@@ -6,7 +6,12 @@ import { Passagem } from "@/components/atmosphere/Passagem";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Carrossel } from "@/components/loja/Carrossel";
 import { Anuncio } from "@/components/anuncios/Anuncio";
-import { APRESENTACAO, AVISO_DE_AFILIADO, PRODUTOS } from "@/content/produtos";
+import {
+  APRESENTACAO,
+  AVISO_DA_AMAZON,
+  AVISO_DE_AFILIADO,
+  PRODUTOS,
+} from "@/content/produtos";
 import fotosGuardadas from "@/content/produtos-fotos.json";
 import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
 import { grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
@@ -53,6 +58,12 @@ export default async function Cadeias() {
       loja: buscado?.loja ?? null,
     };
   });
+
+  // A frase da Amazon só entra quando há produto da Amazon. Ver produtos.ts.
+  const temAmazon = produtos.some((p) => p.loja === "Amazon");
+  const aviso = temAmazon
+    ? `${AVISO_DE_AFILIADO} ${AVISO_DA_AMAZON}`
+    : AVISO_DE_AFILIADO;
 
   const emDestaque = produtos.filter((p) => p.destaque);
   const demais = produtos.filter((p) => !p.destaque);
@@ -120,7 +131,7 @@ export default async function Cadeias() {
               )}
 
               <p className="mx-auto mt-20 max-w-[58ch] text-center text-sm leading-relaxed text-[var(--texto-suave)]">
-                {AVISO_DE_AFILIADO}
+                {aviso}
               </p>
             </>
           )}

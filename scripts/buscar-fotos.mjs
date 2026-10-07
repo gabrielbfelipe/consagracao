@@ -133,7 +133,10 @@ for (const produto of produtos) {
     const pelaApi =
       loja === "Mercado Livre" ? await fotosPelaApiDoML(url) : null;
 
-    const fotos = (pelaApi?.fotos ?? colher(html, loja)).slice(0, MAXIMO_FOTOS);
+    const fotos = (pelaApi?.fotos ?? colher(html, loja, url)).slice(
+      0,
+      MAXIMO_FOTOS,
+    );
     const titulo = produto.titulo ?? pelaApi?.titulo ?? tituloDe(html);
 
     if (fotos.length === 0) {
@@ -254,10 +257,33 @@ function tituloDe(html) {
  * loja, com a meta og:image como rede de segurança — ela existe em quase
  * toda página de produto e garante ao menos uma imagem.
  */
-function colher(html, loja) {
+function colher(html, loja, url = "") {
   const fotos = [];
 
-  if (loja === "Mercado Livre") {
+  /*
+   * O PERFIL SOCIAL DO MERCADO LIVRE
+   *
+   * Os links de afiliado gerados no aplicativo (meli.la/…) não abrem a página
+   * do produto: caem em mercadolivre.com.br/social/SEU-NOME, uma vitrine com
+   * dezenas de peças. O produto que o link realmente aponta está escondido no
+   * parâmetro `ref`, que é opaco — mas o Mercado Livre resolve-o no servidor
+   * e põe o título e a foto **daquele** produto nas etiquetas Open Graph, que
+   * é como o WhatsApp mostra a pré-visualização certa ao partilhar o link.
+   *
+   * É por isso que, aqui, não se varre a página. Varrendo, apanhavam-se as
+   * miniaturas das dezenas de peças da vitrine e montava-se um carrossel de
+   * produtos que não são o do link — com um título que também não era o dele.
+   * Parecia funcionar: doze fotos, cinco títulos diferentes. Descobriu-se
+   * olhando os códigos MLB dentro dos endereços das imagens, que eram de onze
+   * anúncios distintos.
+   *
+   * Do og:image vem uma foto só, e é a do produto certo. Uma foto certa vale
+   * mais do que doze erradas. Para o carrossel inteiro é preciso o link
+   * gerado na própria página do produto, que resolve para /MLB-… ou /p/MLB….
+   */
+  const ePerfilSocial = loja === "Mercado Livre" && /\/social\//.test(url);
+
+  if (loja === "Mercado Livre" && !ePerfilSocial) {
     // O Mercado Livre serve as fotos a partir de mlstatic.com, e o sufixo
     // diz o tamanho. Pedimos a versão grande trocando o sufixo.
     for (const m of html.matchAll(
@@ -286,7 +312,14 @@ function colher(html, loja) {
   for (const m of html.matchAll(
     /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/gi,
   )) {
-    fotos.push(limpar(m[1]));
+    const endereco = limpar(m[1]);
+    // O Mercado Livre serve a foto do Open Graph em tamanho pequeno; o
+    // sufixo do nome diz o tamanho, e trocá-lo traz a versão grande.
+    fotos.push(
+      /mlstatic\.com/.test(endereco)
+        ? endereco.replace(/D_(?:NQ_)?(?:NP_)?(?:2X_)?/, "D_NQ_NP_2X_")
+        : endereco,
+    );
   }
 
   // Sem repetidas, e sem as miniaturas de interface que escapam do filtro.

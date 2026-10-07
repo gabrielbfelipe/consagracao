@@ -535,3 +535,31 @@ body {
 [data-retiro="true"] {
   --ease-santuario: cubic-bezier(0.33, 0.6, 0.3, 1);
 }
+
+/* ---------------------------------------------------------------------------
+   O espaço de publicidade só existe quando há publicidade.
+
+   O AdSense marca cada bloco com data-ad-status: "filled" quando serviu um
+   anúncio, "unfilled" quando não tinha nenhum para aquele lugar. Medido em
+   localhost, o não preenchido não encolhe sozinho — fica uma moldura vazia
+   com a palavra PUBLICIDADE por cima, que é pior do que não ter anúncio
+   nenhum. E com um bloqueador de anúncios o atributo nem chega a existir,
+   caso em que a moldura ficaria para sempre.
+
+   Por isso a regra é pela afirmativa: o espaço nasce escondido e só aparece
+   quando o atributo diz, com todas as letras, que foi preenchido. Qualquer
+   outra situação — sem resposta, sem inventário, bloqueado — não deixa
+   marca na página.
+
+   O :has() olha para dentro do elemento, que é o que permite esconder o
+   <aside> por causa de um atributo do <ins> lá dentro. Tem suporte em todos
+   os navegadores desde o fim de 2023; onde não houver, a regra é ignorada e
+   o espaço simplesmente aparece, que é a falha mais branda possível.
+   --------------------------------------------------------------------------- */
+aside[data-anuncio] {
+  display: none;
+}
+
+aside[data-anuncio]:has(ins[data-ad-status="filled"]) {
+  display: block;
+}

@@ -95,10 +95,17 @@ describe("as regras da rede", () => {
     expect(["Publicidade", "Anúncios"]).toContain(ROTULO);
   });
 
-  it("sem código de editor, não há publicidade", async () => {
-    // O ambiente de teste não define NEXT_PUBLIC_ADSENSE_ID, e é assim que
-    // tem de ser: o padrão de um site sem configuração é não anunciar.
-    const { ANUNCIOS_LIGADOS } = await import("@/content/anuncios");
-    expect(ANUNCIOS_LIGADOS).toBe(false);
+  it("o código de editor tem a forma que o AdSense emite", async () => {
+    const { EDITOR, ANUNCIOS_LIGADOS } = await import("@/content/anuncios");
+    expect(EDITOR).toMatch(/^ca-pub-\d{16}$/);
+    expect(ANUNCIOS_LIGADOS).toBe(true);
+  });
+
+  it("todo espaço tem um bloco, e o bloco é um número", () => {
+    // Um espaço sem bloco não aparece — o que é o comportamento certo, e
+    // também a forma mais silenciosa de ficar sem publicidade sem perceber.
+    for (const [nome, espaco] of Object.entries(ESPACOS)) {
+      expect(`${nome}: ${espaco.unidade}`).toMatch(/: \d{8,}$/);
+    }
   });
 });
