@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
@@ -285,5 +287,41 @@ describe("a verificação do Search Console", () => {
     // valor inventado, que o Google conta como tentativa falhada.
     if (VERIFICACAO_GOOGLE === "") return;
     expect(VERIFICACAO_GOOGLE).toMatch(/^[A-Za-z0-9_-]{30,100}$/);
+  });
+});
+
+describe("o arquivo de verificacao do Search Console", () => {
+  const NOME = "google3ea6d49e48aa1d7d.html";
+  const CONTEUDO = `google-site-verification: ${NOME}`;
+
+  /**
+   * O Google busca este arquivo de tempos a tempos e retira a verificacao da
+   * propriedade se ele sumir ou mudar — levando junto os relatorios e a
+   * possibilidade de submeter o sitemap. Como e um arquivo solto em public/,
+   * sem nada no codigo a apontar para ele, e exatamente o tipo de coisa que
+   * alguem apaga numa limpeza sem perceber o que esta a apagar.
+   */
+  it("existe, com o conteudo exato que o Google espera", () => {
+    const caminho = join(process.cwd(), "public", NOME);
+    expect(readFileSync(caminho, "utf8").trim()).toBe(CONTEUDO);
+  });
+
+  it("o robots.txt nao o bloqueia", () => {
+    const regras = robots();
+    const geral = Array.isArray(regras.rules) ? regras.rules[0] : regras.rules;
+    const proibidos = [geral.disallow ?? []].flat().map(String);
+    for (const p of proibidos) {
+      expect(`/${NOME}`.startsWith(p)).toBe(false);
+    }
+  });
+
+  it("o proxy deixa passar os arquivos publicos de raiz", async () => {
+    // A verificacao, o robots, o sitemap e o ads.txt nao podem ser desviados
+    // por sessao nenhuma. Ver o comentario no matcher, em proxy.ts.
+    const fonte = readFileSync(join(process.cwd(), "src", "proxy.ts"), "utf8");
+    const matcher = fonte.slice(fonte.indexOf("matcher:"));
+    for (const extensao of ["html", "txt", "xml", "webmanifest"]) {
+      expect(matcher).toContain(extensao);
+    }
   });
 });

@@ -114,7 +114,22 @@ export async function proxy(requisicao: NextRequest) {
 
 export const config = {
   matcher: [
-    // Tudo, menos arquivos estáticos e imagens.
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif)$).*)",
+    // Tudo, menos arquivos estaticos.
+    //
+    // A lista de extensoes inclui html, txt, xml e webmanifest: sao o
+    // robots.txt, o sitemap.xml, o ads.txt, o manifesto e o arquivo de
+    // verificacao do Google Search Console. Enderecos publicos por
+    // natureza, que nenhuma sessao deve poder desviar.
+    //
+    // O caso que isto fecha nao e teorico: o ramo de sessao expirada
+    // acima redireciona *qualquer* caminho quando ha cookie do Supabase
+    // velho, e redirecionaria tambem o arquivo de verificacao, que o
+    // Google exige encontrar com o conteudo exato. Um visitante anonimo,
+    // como o robo, nao tem cookie e nunca cairia nisso; mas a regra nao
+    // deve depender de quem esta a bater a porta.
+    //
+    // Nenhuma rota da aplicacao termina em extensao, por isso exclui-las
+    // nao deixa nada de pessoal desprotegido.
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|html|txt|xml|webmanifest)$).*)",
   ],
 };
