@@ -112,6 +112,23 @@ export const PALAVRAS_CHAVE = [
  */
 export const VERIFICACAO_GOOGLE = "";
 
+/**
+ * O arquivo de verificação do Search Console, método "arquivo HTML".
+ *
+ * O Google dá um arquivo com nome próprio e conteúdo igual ao nome. Ele vive
+ * em public/, e o nome tem de bater exatamente: o conteúdo errado, ou o nome
+ * errado, e a verificação falha sem dizer por quê.
+ *
+ * Está aqui, e não espalhado, porque já mudou duas vezes — ao gerar uma
+ * propriedade nova o Google emite outro arquivo. O teste e o verificador
+ * leem este valor, de modo que trocar o arquivo é mexer em dois lugares: a
+ * pasta public/ e esta linha.
+ *
+ * ATENÇÃO: depois de verificado, não apague. O Google revalida de tempos a
+ * tempos e a propriedade perde a verificação se o arquivo sumir.
+ */
+export const ARQUIVO_DE_VERIFICACAO = "google449f11149f98326b.html";
+
 /** Transforma "/cadeias" em "https://.../cadeias". */
 export function urlAbsoluta(caminho: string): string {
   if (caminho === "/" || caminho === "") return `${SITE_URL}/`;

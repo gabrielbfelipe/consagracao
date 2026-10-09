@@ -10,6 +10,7 @@ import { ETAPAS } from "@/lib/jornada/etapas";
 import { grafoDaHome, grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
 import { cartao } from "@/lib/seo/cartao";
 import {
+  ARQUIVO_DE_VERIFICACAO,
   DESCRICAO_HOME,
   SITE_URL,
   TITULO_HOME,
@@ -278,7 +279,7 @@ describe("a verificação do Search Console", () => {
 });
 
 describe("o arquivo de verificacao do Search Console", () => {
-  const NOME = "google3ea6d49e48aa1d7d.html";
+  const NOME = ARQUIVO_DE_VERIFICACAO;
   const CONTEUDO = `google-site-verification: ${NOME}`;
 
   /**

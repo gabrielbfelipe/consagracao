@@ -22,26 +22,31 @@ import path from "node:path";
 const RAIZ = path.resolve(import.meta.dirname, "..");
 
 /**
- * O endereço sai de lib/seo/site.ts, que é a mesma fonte que as páginas usam.
- * Lido por expressão regular porque o Node não importa TypeScript — compilar
- * só para ler uma linha seria desproporcionado, e se a linha mudar de forma o
- * script avisa em vez de adivinhar.
+ * O endereço e o nome do arquivo de verificação saem de lib/seo/site.ts, que
+ * é a mesma fonte que as páginas usam — conferir contra uma cópia escrita
+ * aqui seria conferir o script contra ele próprio.
+ *
+ * Lidos por expressão regular porque o Node não importa TypeScript: compilar
+ * só para ler duas linhas seria desproporcionado. Se a linha mudar de forma,
+ * o script para e diz qual é, em vez de adivinhar.
  */
-function enderecoConfigurado() {
+function lerDeSite(padrao, oQue) {
   const fonte = readFileSync(path.join(RAIZ, "src/lib/seo/site.ts"), "utf8");
-  const m = fonte.match(/NEXT_PUBLIC_SITE_URL \?\? "([^"]+)"/);
+  const m = fonte.match(padrao);
   if (!m) {
-    console.error(
-      "Não encontrei o endereço em src/lib/seo/site.ts. Passe-o à mão:\n" +
-        "  npm run verificar:seo -- https://seu-dominio",
-    );
+    console.error(`Não encontrei ${oQue} em src/lib/seo/site.ts.`);
     process.exit(1);
   }
   return m[1];
 }
 
-const BASE = (process.argv[2] ?? enderecoConfigurado()).replace(/\/+$/, "");
-const ARQUIVO_DE_VERIFICACAO = "google3ea6d49e48aa1d7d.html";
+const BASE = (
+  process.argv[2] ?? lerDeSite(/NEXT_PUBLIC_SITE_URL \?\? "([^"]+)"/, "o endereço do site")
+).replace(/\/+$/, "");
+const ARQUIVO_DE_VERIFICACAO = lerDeSite(
+  /ARQUIVO_DE_VERIFICACAO = "([^"]+)"/,
+  "o arquivo de verificação do Search Console",
+);
 
 let falhas = 0;
 
