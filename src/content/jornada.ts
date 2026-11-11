@@ -469,6 +469,7 @@ export const DIAS: readonly Dia[] = [
       "O que na minha vida contradiz o que eu digo crer?",
     ],
     oracao: {
+      id: "ladainha-do-espirito-santo",
       nome: "Ladainha do Espírito Santo",
       motivo:
         "Aquele que agiu no batismo é o mesmo a quem se pede memória do que ali se prometeu.",
@@ -536,6 +537,7 @@ export const DIAS: readonly Dia[] = [
       "A quem eu confiaria algo precioso de verdade? Por quê?",
     ],
     oracao: {
+      id: "ladainha-do-espirito-santo",
       nome: "Ladainha do Espírito Santo",
       motivo:
         "Pede-se o dom da verdade antes de olhar para dentro, para que o olhar não se torne acusação.",
@@ -567,6 +569,7 @@ export const DIAS: readonly Dia[] = [
       "O que eu faço por costume e já não sei por quê?",
     ],
     oracao: {
+      id: "ladainha-de-nossa-senhora",
       nome: "Ladainha de Nossa Senhora",
       motivo:
         "O § 228 manda rezá-la todo dia desta semana. Entre os títulos está Refúgio dos pecadores.",
@@ -597,6 +600,7 @@ export const DIAS: readonly Dia[] = [
       "O que eu peço mais vezes? O que isso diz de mim?",
     ],
     oracao: {
+      id: "ladainha-do-espirito-santo",
       nome: "Ladainha do Espírito Santo",
       motivo:
         "Na primeira semana ela se repete todo dia, conforme o § 228, junto com a oração que a segue.",
@@ -627,6 +631,7 @@ export const DIAS: readonly Dia[] = [
       "Que virtude dela me parece mais distante de mim?",
     ],
     oracao: {
+      id: "ladainha-de-nossa-senhora",
       nome: "Ladainha de Nossa Senhora",
       motivo:
         "Cada invocação é um título antigo; rezá-las devagar é conhecê-la pelos nomes que a Igreja lhe deu.",
@@ -688,6 +693,7 @@ export const DIAS: readonly Dia[] = [
       "Por quem eu rezo, e custaria deixar de dirigir essas orações eu mesmo?",
     ],
     oracao: {
+      id: "ladainha-de-nossa-senhora",
       nome: "Ladainha de Nossa Senhora",
       motivo:
         "Antes de se dar a alguém, convém passar devagar pelos nomes dessa pessoa.",
@@ -718,6 +724,7 @@ export const DIAS: readonly Dia[] = [
       "O que eu levo desta semana para a próxima?",
     ],
     oracao: {
+      id: "ladainha-do-espirito-santo",
       nome: "Ladainha do Espírito Santo",
       motivo:
         "Fecha-se a semana pedindo o que o § 228 chama de fundamento de todas as outras graças.",
@@ -754,6 +761,7 @@ export const DIAS: readonly Dia[] = [
       "O que muda em mim se eu a tratar como mãe, e não como personagem?",
     ],
     oracao: {
+      id: "ladainha-de-nossa-senhora",
       nome: "Ladainha de Nossa Senhora",
       motivo:
         "Cada invocação é um título antigo; rezá-las devagar é conhecê-la pelos nomes que a Igreja lhe deu.",
@@ -816,6 +824,7 @@ export const DIAS: readonly Dia[] = [
       "Eu confio o bastante para ser conduzido?",
     ],
     oracao: {
+      id: "ladainha-do-espirito-santo",
       nome: "Ladainha do Espírito Santo",
       motivo:
         "Nesta semana pede-se a ele o conhecimento daquela que ele cobriu com sua sombra.",
@@ -846,6 +855,7 @@ export const DIAS: readonly Dia[] = [
       "O que eu faria se não tivesse de acertar sempre?",
     ],
     oracao: {
+      id: "ladainha-de-nossa-senhora",
       nome: "Ladainha de Nossa Senhora",
       motivo: "Entre os títulos está Consoladora dos aflitos.",
     },
@@ -935,6 +945,7 @@ export const DIAS: readonly Dia[] = [
       "Estou pronto para a última semana?",
     ],
     oracao: {
+      id: "ladainha-do-espirito-santo",
       nome: "Ladainha do Espírito Santo",
       motivo:
         "Fecha-se a semana pedindo a ele o conhecimento que se pediu durante sete dias.",
@@ -1034,6 +1045,7 @@ export const DIAS: readonly Dia[] = [
       "O que significa, concretamente, pertencer a Ele a partir de sexta-feira?",
     ],
     oracao: {
+      id: "ladainha-do-santissimo-nome-de-jesus",
       nome: "Ladainha do Santíssimo Nome de Jesus",
       motivo:
         "O § 230 acrescenta-a às orações desta semana, junto com as já conhecidas.",
@@ -1064,6 +1076,7 @@ export const DIAS: readonly Dia[] = [
       "Eu me envergonho de algum sinal visível? Diante de quem?",
     ],
     oracao: {
+      id: "ladainha-do-santissimo-nome-de-jesus",
       nome: "Ladainha do Santíssimo Nome de Jesus",
       motivo: "Os nomes d'Ele, repetidos, ensinam mais do que explicações.",
     },

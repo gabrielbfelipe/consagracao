@@ -154,10 +154,10 @@ export default async function Biblioteca() {
             </ul>
 
             <p className="mx-auto mt-16 max-w-[62ch] text-center text-sm leading-relaxed text-[color-mix(in_oklab,var(--texto)_55%,transparent)]">
-              As traduções ao português são próprias, feitas a partir do latim
-              para este aplicativo, e trazem o original ao lado para
-              conferência. Aguardam revisão. As ladainhas e o Rosário entrarão
-              em seguida.
+              Os hinos e as ladainhas trazem o texto português do devocionário
+              impresso, com o latim ao lado para conferência. Onde a tradução
+              ainda é nossa, a própria página o diz. O Rosário entrará em
+              seguida.
             </p>
           </div>
         </section>

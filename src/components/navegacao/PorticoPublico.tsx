@@ -65,82 +65,91 @@ export function PorticoPublico({
   const flutuante = sobreImagem && !rolou && !aberto;
 
   return (
-    <header
-      className={`top-0 right-0 left-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-700 ease-[var(--ease-santuario)] ${
-        sobreImagem ? "fixed" : "sticky"
-      } ${
-        flutuante
-          ? "bg-transparent"
-          : "bg-[color-mix(in_oklab,var(--color-sombra)_92%,transparent)] shadow-[0_1px_0_color-mix(in_oklab,var(--color-ouro)_22%,transparent)] backdrop-blur-sm"
-      }`}
-    >
-      <div className="mx-auto flex max-w-[110rem] items-center justify-between gap-8 px-6 py-5 sm:px-10">
-        <Marca aoClicar={() => setAberto(false)} />
+    <>
+      <header
+        className={`top-0 right-0 left-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-700 ease-[var(--ease-santuario)] ${
+          sobreImagem ? "fixed" : "sticky"
+        } ${
+          flutuante
+            ? "bg-transparent"
+            : "bg-[color-mix(in_oklab,var(--color-sombra)_92%,transparent)] shadow-[0_1px_0_color-mix(in_oklab,var(--color-ouro)_22%,transparent)] backdrop-blur-sm"
+        }`}
+      >
+        <div className="mx-auto flex max-w-[110rem] items-center justify-between gap-8 px-6 py-5 sm:px-10">
+          <Marca aoClicar={() => setAberto(false)} />
 
-        {/* Sete rótulos em português são muito mais largos que os do inglês:
-            com tipo grande eles transbordavam e engoliam o botão de ação.
-            Aqui a letra é menor e o entreletras, curto. */}
-        <nav aria-label="Seções" className="hidden items-center gap-6 xl:flex">
-          {itens.map((item) => (
-            <Elo
-              key={item.href}
-              href={item.href}
-              rotulo={item.rotulo}
-              ativo={caminho === item.href}
-              so2xl={item.so2xl}
-            />
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-6">
-          <Link
-            href="/entrar"
-            className="hidden font-[family-name:var(--font-interface)] text-sm whitespace-nowrap
-              text-[color-mix(in_oklab,var(--color-pergaminho)_60%,transparent)]
-              transition-colors duration-500 hover:text-[var(--color-pergaminho)] 2xl:inline"
-          >
-            Já tenho conta
-          </Link>
-
-          <Link
-            href="/cadastro"
-            className="brilho-borda hidden items-center px-8 py-3
-              font-[family-name:var(--font-livro)] text-sm tracking-[0.22em] indent-[0.22em] whitespace-nowrap
-              text-[var(--color-marfim)] uppercase
-              shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ouro)_65%,transparent)]
-              transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]
-              hover:text-[var(--color-ouro-luz)] hover:shadow-[inset_0_0_0_1px_var(--color-ouro-luz)] sm:inline-flex"
-          >
-            Iniciar
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => setAberto(!aberto)}
-            aria-expanded={aberto}
-            aria-controls="menu-completo"
-            className="flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-[5px]
-              rounded-full shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ouro)_55%,transparent)]
-              transition-colors duration-500 hover:shadow-[inset_0_0_0_1px_var(--color-ouro-luz)] xl:hidden"
-          >
-            <span className="sr-only">
-              {aberto ? "Fechar menu" : "Abrir menu"}
-            </span>
-            {[0, 1, 2].map((i) => (
-              <span
-                key={i}
-                aria-hidden
-                className={`block h-px w-4 bg-[var(--color-ouro)] transition-all duration-500 ease-[var(--ease-santuario)] ${
-                  aberto && i === 0 ? "translate-y-[6px] rotate-45" : ""
-                } ${aberto && i === 1 ? "opacity-0" : ""} ${
-                  aberto && i === 2 ? "-translate-y-[6px] -rotate-45" : ""
-                }`}
+          {/* Sete rótulos em português são muito mais largos que os do inglês:
+              com tipo grande eles transbordavam e engoliam o botão de ação.
+              Aqui a letra é menor e o entreletras, curto. */}
+          <nav aria-label="Seções" className="hidden items-center gap-6 xl:flex">
+            {itens.map((item) => (
+              <Elo
+                key={item.href}
+                href={item.href}
+                rotulo={item.rotulo}
+                ativo={caminho === item.href}
+                so2xl={item.so2xl}
               />
             ))}
-          </button>
-        </div>
-      </div>
+          </nav>
 
+          <div className="flex items-center gap-6">
+            <Link
+              href="/entrar"
+              className="hidden font-[family-name:var(--font-interface)] text-sm whitespace-nowrap
+                text-[color-mix(in_oklab,var(--color-pergaminho)_60%,transparent)]
+                transition-colors duration-500 hover:text-[var(--color-pergaminho)] 2xl:inline"
+            >
+              Já tenho conta
+            </Link>
+
+            <Link
+              href="/cadastro"
+              className="brilho-borda hidden items-center px-8 py-3
+                font-[family-name:var(--font-livro)] text-sm tracking-[0.22em] indent-[0.22em] whitespace-nowrap
+                text-[var(--color-marfim)] uppercase
+                shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ouro)_65%,transparent)]
+                transition-[box-shadow,color] duration-500 ease-[var(--ease-santuario)]
+                hover:text-[var(--color-ouro-luz)] hover:shadow-[inset_0_0_0_1px_var(--color-ouro-luz)] sm:inline-flex"
+            >
+              Iniciar
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setAberto(!aberto)}
+              aria-expanded={aberto}
+              aria-controls="menu-completo"
+              className="flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-[5px]
+                rounded-full shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ouro)_55%,transparent)]
+                transition-colors duration-500 hover:shadow-[inset_0_0_0_1px_var(--color-ouro-luz)] xl:hidden"
+            >
+              <span className="sr-only">
+                {aberto ? "Fechar menu" : "Abrir menu"}
+              </span>
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  aria-hidden
+                  className={`block h-px w-4 bg-[var(--color-ouro)] transition-all duration-500 ease-[var(--ease-santuario)] ${
+                    aberto && i === 0 ? "translate-y-[6px] rotate-45" : ""
+                  } ${aberto && i === 1 ? "opacity-0" : ""} ${
+                    aberto && i === 2 ? "-translate-y-[6px] -rotate-45" : ""
+                  }`}
+                />
+              ))}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* O menu fica FORA do cabeçalho de propósito.
+          Dentro dele nunca abria: o pórtico assentado usa backdrop-blur, e
+          um elemento com backdrop-filter passa a ser o bloco de contenção
+          dos descendentes fixos. O painel, que é `fixed inset-0`, era então
+          medido contra a faixa de 5.25rem do próprio cabeçalho e nascia com
+          altura zero — o ícone virava cruz e não se via nada. Aqui ele se
+          mede contra a janela, e o z-40 o deixa correr por baixo da faixa. */}
       <AnimatePresence>
         {aberto && (
           <motion.nav
@@ -150,7 +159,7 @@ export function PorticoPublico({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 top-[5.25rem] overflow-y-auto bg-[var(--color-sombra)] xl:hidden"
+            className="fixed inset-0 top-[5.25rem] z-40 overflow-y-auto bg-[var(--color-sombra)] xl:hidden"
           >
             <ul className="px-6 py-8 sm:px-10">
               {itens.map((item, i) => (
@@ -193,7 +202,7 @@ export function PorticoPublico({
           </motion.nav>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
 
