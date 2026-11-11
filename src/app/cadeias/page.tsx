@@ -10,6 +10,7 @@ import {
   APRESENTACAO,
   AVISO_DA_AMAZON,
   AVISO_DE_AFILIADO,
+  GUIA,
   PRODUTOS,
 } from "@/content/produtos";
 import fotosGuardadas from "@/content/produtos-fotos.json";
@@ -105,6 +106,42 @@ export default async function Cadeias() {
               {APRESENTACAO.nota}
             </p>
           </header>
+
+          {/* O guia vem antes das lojas, de propósito: quem chega aqui tem
+              uma dúvida antes de ter uma compra. */}
+          <div className="mx-auto mt-20 max-w-[66ch]">
+            {GUIA.map((secao) => (
+              <section key={secao.titulo} className="mt-14 first:mt-0">
+                <h2 className="font-[family-name:var(--font-livro)] text-[clamp(1.4rem,1.2rem+0.9vw,1.9rem)] leading-snug text-[var(--texto)]">
+                  {secao.titulo}
+                </h2>
+                <div
+                  aria-hidden
+                  className="mt-4 h-px w-16 bg-[color-mix(in_oklab,var(--realce)_40%,transparent)]"
+                />
+                <div className="voz-livro mt-6 text-[var(--texto-suave)]">
+                  {secao.paragrafos.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          <div className="mx-auto mt-24 max-w-[66ch] text-center">
+            <div
+              aria-hidden
+              className="mx-auto h-px w-24 bg-[linear-gradient(to_right,transparent,var(--realce),transparent)]"
+            />
+            <h2 className="mt-10 font-[family-name:var(--font-livro)] text-[clamp(1.5rem,1.25rem+1vw,2.1rem)] text-[var(--texto)]">
+              Onde encontrar
+            </h2>
+            <p className="voz-livro mt-5 text-[var(--texto-suave)]">
+              Estas são cadeias que achei honestas pelo preço, em lojas que
+              entregam no Brasil inteiro. Não recebi nada de nenhuma delas
+              para as indicar, e a nota ao lado de cada uma é minha.
+            </p>
+          </div>
 
           {produtos.length === 0 ? (
             <Vazia />

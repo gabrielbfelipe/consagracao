@@ -21,6 +21,7 @@ import {
 import { DadosEstruturados } from "@/components/seo/DadosEstruturados";
 import { grafoDeMigalhas } from "@/lib/seo/dadosEstruturados";
 import { cartao } from "@/lib/seo/cartao";
+import { textoDaFesta } from "@/content/festas";
 import { Anuncio } from "@/components/anuncios/Anuncio";
 
 export function generateStaticParams() {
@@ -51,17 +52,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const festa = FESTAS.find((f) => f.id === id);
   if (!festa) return {};
 
-  const dia = `${festa.dia} de ${MESES[festa.mes - 1]}`;
+  // A Penha não tem dia de calendário: anda com a Páscoa. Para ela o
+  // título fala da regra, e não de uma data que mudaria todo ano.
+  const dia = festa.movel
+    ? "data móvel"
+    : `${festa.dia} de ${MESES[festa.mes - 1]}`;
   const caminho = `/calendario/${festa.id}`;
 
-  const titulo = `Consagração em ${dia} — ${festa.nome}`;
-  const descricao = `${festa.resumo} A preparação de 33 dias começa 33 dias antes de ${dia}: veja a data exata de início e as etapas do método de Montfort.`;
+  const titulo = festa.movel
+    ? `Consagração em ${festa.nome} — data e preparação de 33 dias`
+    : `Consagração em ${dia} — ${festa.nome}`;
+  const descricao = festa.movel
+    ? `${festa.resumo} A festa cai oito dias depois do Domingo de Páscoa: veja a data deste ano, quando começa a preparação de 33 dias e as etapas do método de Montfort.`
+    : `${festa.resumo} A preparação de 33 dias começa 33 dias antes de ${dia}: veja a data exata de início e as etapas do método de Montfort.`;
 
   return {
     title: titulo,
     description: descricao,
     keywords: [
-      `consagração ${dia}`,
+      ...(festa.movel ? [] : [`consagração ${dia}`]),
       `consagração ${festa.nome}`,
       ...(festa.tambemChamada ?? []),
       "33 dias de preparação",
@@ -116,6 +125,8 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
   const jaEMinha =
     jornada?.festa.id === festa.id && jornada?.consagracao === c.consagracao;
 
+  const texto = textoDaFesta(festa.id);
+
   const diasAteComecar = diferencaEmDias(hoje, c.inicio);
   const diasAteConsagracao = diferencaEmDias(hoje, c.consagracao);
 
@@ -155,7 +166,7 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
           />
 
           <p className="voz-livro mx-auto mt-9 text-left text-[var(--texto-suave)]">
-            {festa.sobre}
+            {texto.sobre}
           </p>
 
           {festa.nota && (
@@ -163,6 +174,42 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
               {festa.nota}
             </p>
           )}
+
+          {/* A história da devoção. É o que faz desta uma página para ler,
+              e não um cabeçalho em cima de um cronograma. */}
+          <div className="voz-livro mt-10 text-left text-[var(--texto-suave)]">
+            {texto.historia.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
+
+          <aside className="mt-12 border-t border-[color-mix(in_oklab,var(--color-ouro)_25%,transparent)] pt-7 text-left">
+            <h2 className="font-[family-name:var(--font-livro)] text-sm tracking-[0.22em] text-[var(--color-ouro)] uppercase">
+              De onde veio o que está escrito aqui
+            </h2>
+            <ul className="mt-4 space-y-2">
+              {texto.fontes.map((f) => (
+                <li key={f.url}>
+                  <a
+                    href={f.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm leading-relaxed text-[color-mix(in_oklab,var(--texto)_62%,transparent)] underline
+                      decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[5px]
+                      transition-colors hover:text-[var(--color-pergaminho)]"
+                  >
+                    {f.titulo}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 text-sm leading-relaxed text-[color-mix(in_oklab,var(--texto)_48%,transparent)]">
+              O texto acima é redação própria a partir dessas fontes. Não é
+              magistério: é informação histórica e devocional, para ajudar a
+              escolher uma data. Questões de fé e de consciência pertencem ao
+              seu pároco.
+            </p>
+          </aside>
         </article>
 
         {/* O cronograma calculado */}

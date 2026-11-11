@@ -1,11 +1,22 @@
 import { criarData, type DataSimples } from "./dataSimples";
+import { dataMovel, type RegraMovel } from "./pascoa";
 
 /**
  * As celebrações marianas em que a consagração pode ser feita.
  *
  * Esta lista é fechada: a tradição de Montfort é consagrar-se numa festa de
- * Nossa Senhora, e o sistema só oferece estas datas. Todas são fixas no
- * calendário, de modo que a data só depende do ano.
+ * Nossa Senhora, e o sistema só oferece estas datas.
+ *
+ * SOBRE AS DATAS
+ * Vinte e três caem em dia fixo de calendário, de modo que só dependem do
+ * ano. Uma não: Nossa Senhora da Penha, padroeira do Espírito Santo, cai na
+ * segunda-feira que fecha o oitavário da Páscoa, e anda até um mês de um
+ * ano para o outro. Por isso há duas formas de dizer quando uma festa cai,
+ * e `dataDaFesta` é o único lugar que precisa saber a diferença.
+ *
+ * ONDE ESTÁ O TEXTO DE CADA UMA
+ * Em content/festas.ts. Aqui fica só o que o calendário precisa para
+ * calcular — o resto é prosa, e prosa não pertence a um módulo de datas.
  */
 
 export type FestaId =
@@ -35,23 +46,32 @@ export type FestaId =
   | "nossa-senhora-de-guadalupe";
 
 /** Grau litúrgico, quando a celebração tem um no calendário romano. */
-export type Grau = "solenidade" | "festa" | "memoria" | "memoria-facultativa" | "devocao";
+export type Grau =
+  | "solenidade"
+  | "festa"
+  | "memoria"
+  | "memoria-facultativa"
+  | "devocao";
+
+/**
+ * Quando a festa cai: ou num dia de calendário, ou por regra ligada à
+ * Páscoa. Os campos se excluem, e o tipo não deixa escrever os dois.
+ */
+export type Quando =
+  | { mes: number; dia: number; movel?: undefined }
+  | { mes?: undefined; dia?: undefined; movel: RegraMovel };
 
 export type Festa = {
   id: FestaId;
   nome: string;
   /** Títulos pelos quais a mesma celebração é conhecida. */
   tambemChamada?: string[];
-  mes: number;
-  dia: number;
   grau: Grau;
   /** Uma linha, para o cartão do calendário. */
   resumo: string;
-  /** Para quem quer conhecer a celebração antes de escolher. */
-  sobre: string;
   /** O que pesa na decisão: padroeira, feriado, ligação com Montfort. */
   nota?: string;
-};
+} & Quando;
 
 export const FESTAS: readonly Festa[] = [
   {
@@ -61,20 +81,19 @@ export const FESTAS: readonly Festa[] = [
     dia: 1,
     grau: "solenidade",
     resumo: "O primeiro dia do ano confiado à maternidade divina de Maria.",
-    sobre:
-      "A Igreja abre o ano celebrando o título mais antigo e mais alto de Nossa Senhora, proclamado no Concílio de Éfeso em 431: Theotókos, aquela que gerou Deus feito homem. Consagrar-se nesta data é colocar o ano inteiro sob esse mistério.",
     nota: "A preparação atravessa o Advento e o Natal.",
   },
   {
     id: "apresentacao-do-senhor",
     nome: "Apresentação do Senhor",
-    tambemChamada: ["Nossa Senhora das Candeias", "Nossa Senhora dos Navegantes"],
+    tambemChamada: [
+      "Nossa Senhora das Candeias",
+      "Nossa Senhora dos Navegantes",
+    ],
     mes: 2,
     dia: 2,
     grau: "festa",
     resumo: "Quarenta dias depois do Natal, a Luz é levada ao Templo.",
-    sobre:
-      "Maria e José apresentam o Menino no Templo, e o velho Simeão o reconhece como luz para iluminar as nações. Daí vêm as velas bentas e o nome Candeias. No Brasil, a mesma data é festejada como Nossa Senhora dos Navegantes.",
   },
   {
     id: "nossa-senhora-de-lourdes",
@@ -83,8 +102,21 @@ export const FESTAS: readonly Festa[] = [
     dia: 11,
     grau: "memoria",
     resumo: "“Eu sou a Imaculada Conceição”, disse a Senhora a Bernadete.",
-    sobre:
-      "Em 1858, numa gruta pobre no sul da França, Nossa Senhora apareceu dezoito vezes a uma menina de catorze anos que mal sabia ler. Lourdes é a festa dos doentes e dos pequenos, e das graças que chegam a quem não tem nada a oferecer.",
+    nota: "É também o Dia Mundial do Doente.",
+  },
+  {
+    /**
+     * A data estava em 2 de abril, que vinha da Wikipédia. A Arquidiocese
+     * de Florianópolis, que é a casa desta devoção, celebra a padroeira em
+     * 17 de fevereiro — e é essa que vale.
+     */
+    id: "nossa-senhora-do-desterro",
+    nome: "Nossa Senhora do Desterro",
+    mes: 2,
+    dia: 17,
+    grau: "devocao",
+    resumo: "A Mãe que fugiu para o Egito carregando o Filho.",
+    nota: "Padroeira de Florianópolis.",
   },
   {
     id: "anunciacao",
@@ -93,29 +125,20 @@ export const FESTAS: readonly Festa[] = [
     dia: 25,
     grau: "solenidade",
     resumo: "O sim que abriu a porta da Encarnação.",
-    sobre:
-      "Nove meses antes do Natal, a Igreja celebra o momento em que o Verbo se fez carne no seio de Maria. Montfort volta sempre a este mistério: a Encarnação é o modelo de toda consagração, porque nele Deus quis depender de um sim humano.",
     nota: "Muito escolhida por quem segue Montfort de perto.",
   },
   {
-    id: "nossa-senhora-do-desterro",
-    nome: "Nossa Senhora do Desterro",
-    mes: 4,
-    dia: 2,
-    grau: "devocao",
-    resumo: "A Mãe que fugiu para o Egito carregando o Filho.",
-    sobre:
-      "Celebra a Sagrada Família refugiada em terra estrangeira, fugindo de Herodes. É a devoção de quem vive longe de casa, de quem precisou partir, e de quem se sente estrangeiro onde está.",
-  },
-  {
+    /**
+     * A única móvel da lista. Estava com 8 de abril, que não é a data em
+     * ano nenhum: em 2025 a festa caiu em 28 de abril e em 2026 em 13 de
+     * abril, como o próprio Convento da Penha publicou.
+     */
     id: "nossa-senhora-da-penha",
     nome: "Nossa Senhora da Penha",
-    mes: 4,
-    dia: 8,
+    movel: "segunda-depois-do-oitavario-da-pascoa",
     grau: "devocao",
-    resumo: "A Senhora venerada no alto do rochedo.",
-    sobre:
-      "Devoção nascida na Espanha e trazida a Portugal e ao Brasil, onde ganhou santuários sobre penhascos — o mais conhecido em Vila Velha, no Espírito Santo. É a festa da subida: uma devoção de romeiros e de promessas cumpridas a pé.",
+    resumo: "A Senhora venerada no alto do rochedo, padroeira capixaba.",
+    nota: "Data móvel: cai sempre oito dias depois do Domingo de Páscoa.",
   },
   {
     id: "nossa-senhora-do-bom-conselho",
@@ -124,8 +147,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 26,
     grau: "devocao",
     resumo: "A quem se recorre diante de uma decisão difícil.",
-    sobre:
-      "Devoção ligada ao antigo santuário de Genazzano, na Itália. Invoca-se Nossa Senhora como aquela que obtém do Espírito Santo o dom do conselho. Escolhida por quem chega à consagração em meio a uma decisão que ainda não sabe tomar.",
   },
   {
     id: "nossa-senhora-de-fatima",
@@ -134,8 +155,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 13,
     grau: "memoria",
     resumo: "O pedido de oração, penitência e conversão feito a três pastores.",
-    sobre:
-      "Entre maio e outubro de 1917, Nossa Senhora apareceu seis vezes na Cova da Iria a Lúcia, Francisco e Jacinta. Pediu o Rosário diário e prometeu que, no fim, o seu Imaculado Coração triunfaria.",
   },
   {
     id: "nossa-senhora-auxiliadora",
@@ -144,8 +163,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 24,
     grau: "devocao",
     resumo: "O socorro dos cristãos, título caro a Dom Bosco.",
-    sobre:
-      "Título antigo, ligado à proteção da Igreja em horas difíceis e difundido no mundo inteiro por Dom Bosco, que construiu em Turim a basílica dedicada a ela. É a devoção da confiança em meio à luta.",
   },
   {
     id: "visitacao",
@@ -154,8 +171,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 31,
     grau: "festa",
     resumo: "Maria atravessa as montanhas para servir, e canta o Magnificat.",
-    sobre:
-      "Grávida, Maria parte às pressas para ajudar a prima Isabel. É a primeira vez que leva Jesus a alguém, e é ali que entoa o Magnificat. Festa de quem entende a consagração como serviço.",
   },
   {
     id: "nossa-senhora-do-perpetuo-socorro",
@@ -164,8 +179,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 27,
     grau: "devocao",
     resumo: "O ícone em que o Menino olha para a cruz e busca a mão da Mãe.",
-    sobre:
-      "Ícone bizantino confiado aos redentoristas em 1866 e hoje difundido pelo mundo inteiro. Nele, o Menino vê os instrumentos da Paixão e se volta para a Mãe. É a devoção do socorro que não se cansa.",
   },
   {
     id: "nossa-senhora-do-carmo",
@@ -174,8 +187,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 16,
     grau: "memoria-facultativa",
     resumo: "A Senhora do escapulário e da vida escondida com Deus.",
-    sobre:
-      "Nascida da tradição dos eremitas do Monte Carmelo, é a festa do escapulário e da devoção silenciosa. Fala a quem deseja uma vida interior constante mais do que grandes gestos.",
   },
   {
     id: "nossa-senhora-das-neves",
@@ -183,9 +194,7 @@ export const FESTAS: readonly Festa[] = [
     mes: 8,
     dia: 5,
     grau: "memoria-facultativa",
-    resumo: "A neve de agosto que marcou o chão de uma basílica em Roma.",
-    sobre:
-      "Dedicação da Basílica de Santa Maria Maior, a maior igreja mariana do Ocidente. Conta a tradição que a neve caiu em pleno verão romano para indicar onde ela seria construída.",
+    resumo: "A dedicação de Santa Maria Maior, a mais antiga igreja mariana.",
   },
   {
     id: "assuncao",
@@ -194,8 +203,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 15,
     grau: "solenidade",
     resumo: "Elevada em corpo e alma à glória do céu.",
-    sobre:
-      "Dogma proclamado em 1950, mas crença antiquíssima da Igreja. Celebra o destino que a consagração antecipa: pertencer inteiramente a Deus, corpo e alma. É a maior das solenidades marianas.",
   },
   {
     id: "nossa-senhora-rainha",
@@ -204,8 +211,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 22,
     grau: "memoria",
     resumo: "Oito dias depois da Assunção, a coroação.",
-    sobre:
-      "Colocada no oitavo dia após a Assunção para mostrar que uma festa nasce da outra: quem foi elevada ao céu reina ali como mãe e intercessora, não como soberana distante.",
   },
   {
     id: "natividade-de-maria",
@@ -214,8 +219,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 8,
     grau: "festa",
     resumo: "O nascimento daquela por quem havia de vir a salvação.",
-    sobre:
-      "Nove meses depois da Imaculada Conceição, a Igreja celebra o nascimento de Maria. É uma das três datas de nascimento festejadas na liturgia, ao lado das de Jesus e de João Batista.",
   },
   {
     id: "nossa-senhora-das-dores",
@@ -224,8 +227,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 15,
     grau: "memoria",
     resumo: "A Mãe de pé junto à cruz.",
-    sobre:
-      "No dia seguinte à Exaltação da Santa Cruz, contemplam-se as sete dores de Maria. Festa densa e consoladora para quem chega à consagração carregando um sofrimento.",
   },
   {
     id: "nossa-senhora-de-la-salette",
@@ -234,8 +235,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 19,
     grau: "devocao",
     resumo: "A Senhora que chorou diante de dois pastorinhos nos Alpes.",
-    sobre:
-      "Em 1846, numa montanha da França, Nossa Senhora apareceu chorando a Maximin e Mélanie, pedindo conversão e reconciliação. É a devoção da penitência e do retorno.",
   },
   {
     id: "nossa-senhora-do-rosario",
@@ -244,8 +243,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 7,
     grau: "memoria",
     resumo: "A oração que percorre a vida de Cristo pelos olhos de sua Mãe.",
-    sobre:
-      "Montfort foi um grande pregador do Rosário e o recomenda como alimento diário de quem se consagra. Escolher esta data é comprometer-se, desde o princípio, com essa oração.",
   },
   {
     id: "nossa-senhora-aparecida",
@@ -254,8 +251,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 12,
     grau: "solenidade",
     resumo: "A imagem achada nas águas do Paraíba, padroeira do Brasil.",
-    sobre:
-      "Em 1717, três pescadores tiraram do rio Paraíba do Sul uma pequena imagem escurecida, primeiro o corpo, depois a cabeça. Dali nasceu a devoção que se tornou o coração religioso do Brasil.",
     nota: "Padroeira do Brasil e feriado nacional.",
   },
   {
@@ -265,8 +260,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 21,
     grau: "memoria",
     resumo: "A menina oferecida a Deus no Templo.",
-    sobre:
-      "Memória de raiz oriental que celebra a entrega de Maria a Deus desde a infância. É, em si mesma, uma festa da consagração: uma vida inteira colocada nas mãos do Senhor antes de qualquer mérito.",
   },
   {
     id: "nossa-senhora-das-gracas",
@@ -275,9 +268,8 @@ export const FESTAS: readonly Festa[] = [
     mes: 11,
     dia: 27,
     grau: "devocao",
-    resumo: "“Ó Maria concebida sem pecado, rogai por nós que recorremos a vós.”",
-    sobre:
-      "Em 1830, em Paris, Nossa Senhora pediu a Santa Catarina Labouré que mandasse cunhar a medalha com raios de luz saindo de suas mãos — as graças que ela derrama sobre quem as pede. Ficou conhecida como Medalha Milagrosa.",
+    resumo:
+      "“Ó Maria concebida sem pecado, rogai por nós que recorremos a vós.”",
   },
   {
     id: "imaculada-conceicao",
@@ -286,8 +278,6 @@ export const FESTAS: readonly Festa[] = [
     dia: 8,
     grau: "solenidade",
     resumo: "Preservada do pecado desde o primeiro instante.",
-    sobre:
-      "Dogma proclamado em 1854. Celebra a obra-prima da graça: uma criatura inteiramente pura desde o começo, não por força própria, mas pelos méritos de Cristo aplicados de antemão.",
     nota: "É a data mais escolhida para a consagração.",
   },
   {
@@ -297,11 +287,8 @@ export const FESTAS: readonly Festa[] = [
     dia: 12,
     grau: "festa",
     resumo: "A Senhora morena que falou na língua de Juan Diego.",
-    sobre:
-      "Em 1531, no monte Tepeyac, Nossa Senhora apareceu a um indígena recém-convertido, falou-lhe em náuatle e deixou sua imagem na tilma. É a festa do encontro entre povos.",
-    nota: "Padroeira da América Latina.",
+    nota: "Padroeira de todo o continente americano.",
   },
-
 ] as const;
 
 const POR_ID = new Map(FESTAS.map((f) => [f.id, f]));
@@ -314,6 +301,7 @@ export function festaPorId(id: FestaId): Festa {
 
 /** A data em que a festa cai num determinado ano. */
 export function dataDaFesta(festa: Festa, ano: number): DataSimples {
+  if (festa.movel !== undefined) return dataMovel(festa.movel, ano);
   return criarData(ano, festa.mes, festa.dia);
 }
 

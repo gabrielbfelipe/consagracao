@@ -141,17 +141,35 @@ describe("comecarHoje", () => {
 });
 
 describe("festas", () => {
-  it("todas as datas são fixas e se repetem todo ano", () => {
-    for (const festa of FESTAS) {
+  /**
+   * Este teste dizia "todas as datas são fixas", e estava a guardar uma
+   * premissa falsa: a Penha cai oito dias depois da Páscoa e anda até um
+   * mês de um ano para o outro. Agora ele guarda a regra verdadeira — as
+   * fixas repetem-se, a móvel tem de se mexer.
+   */
+  it("as festas fixas caem no mesmo dia todo ano", () => {
+    for (const festa of FESTAS.filter((f) => !f.movel)) {
       const a = dataDaFesta(festa, 2026);
       const b = dataDaFesta(festa, 2027);
       expect(a.slice(5)).toBe(b.slice(5));
     }
   });
 
-  it("não há duas festas no mesmo dia", () => {
-    const chaves = FESTAS.map((f) => `${f.mes}-${f.dia}`);
-    expect(new Set(chaves).size).toBe(FESTAS.length);
+  it("a festa móvel muda de dia de um ano para o outro", () => {
+    const moveis = FESTAS.filter((f) => f.movel);
+    expect(moveis).toHaveLength(1);
+    for (const festa of moveis) {
+      const a = dataDaFesta(festa, 2026);
+      const b = dataDaFesta(festa, 2027);
+      expect(a.slice(5)).not.toBe(b.slice(5));
+    }
+  });
+
+  it("não há duas festas no mesmo dia, em ano nenhum", () => {
+    for (const ano of [2026, 2027, 2028, 2029, 2030]) {
+      const chaves = FESTAS.map((f) => dataDaFesta(f, ano));
+      expect(new Set(chaves).size).toBe(FESTAS.length);
+    }
   });
 
   it("são as vinte e quatro celebrações marianas, e só elas", () => {
