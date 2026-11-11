@@ -30,6 +30,11 @@ export function Rodape() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href="/preparacao" className={ELO}>
+                  Os doze dias, dia a dia
+                </Link>
+              </li>
             </ul>
           </nav>
 
@@ -84,6 +89,9 @@ export function Rodape() {
           </p>
 
           <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
+            <Link href="/contato" className={ELO}>
+              Contato
+            </Link>
             <Link href="/privacidade" className={ELO}>
               Privacidade
             </Link>

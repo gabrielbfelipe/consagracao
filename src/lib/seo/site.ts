@@ -39,6 +39,28 @@ export const SITE_URL = semBarraFinal(
 
 export const SITE_NOME = "Consagração a Nossa Senhora";
 
+/**
+ * O canal de contato, num lugar só.
+ *
+ * Aparece na página de contato, na política de privacidade e nos dados
+ * estruturados. Até aqui não existia: a privacidade prometia publicá-lo
+ * "antes de o aplicativo receber seus primeiros usuários", o que é uma
+ * promessa escrita na parede de uma casa que já está aberta — e, para quem
+ * avalia o site, uma tela em construção.
+ */
+export const EMAIL_DE_CONTATO = "tratado.consagracao@gmail.com";
+
+/**
+ * Quem responde pelo tratamento dos dados, na política de privacidade.
+ *
+ * Fica assim, sem nome, porque publicar o nome civil de alguém é decisão
+ * de quem o tem. A LGPD espera um controlador identificável: ao registar
+ * um MEI ou ao decidir assinar com o próprio nome, troque esta linha pelo
+ * nome e, havendo, pelo CNPJ. Não é um espaço reservado — a frase está
+ * completa e verdadeira como está; é só menos precisa do que podia ser.
+ */
+export const RESPONSAVEL = "o editor deste site";
+
 /** Para a Organization do JSON-LD e o og:site_name. */
 export const SITE_IDIOMA = "pt-BR";
 export const SITE_LOCALE = "pt_BR";

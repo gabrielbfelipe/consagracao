@@ -317,6 +317,20 @@ export function dataDaFesta(festa: Festa, ano: number): DataSimples {
   return criarData(ano, festa.mes, festa.dia);
 }
 
+/**
+ * O ano em que a festa cai da próxima vez, contado a partir de uma data.
+ *
+ * Serve à página de cada festa, que precisa de um ano padrão quando nenhum
+ * foi pedido. O ano corrente não serve: em novembro, vinte das vinte e
+ * quatro datas já passaram, e a página anunciava uma consagração vencida.
+ * A festa do próprio dia de hoje ainda conta como próxima — quem a abre
+ * hoje de manhã não quer ser mandado para o ano que vem.
+ */
+export function anoDaProximaOcorrencia(festa: Festa, de: DataSimples): number {
+  const anoBase = Number(de.slice(0, 4));
+  return dataDaFesta(festa, anoBase) >= de ? anoBase : anoBase + 1;
+}
+
 export type Ocorrencia = { festa: Festa; data: DataSimples };
 
 /** Todas as festas de um ano, em ordem de calendário. */

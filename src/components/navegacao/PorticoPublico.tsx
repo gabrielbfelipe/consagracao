@@ -23,6 +23,7 @@ import { PAGINAS } from "@/content/sobre";
  * tela. Quem não as vê aqui as encontra no rodapé e no menu recolhido.
  */
 const EXTRAS = [
+  { href: "/preparacao", rotulo: "Dia a dia", so2xl: false },
   { href: "/calendario", rotulo: "Calendário", so2xl: false },
   { href: "/cadeias", rotulo: "Cadeias", so2xl: false },
   { href: "/biblioteca", rotulo: "Biblioteca", so2xl: true },

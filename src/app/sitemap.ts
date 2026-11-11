@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { FESTAS } from "@/lib/agenda/festas";
+import { DIAS } from "@/content/jornada";
 import { ORACOES } from "@/content/oracoes";
 import { PAGINAS } from "@/content/sobre";
 import { urlAbsoluta } from "@/lib/seo/site";
@@ -90,6 +91,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: publicacao,
       changeFrequency: "yearly",
       priority: 0.3,
+    },
+    {
+      url: urlAbsoluta("/preparacao"),
+      lastModified: publicacao,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    ...DIAS.filter((d) => d.numero <= 12).map((d) => ({
+      url: urlAbsoluta(`/preparacao/dia-${d.numero}`),
+      lastModified: publicacao,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+    {
+      url: urlAbsoluta("/contato"),
+      lastModified: publicacao,
+      changeFrequency: "yearly",
+      priority: 0.4,
     },
   ];
 }

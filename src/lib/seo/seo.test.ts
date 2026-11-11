@@ -83,6 +83,13 @@ describe("o sitemap", () => {
     }
   });
 
+  /**
+   * Os prefixos vão com a barra final de propósito.
+   *
+   * Sem ela, "/conta" proibia também "/contato", que é uma página pública
+   * e devida — e o teste acusava uma sala pessoal onde havia um endereço
+   * de e-mail. Um prefixo sem fronteira apanha o vizinho.
+   */
   it("não submete nenhuma sala pessoal nem porta de entrada", () => {
     const proibidos = [
       "/caminho",
@@ -90,16 +97,17 @@ describe("o sitemap", () => {
       "/diario",
       "/carta",
       "/grande-dia",
-      "/conta",
+      "/conta/",
       "/entrar",
       "/cadastro",
       "/silencio",
-      "/api",
+      "/api/",
     ];
     for (const e of enderecos) {
       const caminho = e.slice(SITE_URL.length);
       for (const proibido of proibidos) {
-        expect(caminho.startsWith(proibido)).toBe(false);
+        const exato = caminho === proibido.replace(/\/$/, "");
+        expect(caminho.startsWith(proibido) || exato).toBe(false);
       }
     }
   });

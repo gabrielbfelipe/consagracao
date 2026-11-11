@@ -1,7 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { FESTAS, festaPorId, type FestaId } from "@/lib/agenda/festas";
+import {
+  FESTAS,
+  anoDaProximaOcorrencia,
+  festaPorId,
+  type FestaId,
+} from "@/lib/agenda/festas";
 import { montarCronograma, situacao } from "@/lib/agenda/cronograma";
 import { escolherData } from "@/lib/jornada/acoes";
 import { Previa } from "@/components/jornada/Previa";
@@ -93,7 +98,17 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
   const jornada = await jornadaAtual().catch(() => null);
 
   const hoje = jornada?.hoje ?? hojeEm("America/Sao_Paulo");
-  const anoEscolhido = Number(ano) || Number(hoje.slice(0, 4));
+
+  /**
+   * O ano que a página mostra quando ninguém pediu um.
+   *
+   * Era sempre o ano corrente, e isso deixava vinte das vinte e quatro
+   * festas a anunciar uma data vencida, com a contagem em número negativo
+   * — "faltam -182 dias". Quem chega aqui em novembro à procura de Fátima
+   * quer o 13 de maio que vem, não o que passou. Pedindo `?ano=`, porém, o
+   * pedido vale: é por ali que se olha para trás de propósito.
+   */
+  const anoEscolhido = Number(ano) || anoDaProximaOcorrencia(festa, hoje);
   const c = montarCronograma(festaPorId(festa.id as FestaId), anoEscolhido);
   const s = situacao(c, hoje);
 
@@ -181,10 +196,21 @@ export default async function DetalheDaFesta({ params, searchParams }: Props) {
             </div>
             <div>
               <dt className="text-sm text-[var(--texto-suave)]">
-                Faltam para a consagração
+                {diasAteConsagracao >= 0
+                  ? "Faltam para a consagração"
+                  : "A consagração"}
               </dt>
+              {/* Nunca um número negativo: olhando para um ano já vencido,
+                  a conta dá -182, e "faltam -182 dias" é um defeito à
+                  vista de quem chega. */}
               <dd className="mt-2 font-[family-name:var(--font-livro)] text-2xl text-[var(--color-marfim)]">
-                {diasAteConsagracao} dias
+                {diasAteConsagracao > 1
+                  ? `${diasAteConsagracao} dias`
+                  : diasAteConsagracao === 1
+                    ? "1 dia"
+                    : diasAteConsagracao === 0
+                      ? "É hoje"
+                      : "Já passou"}
               </dd>
             </div>
           </dl>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { cartao } from "@/lib/seo/cartao";
+import { EMAIL_DE_CONTATO, RESPONSAVEL } from "@/lib/seo/site";
 import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 import { Rodape } from "@/components/vitrine/Rodape";
 import { Passagem } from "@/components/atmosphere/Passagem";
@@ -92,7 +93,8 @@ const SECOES = [
   {
     titulo: "Como falar conosco",
     paragrafos: [
-      "O canal de contato para assuntos de privacidade será publicado aqui antes de o aplicativo receber seus primeiros usuários.",
+      `Escreva para ${EMAIL_DE_CONTATO}. É o mesmo endereço para dúvidas, pedidos de acesso aos seus dados, correção, cópia, revogação do consentimento e eliminação da conta. Respondemos em até sete dias.`,
+      "Para apagar a conta e tudo o que ela guarda, basta pedir por esse endereço, a partir do e-mail com que você se cadastrou. Não exigimos justificativa.",
     ],
   },
 ] as const;
@@ -132,9 +134,9 @@ export default function Privacidade() {
             ))}
 
             <p className="mt-20 border-t border-[color-mix(in_oklab,var(--realce)_30%,transparent)] pt-8 text-sm leading-relaxed text-[color-mix(in_oklab,var(--texto)_55%,transparent)]">
-              Este texto ainda não passou por revisão jurídica. Antes de o
-              aplicativo abrir ao público, ele deve ser revisto por um advogado
-              e ganhar a identificação do responsável pelo tratamento dos dados.
+              Última atualização em 11 de novembro de 2026. Responsável pelo
+              tratamento dos dados: {RESPONSAVEL}, pelo endereço{" "}
+              {EMAIL_DE_CONTATO}.
             </p>
           </article>
         </main>
