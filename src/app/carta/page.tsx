@@ -6,6 +6,7 @@ import { MeuMotivo } from "@/components/jornada/MeuMotivo";
 import { jornadaAtual } from "@/lib/jornada/repositorio";
 import { clienteServidor } from "@/lib/supabase/servidor";
 import { diferencaEmDias, porExtenso } from "@/lib/agenda/dataSimples";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 
 export const metadata: Metadata = {
   title: "A carta do primeiro dia",
@@ -47,53 +48,57 @@ export default async function Carta() {
   const faltam = diferencaEmDias(jornada.hoje, jornada.consagracao);
 
   return (
-    <main
+    <div
       data-sala={aberta ? "altar" : "estudo"}
-      className="luz-alta min-h-dvh px-6 py-20"
+      className="luz-alta min-h-dvh"
     >
-      <div className="mx-auto w-full max-w-[62ch]">
-        <Link
-          href="/caminho"
-          className="text-sm text-[var(--texto-suave)] underline
-            decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
-            transition-colors hover:text-[var(--color-pergaminho)]"
-        >
-          Meu caminho
-        </Link>
+      <PorticoDaSala />
 
-        <h1 className="mt-10 font-[family-name:var(--font-livro)] text-[clamp(2rem,1.5rem+2.4vw,3.25rem)] leading-tight text-[var(--color-marfim)]">
-          A carta do primeiro dia
-        </h1>
+      <main className="px-6 pt-6 pb-20">
+        <div className="mx-auto w-full max-w-[62ch]">
+          <Link
+            href="/caminho"
+            className="text-sm text-[var(--texto-suave)] underline
+              decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
+              transition-colors hover:text-[var(--color-pergaminho)]"
+          >
+            Meu caminho
+          </Link>
 
-        <div
-          aria-hidden
-          className="mt-8 h-px w-24 bg-[linear-gradient(to_right,var(--color-ouro),transparent)]"
-        />
+          <h1 className="mt-10 font-[family-name:var(--font-livro)] text-[clamp(2rem,1.5rem+2.4vw,3.25rem)] leading-tight text-[var(--color-marfim)]">
+            A carta do primeiro dia
+          </h1>
 
-        {aberta && <Aberta texto={carta!.texto} seladaEm={carta!.selada_em} />}
-
-        {selada && (
-          <Selada
-            faltam={faltam}
-            consagracao={porExtenso(jornada.consagracao)}
+          <div
+            aria-hidden
+            className="mt-8 h-px w-24 bg-[linear-gradient(to_right,var(--color-ouro),transparent)]"
           />
-        )}
 
-        {!aberta && !selada && <EscritaDaCarta jornadaId={jornada.id} />}
+          {aberta && <Aberta texto={carta!.texto} seladaEm={carta!.selada_em} />}
 
-        <section className="mt-24">
-          <h2 className="font-[family-name:var(--font-livro)] text-2xl text-[var(--color-marfim)]">
-            Meu motivo
-          </h2>
-          <p className="voz-livro mt-4 text-[var(--texto-suave)]">
-            Uma ou duas frases sobre o que o trouxe até aqui. Diferente da
-            carta, esta você pode reler e mudar quando quiser — ela reaparece
-            nos dias em que a vontade faltar.
-          </p>
-          <MeuMotivo jornadaId={jornada.id} inicial={motivo?.texto ?? ""} />
-        </section>
-      </div>
-    </main>
+          {selada && (
+            <Selada
+              faltam={faltam}
+              consagracao={porExtenso(jornada.consagracao)}
+            />
+          )}
+
+          {!aberta && !selada && <EscritaDaCarta jornadaId={jornada.id} />}
+
+          <section className="mt-24">
+            <h2 className="font-[family-name:var(--font-livro)] text-2xl text-[var(--color-marfim)]">
+              Meu motivo
+            </h2>
+            <p className="voz-livro mt-4 text-[var(--texto-suave)]">
+              Uma ou duas frases sobre o que o trouxe até aqui. Diferente da
+              carta, esta você pode reler e mudar quando quiser — ela reaparece
+              nos dias em que a vontade faltar.
+            </p>
+            <MeuMotivo jornadaId={jornada.id} inicial={motivo?.texto ?? ""} />
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }
 

@@ -186,6 +186,9 @@ export function PorticoPublico({
               ))}
             </ul>
 
+            {/* Duas portas, e nesta ordem. "Já tenho conta" só aparece na
+                faixa a partir de 2xl, de modo que no celular quem já está
+                inscrito não tinha por onde entrar senão pela inscrição. */}
             <div className="px-6 pb-16 sm:px-10">
               <Link
                 href="/cadastro"
@@ -197,6 +200,20 @@ export function PorticoPublico({
                   hover:text-[var(--color-ouro-luz)]"
               >
                 Iniciar preparação
+              </Link>
+
+              <Link
+                href="/entrar"
+                onClick={() => setAberto(false)}
+                className="mt-4 flex items-center justify-center px-10 py-4
+                  font-[family-name:var(--font-livro)] text-base tracking-[0.28em] indent-[0.28em] uppercase
+                  text-[color-mix(in_oklab,var(--color-pergaminho)_72%,transparent)]
+                  shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-bronze)_55%,transparent)]
+                  transition-[box-shadow,color] duration-500
+                  hover:text-[var(--color-pergaminho)]
+                  hover:shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ouro)_55%,transparent)]"
+              >
+                Entrar
               </Link>
             </div>
           </motion.nav>

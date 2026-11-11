@@ -6,6 +6,7 @@ import { diaPorNumero } from "@/content/jornada";
 import { TOTAL_DIAS, etapaDoDia } from "@/lib/jornada/etapas";
 import { jornadaAtual } from "@/lib/jornada/repositorio";
 import { clienteServidor } from "@/lib/supabase/servidor";
+import { PorticoDaSala } from "@/components/navegacao/PorticoDaSala";
 
 type Props = { params: Promise<{ n: string }> };
 
@@ -37,50 +38,51 @@ export default async function DiaDaJornada({ params }: Props) {
   const textos = await textosDoDia(jornada.id, numero);
 
   return (
-    <main
-      data-sala={etapa.sala}
-      className="luz-alta min-h-dvh px-6 py-16 sm:px-10"
-    >
-      <header className="mx-auto max-w-[64ch]">
-        <Link
-          href="/caminho"
-          className="text-sm text-[var(--texto-suave)] underline
-            decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
-            transition-colors hover:text-[var(--color-pergaminho)]"
-        >
-          Meu caminho
-        </Link>
+    <div data-sala={etapa.sala} className="luz-alta min-h-dvh">
+      <PorticoDaSala />
 
-        <p className="mt-10 font-[family-name:var(--font-livro)] tracking-[0.28em] text-[var(--texto-suave)] uppercase">
-          Dia {numero} de {TOTAL_DIAS} · {etapa.nome}
-        </p>
+      <main className="px-6 pt-4 pb-16 sm:px-10">
+        <header className="mx-auto max-w-[64ch]">
+          <Link
+            href="/caminho"
+            className="text-sm text-[var(--texto-suave)] underline
+              decoration-[color-mix(in_oklab,var(--color-ouro)_35%,transparent)] underline-offset-[6px]
+              transition-colors hover:text-[var(--color-pergaminho)]"
+          >
+            Meu caminho
+          </Link>
 
-        {dia && (
-          <h1 className="mt-4 font-[family-name:var(--font-livro)] text-[clamp(2.25rem,1.6rem+2.6vw,3.5rem)] leading-[1.1] text-balance text-[var(--color-marfim)]">
-            {dia.tema}
-          </h1>
-        )}
+          <p className="mt-10 font-[family-name:var(--font-livro)] tracking-[0.28em] text-[var(--texto-suave)] uppercase">
+            Dia {numero} de {TOTAL_DIAS} · {etapa.nome}
+          </p>
 
-        <div
-          aria-hidden
-          className="mt-9 h-px w-full bg-[linear-gradient(to_right,var(--color-ouro),transparent)]"
-        />
-      </header>
+          {dia && (
+            <h1 className="mt-4 font-[family-name:var(--font-livro)] text-[clamp(2.25rem,1.6rem+2.6vw,3.5rem)] leading-[1.1] text-balance text-[var(--color-marfim)]">
+              {dia.tema}
+            </h1>
+          )}
 
-      <div className="mt-14">
-        {dia ? (
-          <CondutorDoDia
-            dia={dia}
-            etapa={etapa}
-            jornadaId={jornada.id}
-            passosFeitos={jornada.progresso.get(numero) ?? []}
-            textos={textos}
+          <div
+            aria-hidden
+            className="mt-9 h-px w-full bg-[linear-gradient(to_right,var(--color-ouro),transparent)]"
           />
-        ) : (
-          <EmPreparacao numero={numero} />
-        )}
-      </div>
-    </main>
+        </header>
+
+        <div className="mt-14">
+          {dia ? (
+            <CondutorDoDia
+              dia={dia}
+              etapa={etapa}
+              jornadaId={jornada.id}
+              passosFeitos={jornada.progresso.get(numero) ?? []}
+              textos={textos}
+            />
+          ) : (
+            <EmPreparacao numero={numero} />
+          )}
+        </div>
+      </main>
+    </div>
   );
 }
 
