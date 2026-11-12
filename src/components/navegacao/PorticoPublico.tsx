@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
@@ -16,17 +16,18 @@ import { PAGINAS } from "@/content/sobre";
  */
 
 /**
- * As duas salas que não são páginas de apresentação.
+ * As quatro salas que não são páginas de apresentação.
  *
- * `so2xl` marca as que só aparecem em telas largas: com sete rótulos em
- * português, um monitor de 1280px empurrava o botão de ação para fora da
- * tela. Quem não as vê aqui as encontra no rodapé e no menu recolhido.
+ * Ficam soltas na faixa porque são destinos, não leitura: calendário,
+ * biblioteca, cadeias e o dia a dia da preparação. As cinco páginas de
+ * apresentação (o que é, por que fazer, como funciona...) vão dentro do
+ * menu "Conhecer" — ver o comentário sobre ele mais abaixo.
  */
 const EXTRAS = [
-  { href: "/preparacao", rotulo: "Dia a dia", so2xl: false },
-  { href: "/calendario", rotulo: "Calendário", so2xl: false },
-  { href: "/cadeias", rotulo: "Cadeias", so2xl: false },
-  { href: "/biblioteca", rotulo: "Biblioteca", so2xl: true },
+  { href: "/preparacao", rotulo: "Dia a dia" },
+  { href: "/calendario", rotulo: "Calendário" },
+  { href: "/cadeias", rotulo: "Cadeias" },
+  { href: "/biblioteca", rotulo: "Biblioteca" },
 ] as const;
 
 export function PorticoPublico({
@@ -39,12 +40,10 @@ export function PorticoPublico({
   const [rolou, setRolou] = useState(false);
   const caminho = usePathname();
 
+  // O menu do celular continua uma lista única e plana — não há porque
+  // dar ao dedo uma gaveta dentro de outra gaveta.
   const itens = [
-    ...PAGINAS.map((p) => ({
-      href: `/sobre/${p.slug}`,
-      rotulo: p.menu,
-      so2xl: false,
-    })),
+    ...PAGINAS.map((p) => ({ href: `/sobre/${p.slug}`, rotulo: p.menu })),
     ...EXTRAS,
   ];
 
@@ -79,17 +78,31 @@ export function PorticoPublico({
         <div className="mx-auto flex max-w-[110rem] items-center justify-between gap-8 px-6 py-5 sm:px-10">
           <Marca aoClicar={() => setAberto(false)} />
 
-          {/* Sete rótulos em português são muito mais largos que os do inglês:
-              com tipo grande eles transbordavam e engoliam o botão de ação.
-              Aqui a letra é menor e o entreletras, curto. */}
-          <nav aria-label="Seções" className="hidden items-center gap-6 xl:flex">
-            {itens.map((item) => (
+          {/*
+           * Isto já foi nove rótulos soltos — as cinco páginas de
+           * apresentação mais as quatro salas — e nove rótulos em
+           * português, sem quebra de linha, não cabem nem num monitor de
+           * 1920px: a faixa transbordava e nascia barra de rolagem
+           * horizontal na página inteira. Agrupar as cinco páginas de
+           * leitura num só menu suspenso ("Conhecer") devolve a faixa a
+           * cinco itens, que é uma largura que qualquer tela a partir de
+           * 1280px comporta com folga.
+           */}
+          <nav aria-label="Seções" className="hidden items-center gap-7 xl:flex">
+            <MenuSuspenso
+              rotulo="Conhecer"
+              itens={PAGINAS.map((p) => ({
+                href: `/sobre/${p.slug}`,
+                rotulo: p.menu,
+              }))}
+              caminho={caminho}
+            />
+            {EXTRAS.map((item) => (
               <Elo
                 key={item.href}
                 href={item.href}
                 rotulo={item.rotulo}
                 ativo={caminho === item.href}
-                so2xl={item.so2xl}
               />
             ))}
           </nav>
@@ -264,12 +277,10 @@ function Elo({
   href,
   rotulo,
   ativo,
-  so2xl = false,
 }: {
   href: string;
   rotulo: string;
   ativo: boolean;
-  so2xl?: boolean;
 }) {
   return (
     <Link
@@ -277,7 +288,6 @@ function Elo({
       aria-current={ativo ? "page" : undefined}
       className={`relative font-[family-name:var(--font-livro)] text-[0.82rem] tracking-[0.06em] whitespace-nowrap
         uppercase transition-colors duration-500 ease-[var(--ease-santuario)] hover:text-[var(--color-ouro-luz)]
-        ${so2xl ? "hidden 2xl:inline" : ""}
         ${ativo ? "text-[var(--color-ouro)]" : "text-[color-mix(in_oklab,var(--color-pergaminho)_72%,transparent)]"}`}
     >
       {rotulo}
@@ -288,5 +298,119 @@ function Elo({
         }`}
       />
     </Link>
+  );
+}
+
+/**
+ * O menu suspenso que recolhe as cinco páginas de apresentação.
+ *
+ * Por que um dropdown, e não mais um Elo entre os outros: essas cinco
+ * páginas (o que é a consagração, por que fazer, como funciona a
+ * preparação...) são leitura de quem ainda está decidindo, e formam um
+ * grupo com nome próprio — "conhecer" antes de começar. As quatro salas
+ * ao lado (calendário, biblioteca, cadeias, dia a dia) são destinos de
+ * quem já decidiu. Juntar os dois tipos numa fileira só foi o que
+ * transbordou a faixa; separá-los por função resolve o espaço e também
+ * fica mais claro para quem lê.
+ */
+function MenuSuspenso({
+  rotulo,
+  itens,
+  caminho,
+}: {
+  rotulo: string;
+  itens: readonly { href: string; rotulo: string }[];
+  caminho: string | null;
+}) {
+  const [aberto, setAberto] = useState(false);
+  const raiz = useRef<HTMLDivElement>(null);
+  const ativo = itens.some((item) => item.href === caminho);
+
+  // Fecha ao clicar fora e ao apertar Esc. Navegar também fecha, mas isso
+  // é o onClick de cada link: fechar por efeito ao mudar de rota dispara
+  // renderização em cascata, e o lint reclama com razão.
+  useEffect(() => {
+    if (!aberto) return;
+
+    const aoClicarFora = (e: MouseEvent) => {
+      if (raiz.current && !raiz.current.contains(e.target as Node)) {
+        setAberto(false);
+      }
+    };
+    const aoTeclar = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setAberto(false);
+    };
+
+    document.addEventListener("mousedown", aoClicarFora);
+    document.addEventListener("keydown", aoTeclar);
+    return () => {
+      document.removeEventListener("mousedown", aoClicarFora);
+      document.removeEventListener("keydown", aoTeclar);
+    };
+  }, [aberto]);
+
+  return (
+    <div ref={raiz} className="relative">
+      <button
+        type="button"
+        onClick={() => setAberto((v) => !v)}
+        aria-expanded={aberto}
+        aria-haspopup="menu"
+        className={`relative flex items-center gap-1.5 font-[family-name:var(--font-livro)] text-[0.82rem] tracking-[0.06em]
+          uppercase transition-colors duration-500 ease-[var(--ease-santuario)] hover:text-[var(--color-ouro-luz)]
+          ${ativo ? "text-[var(--color-ouro)]" : "text-[color-mix(in_oklab,var(--color-pergaminho)_72%,transparent)]"}`}
+      >
+        {rotulo}
+        <svg viewBox="0 0 12 8" aria-hidden className="h-2 w-2.5 shrink-0">
+          <path
+            d="M1 1l5 5 5-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`origin-center transition-transform duration-300 ${aberto ? "-rotate-180" : ""}`}
+          />
+        </svg>
+        <span
+          aria-hidden
+          className={`absolute -bottom-2 left-0 h-px bg-[var(--color-ouro)] transition-all duration-500 ease-[var(--ease-santuario)] ${
+            ativo ? "w-full" : "w-0"
+          }`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {aberto && (
+          <motion.div
+            role="menu"
+            aria-label={rotulo}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
+            className="superficie-madeira absolute left-0 top-full z-10 mt-4 min-w-[16rem] py-2"
+          >
+            {itens.map((item) => {
+              const itemAtivo = caminho === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  role="menuitem"
+                  aria-current={itemAtivo ? "page" : undefined}
+                  onClick={() => setAberto(false)}
+                  className={`block px-5 py-3 font-[family-name:var(--font-livro)] text-[0.88rem] tracking-[0.02em]
+                    transition-colors duration-300 hover:text-[var(--color-ouro-luz)]
+                    ${itemAtivo ? "text-[var(--color-ouro)]" : "text-[color-mix(in_oklab,var(--color-pergaminho)_82%,transparent)]"}`}
+                >
+                  {item.rotulo}
+                </Link>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
