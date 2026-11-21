@@ -7,7 +7,7 @@ import { dataDaFesta, festaPorId, type FestaId } from "@/lib/agenda/festas";
 import { cronogramaPara } from "@/lib/agenda/cronograma";
 import { dataSimples, hojeEm } from "@/lib/agenda/dataSimples";
 import { TOTAL_DIAS } from "./etapas";
-import { PASSOS, type PassoId } from "./passos";
+import { diaCompleto, ePasso, unirPassos, type PassoId } from "./passos";
 
 /**
  * Registra a data escolhida e abre a jornada — ou troca a data já escolhida.
@@ -84,39 +84,94 @@ export async function escolherData(dados: FormData) {
   redirect("/caminho");
 }
 
-/** Marca um passo do dia como cumprido, sem apagar os já marcados. */
-export async function marcarPasso(
+/**
+ * Guarda passos do dia, juntando-os aos que já estavam — nunca por cima.
+ *
+ * Recebe todos os passos que a tela sabe estarem feitos, e não só o último.
+ * Assim, se alguma gravação anterior se perdeu, a seguinte a repõe.
+ *
+ * O caminho principal é a função public.marcar_passos, que junta os passos
+ * dentro do banco numa só instrução e é imune a gravações simultâneas. Ela
+ * vem na migração 0003. Enquanto essa migração não for aplicada, a função
+ * não existe, e cai-se no caminho de reserva — ler, juntar, gravar —, que é
+ * o antigo sem o defeito de sobrescrever. Ele ainda pode perder uma corrida
+ * entre duas abas abertas; dentro de uma aba, a fila do condutor impede.
+ *
+ * Devolve se o dia ficou concluído, para a tela não ter de adivinhar.
+ */
+export async function marcarPassos(
   jornadaId: string,
   dia: number,
-  passo: PassoId,
-) {
-  validar(dia, passo);
+  passos: PassoId[],
+): Promise<{ concluido: boolean }> {
+  validarDia(dia);
+  if (passos.length === 0 || !passos.every(ePasso)) {
+    throw new Error("Passo inválido.");
+  }
+
+  const supabase = await clienteServidor();
+
+  const { data, error } = await supabase.rpc("marcar_passos", {
+    p_jornada: jornadaId,
+    p_dia: dia,
+    p_passos: unirPassos(passos),
+  });
+
+  let concluido: boolean;
+  if (!error) {
+    concluido = Boolean(data);
+  } else if (funcaoAusente(error)) {
+    concluido = await marcarSemFuncao(jornadaId, dia, passos);
+  } else {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/dia/${dia}`);
+  revalidatePath("/caminho");
+  return { concluido };
+}
+
+/** O PostgREST responde PGRST202 quando a função chamada não existe. */
+function funcaoAusente(erro: { code?: string; message?: string }) {
+  return (
+    erro.code === "PGRST202" ||
+    /could not find the function/i.test(erro.message ?? "")
+  );
+}
+
+/** Caminho de reserva, até a migração 0003 ser aplicada. */
+async function marcarSemFuncao(
+  jornadaId: string,
+  dia: number,
+  novos: PassoId[],
+): Promise<boolean> {
   const supabase = await clienteServidor();
 
   const { data: atual } = await supabase
     .from("progresso_dias")
-    .select("passos")
+    .select("passos, concluido_em")
     .eq("jornada_id", jornadaId)
     .eq("dia", dia)
-    .maybeSingle<{ passos: string[] }>();
+    .maybeSingle<{ passos: string[]; concluido_em: string | null }>();
 
-  const passos = Array.from(new Set([...(atual?.passos ?? []), passo]));
-  const completo = PASSOS.every((p) => passos.includes(p.id));
+  const passos = unirPassos(atual?.passos ?? [], novos);
+  const completo = diaCompleto(passos);
 
   const { error } = await supabase.from("progresso_dias").upsert(
     {
       jornada_id: jornadaId,
       dia,
       passos,
-      concluido_em: completo ? new Date().toISOString() : null,
+      // A primeira vez em que o dia fechou é a que vale.
+      concluido_em: completo
+        ? (atual?.concluido_em ?? new Date().toISOString())
+        : null,
     },
     { onConflict: "jornada_id,dia" },
   );
 
   if (error) throw new Error(error.message);
-
-  revalidatePath(`/dia/${dia}`);
-  revalidatePath("/caminho");
+  return completo;
 }
 
 /** Guarda o que a pessoa escreveu, substituindo o texto anterior daquele dia. */
@@ -126,9 +181,7 @@ export async function salvarTexto(
   tipo: "reflexao" | "registro",
   texto: string,
 ) {
-  if (!Number.isInteger(dia) || dia < 1 || dia > TOTAL_DIAS) {
-    throw new Error("Dia inválido.");
-  }
+  validarDia(dia);
 
   const supabase = await clienteServidor();
   // "registro" é o que fica no diário como entrada livre do dia.
@@ -153,11 +206,8 @@ export async function salvarTexto(
   revalidatePath("/diario");
 }
 
-function validar(dia: number, passo: PassoId) {
+function validarDia(dia: number) {
   if (!Number.isInteger(dia) || dia < 1 || dia > TOTAL_DIAS) {
     throw new Error("Dia inválido.");
-  }
-  if (!PASSOS.some((p) => p.id === passo)) {
-    throw new Error("Passo inválido.");
   }
 }

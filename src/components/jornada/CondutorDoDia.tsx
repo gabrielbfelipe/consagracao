@@ -3,9 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { PASSOS, TOTAL_PASSOS, type PassoId } from "@/lib/jornada/passos";
+import { useRouter } from "next/navigation";
+import {
+  PASSOS,
+  TOTAL_PASSOS,
+  passoAlcancavel,
+  type PassoId,
+} from "@/lib/jornada/passos";
 import type { Etapa } from "@/lib/jornada/etapas";
-import { marcarPasso, salvarTexto } from "@/lib/jornada/acoes";
+import { marcarPassos, salvarTexto } from "@/lib/jornada/acoes";
+import { criarFila } from "@/lib/jornada/fila";
 import { faixaDeLeitura, tamanhoDaLeitura, type Dia } from "@/content/jornada";
 
 type Props = {
@@ -22,6 +29,17 @@ type Props = {
  * Cada passo é marcado ao ser deixado para trás, e o que se escreve é
  * guardado sozinho pouco depois de a digitação parar — não há botão de
  * salvar a esquecer no meio de uma oração.
+ *
+ * AS GRAVAÇÕES VÃO EM FILA, E LEVAM A LISTA INTEIRA
+ * Antes, cada passo era mandado ao servidor sem esperar o anterior, e duas
+ * gravações simultâneas apagavam uma o passo da outra: um dia percorrido do
+ * começo ao fim podia ficar com seis de sete passos e nunca fechar. Agora
+ * uma gravação só parte depois da anterior, e cada uma leva todos os passos
+ * que a tela sabe feitos — se uma se perder, a seguinte a repõe.
+ *
+ * "Concluir o dia" espera a gravação chegar antes de sair da tela. Antes era
+ * um link que mandava gravar e saía no mesmo instante, e o "Meu caminho"
+ * podia abrir antes de o banco saber que o dia tinha acabado.
  */
 export function CondutorDoDia({
   dia,
@@ -30,6 +48,7 @@ export function CondutorDoDia({
   passosFeitos,
   textos,
 }: Props) {
+  const router = useRouter();
   const [indice, setIndice] = useState(0);
   const [feitos, setFeitos] = useState<Set<PassoId>>(new Set(passosFeitos));
   const passo = PASSOS[indice];
@@ -37,13 +56,50 @@ export function CondutorDoDia({
   const [reflexao, setReflexao] = useState(textos.reflexao);
   const [registro, setRegistro] = useState(textos.registro);
 
+  const [falhou, setFalhou] = useState(false);
+  const [concluindo, setConcluindo] = useState(false);
+
+  // Uma fila por tela de dia: as gravações saem uma de cada vez.
+  const [enfileirar] = useState(criarFila);
+
+  // A lista mais recente, fora do ciclo de renderização: dois cliques antes
+  // de a tela redesenhar não podem partir de uma lista já ultrapassada.
+  const feitosAgora = useRef(feitos);
+
+  /** Acrescenta um passo e manda guardar a lista inteira, na fila. */
+  function guardar(novo: PassoId) {
+    const todos = new Set(feitosAgora.current).add(novo);
+    feitosAgora.current = todos;
+    setFeitos(todos);
+    return enfileirar(() =>
+      marcarPassos(jornadaId, dia.numero, [...todos]),
+    );
+  }
+
   function irPara(novo: number) {
+    if (!passoAlcancavel(novo, indice, feitos)) return;
+
     const deixado = PASSOS[indice].id;
-    if (!feitos.has(deixado)) {
-      setFeitos(new Set(feitos).add(deixado));
-      void marcarPasso(jornadaId, dia.numero, deixado);
+    if (!feitosAgora.current.has(deixado)) {
+      guardar(deixado).then(
+        () => setFalhou(false),
+        () => setFalhou(true),
+      );
     }
     setIndice(novo);
+  }
+
+  async function concluir() {
+    setConcluindo(true);
+    try {
+      // Sempre pede ao servidor, mesmo com o "registre" já marcado: é o que
+      // repara um dia que ficou aberto por causa do defeito antigo.
+      await guardar("registre");
+      router.push("/caminho");
+    } catch {
+      setFalhou(true);
+      setConcluindo(false);
+    }
   }
 
   const transicao = { duration: 0.55, ease: [0.22, 0.61, 0.36, 1] as const };
@@ -51,18 +107,22 @@ export function CondutorDoDia({
   return (
     <div className="mx-auto w-full max-w-[64ch]">
       <ol className="flex items-center gap-2" aria-label="Passos de hoje">
-        {PASSOS.map((p, i) => (
+        {PASSOS.map((p, i) => {
+          const alcancavel = passoAlcancavel(i, indice, feitos);
+          return (
           <li key={p.id} className="flex-1">
             <button
               type="button"
               onClick={() => irPara(i)}
+              disabled={!alcancavel}
               aria-current={i === indice ? "step" : undefined}
-              className="group block w-full py-3"
+              className="group block w-full py-3 disabled:cursor-not-allowed"
             >
               <span className="sr-only">
                 {p.nome}
                 {i === indice ? " (passo atual)" : ""}
                 {feitos.has(p.id) ? " — cumprido" : ""}
+                {!alcancavel ? " — abre depois dos anteriores" : ""}
               </span>
               <span
                 aria-hidden
@@ -82,7 +142,8 @@ export function CondutorDoDia({
               />
             </button>
           </li>
-        ))}
+          );
+        })}
       </ol>
 
       <AnimatePresence mode="wait">
@@ -258,19 +319,26 @@ export function CondutorDoDia({
             Continuar
           </button>
         ) : (
-          <Link
-            href="/caminho"
-            onClick={() => {
-              if (!feitos.has("registre")) {
-                void marcarPasso(jornadaId, dia.numero, "registre");
-              }
-            }}
-            className={ESTILO_BOTAO}
+          <button
+            type="button"
+            onClick={concluir}
+            disabled={concluindo}
+            className={`${ESTILO_BOTAO} disabled:cursor-wait disabled:opacity-70`}
           >
-            Concluir o dia {dia.numero}
-          </Link>
+            {concluindo ? "Guardando…" : `Concluir o dia ${dia.numero}`}
+          </button>
         )}
       </nav>
+
+      {falhou && (
+        <p
+          role="alert"
+          className="mt-6 text-center text-sm text-[var(--color-ouro-luz)]"
+        >
+          Não consegui guardar o último passo — confira a conexão. Ele será
+          guardado de novo no passo seguinte, ou ao concluir o dia.
+        </p>
+      )}
 
       <p className="mt-10 text-center text-xs text-[color-mix(in_oklab,var(--color-pergaminho)_40%,transparent)]">
         {etapa.nome} · dia {dia.numero}
@@ -303,6 +371,8 @@ function Escrita({
     "parado",
   );
   const tempo = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // O texto que espera os 900ms para ser gravado, se houver.
+  const pendente = useRef<string | null>(null);
   // A gravação é adiada 900ms, e nesse intervalo a prop pode mudar. Guardá-la
   // numa ref deixa `agendar` estável sem que o temporizador dispare a versão
   // velha. A escrita vai num efeito: durante o render o React pode descartar
@@ -314,8 +384,10 @@ function Escrita({
 
   const agendar = useCallback((texto: string) => {
     if (tempo.current) clearTimeout(tempo.current);
+    pendente.current = texto;
     setEstado("gravando");
     tempo.current = setTimeout(async () => {
+      pendente.current = null;
       try {
         await gravarRef.current(texto);
         setEstado("guardado");
@@ -325,8 +397,16 @@ function Escrita({
     }, 900);
   }, []);
 
+  // Ao sair do passo ou da tela, o que ainda esperava é gravado agora. Antes
+  // o temporizador era só cancelado: quem escrevia e clicava "Concluir" em
+  // menos de um segundo perdia as últimas palavras do diário.
   useEffect(
-    () => () => void (tempo.current && clearTimeout(tempo.current)),
+    () => () => {
+      if (tempo.current) clearTimeout(tempo.current);
+      if (pendente.current !== null) {
+        void gravarRef.current(pendente.current).catch(() => {});
+      }
+    },
     [],
   );
 
